@@ -1,0 +1,15 @@
+import preact from '@preact/preset-vite';
+import { defineConfig } from 'vite';
+import { viteSingleFile } from 'vite-plugin-singlefile';
+
+// `WLED=192.168.1.50 npm run dev` proxies API calls to a real controller.
+const wled = process.env.WLED ? `http://${process.env.WLED}` : undefined;
+
+export default defineConfig({
+  plugins: [preact(), viteSingleFile()],
+  build: { target: 'es2020', assetsInlineLimit: 100000000, cssCodeSplit: false, reportCompressedSize: false },
+  server: wled
+    ? { proxy: Object.fromEntries(['/json', '/presets.json', '/upload', '/eaveglow.json'].map((p) => [p, wled])) }
+    : undefined,
+  test: { globals: true, environment: 'node' },
+});

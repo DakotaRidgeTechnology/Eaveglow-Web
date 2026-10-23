@@ -1,0 +1,23 @@
+{
+  "name": "eaveglow-web",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Eaveglow as a single web page served by the WLED controller itself.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/gzip.mjs",
+    "test": "vitest run",
+    "install-to": "node scripts/install.mjs"
+  },
+  "dependencies": {
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.5",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^3.2.7"
+  }
+}
