@@ -1,6 +1,8 @@
-# Eaveglow for the web (runs on your WLED controller)
+# Eaveglow
 
-The same Eaveglow looks, zones, light spacing and schedules, as one small web page (about 31 KB) that lives
+*Beautiful roofline lighting, made easy. Works with WLED.*
+
+Eaveglow's looks, zones, light spacing and schedules, as one small web page (about 36 KB) that lives
 **on the ESP32 running WLED**. There's nothing to install on phones, no app store, and nothing expires.
 Everyone on your Wi-Fi opens the same page and shares the same settings.
 
@@ -35,12 +37,20 @@ If the controller's settings are locked with a PIN, unlock them first (WLED → 
 
 To update, rebuild and upload `eaveglow.htm.gz` again. Your settings are kept.
 
-## Differences from the phone app
+## Features
 
-- **Not included:** camera mapping and AR measuring.
-- **Sunrise/sunset location:** uses a **zip/postal code** or typed-in coordinates, because browsers only allow
-  location access on secure (`https`) pages, and the controller serves plain `http`.
-- **Finding the controller:** not needed, because the page comes from the controller itself.
+- **Looks:** 131 looks (Everyday, Holidays, Bulbs, Party, Sports, Nature). Holidays are grouped by holiday,
+  sorted by which comes next, with a "coming up" card.
+- **Make your own look:** 94 effect styles, 66 colors plus any color, and 70 color themes. 27 of the themes are
+  Eaveglow's own (★) and get installed on the controller as WLED custom palettes when first used.
+- **House zones and light spacing:** e.g. light every 4th LED, with a street-distance preview.
+- **Schedules:** several on/off windows, sunrise/sunset with offsets. Saving replaces WLED's timers.
+- **Shared settings:** settings live on the controller, so every phone sees the same setup.
+
+Sunrise/sunset needs a zip/postal code or coordinates, because browsers don't allow location access on plain
+`http` pages, which is how the controller serves the app.
+
+See [docs/how-it-works.md](docs/how-it-works.md) for the WLED details.
 
 ## Development
 
@@ -54,5 +64,6 @@ node e2e/e2e.mjs                 # end-to-end in headless Chromium against the m
                                  # (set PLAYWRIGHT_PATH / CHROMIUM_PATH if Playwright isn't installed locally)
 ```
 
-The look/effect/color library is generated from the Flutter app so both stay identical:
-`dart run tool/export_library.dart > web/src/engine/library.json` (run from the repo root).
+The look, effect-style, palette, color and holiday library lives in `src/engine/library.json`. Edit it directly; the
+tests check that every look works on WLED 0.15 and 16.0.1 and that custom palettes are valid. (It was originally
+exported from the Flutter app in DakotaRidgeTechnology/Eaveglow, which is no longer updated.)

@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build   # fails if eaveglow.htm.gz grows beyond 60 KB
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eaveglow
+          path: |
+            dist/eaveglow.htm.gz
+            dist/eaveglow-icon.png
