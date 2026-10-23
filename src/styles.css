@@ -55,6 +55,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 button.primary { background: var(--accent); color: var(--on-accent); border: none; font-weight: 600; }
 button.link { border: none; background: none; text-decoration: underline; min-height: 0; padding: 0; color: inherit; }
 button.icon { border: none; background: none; font-size: 22px; padding: 6px 8px; min-width: 44px; }
+button.icon.back { font-size: 34px; line-height: 1; padding: 0 12px 4px 4px; }
 input[type='number'], input:not([type]), input[type='text'], input[type='time'], select, .search, .name-input {
   border: 1px solid var(--line);
   background: var(--card);

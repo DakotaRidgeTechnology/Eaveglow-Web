@@ -8,7 +8,7 @@ import { Chip, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, he
 const EMOJIS = ['✨', '🎄', '🎅', '❄️', '🎃', '👻', '❤️', '🍀', '🐣', '🇺🇸', '🎆', '🦃', '🕎', '🪔', '🏈', '⚽', '🏀', '⚾', '🏒', '🎉', '🎂', '🌈', '🌊', '🔥', '🌙', '⭐', '🌸', '🦄'];
 
 export function LookEditor(props: { lookId?: string }) {
-  const { settings, store, snapshot, applyLook, toast, go } = useApp();
+  const { settings, store, snapshot, applyLook, toast, back } = useApp();
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
   const layer = look.layers[0];
@@ -59,12 +59,12 @@ export function LookEditor(props: { lookId?: string }) {
         return toast(String(e instanceof Error ? e.message : e));
       }
     }
-    go('/');
+    back();
   };
 
   const remove = () => {
     store.update('customLooks', settings.customLooks.filter((l) => l.id !== look.id));
-    go('/');
+    back();
   };
 
   const target = layer.target;

@@ -27,6 +27,13 @@ try {
     check((await page.getByLabel('Number of lights').inputValue()) === '200', 'zones page uses the controller LED count');
     await page.getByLabel('Number of lights').fill('120');
     check((await page.getByLabel('Roofline lights').inputValue()) === '120', 'changing the total resizes the house part');
+    // Regression: a home-screen web app can reopen straight on a page with no
+    // Eaveglow page behind it; Back must go Home instead of doing nothing.
+    await page.goto(`${mock.url}/eaveglow.htm#/schedule`);
+    await page.waitForTimeout(400);
+    await page.getByRole('button', { name: 'Back' }).click();
+    await page.waitForTimeout(300);
+    check((await page.locator('header h1').innerText()) === 'Roofline' && page.url().startsWith(mock.url), 'Back on a directly opened page goes Home');
     await page.context().close();
   }
   for (const scheme of ['light', 'dark']) {

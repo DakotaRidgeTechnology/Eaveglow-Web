@@ -8,7 +8,7 @@ import { Chip, Header, NumberField, SpacingPicker, StripPreview } from './common
 const INCHES = [1, 2, 3, 4, 6, 8, 12, 18];
 
 export function ZonesPage() {
-  const { settings, store, snapshot, toast, go } = useApp();
+  const { settings, store, snapshot, toast, back } = useApp();
   const saved = settings.layout;
   const ledCount = snapshot?.info.ledCount;
   const [total, setTotal] = useState(saved?.totalPixels ?? ledCount ?? 150);
@@ -62,7 +62,7 @@ export function ZonesPage() {
     if (problems.length) return toast(problems[0]);
     store.update('layout', layout);
     toast('🏠 House saved');
-    go('/');
+    back();
   };
 
   return (

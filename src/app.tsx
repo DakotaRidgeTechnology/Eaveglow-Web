@@ -18,6 +18,9 @@ interface AppContext {
   toast: (message: string) => void;
   applyLook: (look: Look) => Promise<string[]>;
   go: (route: string) => void;
+  /** Back to the previous Eaveglow page, or Home if there isn't one (e.g.
+   * a home-screen web app that reopened directly on this page). */
+  back: () => void;
 }
 
 const Ctx = createContext<AppContext>(null as unknown as AppContext);
@@ -36,12 +39,16 @@ export function App() {
 
   useEffect(() => store.subscribe(() => setSettings(store.settings)), [store]);
   useEffect(() => {
-    const onHash = () => {
+    const onNav = () => {
       setPath(route());
       window.scrollTo(0, 0);
     };
-    addEventListener('hashchange', onHash);
-    return () => removeEventListener('hashchange', onHash);
+    addEventListener('hashchange', onNav);
+    addEventListener('popstate', onNav);
+    return () => {
+      removeEventListener('hashchange', onNav);
+      removeEventListener('popstate', onNav);
+    };
   }, []);
 
   const refresh = useCallback(async () => {
@@ -80,11 +87,25 @@ export function App() {
     [client, store, refresh],
   );
 
+  // In-app navigation is marked in history.state, so Back knows whether the
+  // previous entry is an Eaveglow page.
   const go = useCallback((r: string) => {
-    location.hash = r;
+    history.pushState({ eaveglow: true }, '', '#' + r);
+    setPath(route());
+    window.scrollTo(0, 0);
   }, []);
 
-  const ctx: AppContext = { client, store, settings, snapshot, refresh, toast, applyLook, go };
+  const back = useCallback(() => {
+    if (history.state?.eaveglow) {
+      history.back();
+    } else {
+      history.replaceState(null, '', '#/');
+      setPath('/');
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
+  const ctx: AppContext = { client, store, settings, snapshot, refresh, toast, applyLook, go, back };
   const [page, arg] = path.split('/').filter(Boolean);
 
   return (

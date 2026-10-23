@@ -1,5 +1,6 @@
 import { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useApp } from '../app';
 import { BLACK, HouseLayout, LightSpacing, Rgb, SPACING_PRESETS, WledSegment, effectiveZones, rgbEquals, spacingEquals } from '../engine/model';
 
 export const css = (c: Rgb) => `rgb(${c[0]},${c[1]},${c[2]})`;
@@ -8,10 +9,11 @@ export const hexToRgb = (hex: string): Rgb => [1, 3, 5].map((i) => parseInt(hex.
 export const rgbToHex = (c: Rgb) => '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
 
 export function Header(props: { title: string; back?: boolean; children?: ComponentChildren }) {
+  const { back } = useApp();
   return (
     <header class="bar">
       {props.back && (
-        <button class="icon" aria-label="Back" onClick={() => history.length > 1 ? history.back() : (location.hash = '/')}>
+        <button class="icon back" aria-label="Back" onClick={back}>
           ‹
         </button>
       )}
