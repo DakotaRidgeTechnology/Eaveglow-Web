@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { colorGroups, newCustomLook, palettePresets, styleCategories, styleForEffects, effectStyles } from '../engine/library';
+import { colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, rgbEquals, spacingLabel } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
 import { Chip, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
@@ -28,7 +28,8 @@ export function LookEditor(props: { lookId?: string }) {
   const available = (cat: string) =>
     effectStyles.filter((s) => s.category === cat && (!catalog || catalog.effectId(s.wled) !== undefined));
   const devicePalettes = new Set(snapshot?.palettes.map((p) => p.toLowerCase()));
-  const themeList = palettePresets.filter((p) => !snapshot || devicePalettes.has(p.wled.toLowerCase()));
+  // Eaveglow's own (★) themes are installed on the controller when used.
+  const themeList = palettePresets.filter((p) => isCustomPalette(p.wled) || !snapshot || devicePalettes.has(p.wled.toLowerCase()));
   const preview = compileLook(layout, look, catalog ?? new EffectCatalog([...layer.effect, 'Solid'], palettePresets.map((p) => p.wled)), 64);
 
   const toggleColor = (c: Rgb) => {
@@ -158,8 +159,11 @@ export function LookEditor(props: { lookId?: string }) {
       ) : (
         <div class="themes">
           {themeList.map((p) => (
-            <button key={p.wled} class={'theme' + (layer.palette[0] === p.wled ? ' on' : '')} onClick={() => setLayer({ palette: [p.wled] })}>
-              <span>{p.emoji} {p.label}</span>
+            <button key={p.wled} class={'theme' + (layer.palette[0] === p.wled ? ' on' : '')} onClick={() => setLayer({ palette: paletteCandidates(p) })}>
+              <span>
+                {p.emoji} {p.label}
+                {isCustomPalette(p.wled) && <em class="new"> ★</em>}
+              </span>
               <GradientBar colors={p.stops} />
             </button>
           ))}

@@ -8,13 +8,26 @@ export class EffectCatalog {
   private fx: string[];
   private pal: string[];
 
-  constructor(effects: string[], palettes: string[]) {
+  private extra: Map<string, number>;
+
+  /** `extraPalettes`: installed custom palettes, name → WLED palette id. */
+  constructor(effects: string[], palettes: string[], extraPalettes: Record<string, number> = {}) {
     this.fx = effects.map(normalize);
     this.pal = palettes.map(normalize);
+    this.extra = new Map(Object.entries(extraPalettes).map(([k, v]) => [normalize(k), v]));
   }
 
   effectId = (candidates: string[]) => find(this.fx, candidates);
-  paletteId = (candidates: string[]) => find(this.pal, candidates);
+
+  paletteId(candidates: string[]): number | undefined {
+    for (const c of candidates) {
+      const extra = this.extra.get(normalize(c));
+      if (extra !== undefined) return extra;
+      const i = this.pal.indexOf(normalize(c));
+      if (i >= 0) return i;
+    }
+    return undefined;
+  }
 }
 
 const normalize = (n: string) => n.split('@')[0].trim().toLowerCase();

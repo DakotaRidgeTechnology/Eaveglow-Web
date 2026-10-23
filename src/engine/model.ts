@@ -126,6 +126,8 @@ export interface Look {
   emoji: string;
   layers: LookLayer[];
   category?: string;
+  /** Holiday id within the Holidays category (e.g. 'halloween'). */
+  group?: string;
 }
 
 export const CUSTOM_CATEGORY = 'My Looks';

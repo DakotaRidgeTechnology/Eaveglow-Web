@@ -186,3 +186,9 @@ dialog .primary { width: 100%; margin-top: 12px; }
 .toast { background: #1c1830ee; color: #fff; padding: 10px 16px; border-radius: 14px; max-width: 90vw; box-shadow: 0 4px 12px #0005; }
 .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 8px 0 2px; }
 .days .chip { padding: 4px 0; font-size: 13px; min-height: 36px; }
+.banner.coming { display: flex; align-items: center; gap: 12px; background: linear-gradient(90deg, #ff9a3c33, #a98bff33); border: 1px solid var(--line); }
+.banner.coming small { display: block; }
+.big-emoji { font-size: 34px; }
+.chips.holidays .chip { font-size: 14px; min-height: 34px; }
+h3.section { margin: 18px 0 8px; align-items: baseline; }
+.theme em.new { color: var(--glow); font-style: normal; }

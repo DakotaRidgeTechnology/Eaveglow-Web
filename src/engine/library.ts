@@ -24,7 +24,23 @@ export interface PalettePreset {
   emoji: string;
   wled: string;
   stops: Rgb[];
+  /** Gradient positions 0-255 (repeat a position for a hard edge). */
+  positions?: number[];
+  /** Built-in palette used where a custom one can't be installed. */
+  fallback?: string;
 }
+
+export interface HolidayGroup {
+  id: string;
+  name: string;
+  emoji: string;
+  rule: string;
+}
+
+/** Eaveglow's own palettes (★), installed on the controller when used. */
+export const CUSTOM_PALETTE_PREFIX = '★ ';
+export const isCustomPalette = (name: string) => name.startsWith(CUSTOM_PALETTE_PREFIX);
+export const paletteCandidates = (p: PalettePreset) => (p.fallback ? [p.wled, p.fallback] : [p.wled]);
 
 export interface ColorGroup {
   name: string;
@@ -37,6 +53,7 @@ export const styleCategories: StyleCategory[] = data.styleCategories;
 export const effectStyles = data.styles as EffectStyle[];
 export const palettePresets = data.palettes as unknown as PalettePreset[];
 export const colorGroups = data.colorGroups as unknown as ColorGroup[];
+export const holidayGroups: HolidayGroup[] = data.holidays;
 
 export const styleById = (id: string) => effectStyles.find((s) => s.id === id);
 

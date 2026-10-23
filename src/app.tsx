@@ -1,6 +1,7 @@
 import { createContext } from 'preact';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
 import { Look, WledSnapshot } from './engine/model';
+import { CustomPaletteInstaller, customPalettesIn, paletteSlots } from './engine/customPalettes';
 import { EffectCatalog, compileLook, toStateJson } from './engine/segmentCompiler';
 import { WledClient } from './engine/wledClient';
 import { SettingsStore, Settings } from './store';
@@ -31,6 +32,10 @@ const route = () => location.hash.replace(/^#/, '') || '/';
 export function App() {
   const client = useMemo(() => new WledClient(), []);
   const store = useMemo(() => new SettingsStore(client), [client]);
+  const installer = useMemo(
+    () => new CustomPaletteInstaller(client, () => store.settings.customPalettes ?? {}, (m) => store.update('customPalettes', m)),
+    [client, store],
+  );
   const [settings, setSettings] = useState(store.settings);
   const [snapshot, setSnapshot] = useState<WledSnapshot>();
   const [error, setError] = useState<string>();
@@ -78,13 +83,26 @@ export function App() {
     async (look: Look) => {
       const snap = await client.fetchSnapshot();
       const layout = store.settings.layout ?? { totalPixels: snap.info.ledCount, zones: [] };
-      const compiled = compileLook(layout, look, new EffectCatalog(snap.effects, snap.palettes), snap.info.maxSegments);
+      // Install any Eaveglow (★) palettes this look uses; if that's not
+      // possible the look falls back to a similar built-in palette.
+      const notes: string[] = [];
+      let extra: Record<string, number> = {};
+      const wanted = customPalettesIn(look.layers.map((l) => l.palette));
+      if (wanted.length) {
+        const r = await installer.ensure(wanted, paletteSlots(snap.info.ver, snap.info.arch));
+        extra = r.ids;
+        if (r.failed.length) {
+          notes.push(`Couldn't add ${r.failed.map((n) => n.replace('★ ', '')).join(', ')} to your controller (is it PIN-locked?), so a similar built-in color theme is used.`);
+        }
+      }
+      const catalog = new EffectCatalog(snap.effects, snap.palettes, extra);
+      const compiled = compileLook(layout, look, catalog, snap.info.maxSegments);
       await client.setState(toStateJson(compiled, snap.state.seg.length));
       store.update('activeLookId', look.id);
       void refresh();
-      return compiled.warnings;
+      return [...notes, ...compiled.warnings];
     },
-    [client, store, refresh],
+    [client, store, refresh, installer],
   );
 
   // In-app navigation is marked in history.state, so Back knows whether the

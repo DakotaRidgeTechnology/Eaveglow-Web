@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { builtinLooks, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
+import { byUpcoming, describeDays } from '../engine/holidays';
+import { builtinLooks, holidayGroups, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
 import { CUSTOM_CATEGORY, Look, isBuiltIn } from '../engine/model';
 import { Chip, Header, StripPreview, Swatch } from './common';
 
 const ALL = 'All';
+const HOLIDAYS = 'Holidays';
 
 export function Home() {
   const { snapshot, settings, client, refresh, applyLook, toast, go, store } = useApp();
   const [category, setCategory] = useState(ALL);
+  const [holiday, setHoliday] = useState<string>();
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [busy, setBusy] = useState<string>();
@@ -18,8 +21,25 @@ export function Home() {
   const categories = [ALL, ...(settings.customLooks.length ? [CUSTOM_CATEGORY] : []), ...lookCategories];
   const q = query.trim().toLowerCase();
   const shown = looks.filter(
-    (l) => (category === ALL || (l.category ?? CUSTOM_CATEGORY) === category) && (!q || l.name.toLowerCase().includes(q)),
+    (l) =>
+      (category === ALL || (l.category ?? CUSTOM_CATEGORY) === category) &&
+      (category !== HOLIDAYS || !holiday || l.group === holiday) &&
+      (!q || l.name.toLowerCase().includes(q)),
   );
+  const upcoming = useMemo(() => byUpcoming(holidayGroups), []);
+  const next = upcoming.find((u) => u.days !== null && u.days <= 45);
+  const pickCategory = (c: string, h?: string) => {
+    setCategory(c);
+    setHoliday(h);
+  };
+  // In Holidays with no holiday picked, show looks in sections by holiday,
+  // soonest first.
+  const sections =
+    category === HOLIDAYS && !holiday
+      ? upcoming
+          .map((u) => ({ ...u, looks: shown.filter((l) => l.group === u.group.id) }))
+          .filter((s) => s.looks.length)
+      : null;
   const state = snapshot?.state;
   const layout = settings.layout ?? (snapshot ? { totalPixels: snapshot.info.ledCount, zones: [] } : undefined);
 
@@ -95,6 +115,16 @@ export function Home() {
         </p>
       </section>
 
+      {next && category === ALL && (
+        <button class="banner coming" onClick={() => pickCategory(HOLIDAYS, next.group.id)}>
+          <span class="big-emoji">{next.group.emoji}</span>
+          <span>
+            <b>{next.group.name}</b> is {describeDays(next.days!)}
+            <small>{looks.filter((l) => l.group === next.group.id).length} looks to get ready →</small>
+          </span>
+        </button>
+      )}
+
       <div class="row spread">
         <h2>
           Looks <small>{shown.length}</small>
@@ -108,14 +138,45 @@ export function Home() {
       )}
       <div class="chips scroll">
         {categories.map((c) => (
-          <Chip key={c} selected={c === category} onClick={() => setCategory(c)}>
+          <Chip key={c} selected={c === category} onClick={() => pickCategory(c)}>
+            {c === HOLIDAYS ? '🎉 ' : ''}
             {c}
           </Chip>
         ))}
       </div>
+      {category === HOLIDAYS && (
+        <div class="chips scroll holidays">
+          {upcoming.map(({ group, days }) => (
+            <Chip key={group.id} selected={holiday === group.id} onClick={() => setHoliday(holiday === group.id ? undefined : group.id)}>
+              {group.emoji} {group.name}
+              {days !== null && days <= 60 && <small> · {describeDays(days)}</small>}
+            </Chip>
+          ))}
+        </div>
+      )}
 
+      {sections ? (
+        sections.map((sec) => (
+          <section key={sec.group.id}>
+            <h3 class="section">
+              <span>{sec.group.emoji} {sec.group.name}</span>
+              <small>{sec.days !== null && sec.days <= 60 ? describeDays(sec.days) : ''}</small>
+            </h3>
+            {lookGrid(sec.looks)}
+          </section>
+        ))
+      ) : (
+        lookGrid(shown)
+      )}
+
+      <button class="fab" onClick={() => go('/look/new')}>🎨 Make a look</button>
+    </main>
+  );
+
+  function lookGrid(list: Look[]) {
+    return (
       <div class="grid">
-        {shown.map((look) => (
+        {list.map((look) => (
           <div
             key={look.id}
             class={'tile' + (settings.activeLookId === look.id ? ' active' : '')}
@@ -140,8 +201,6 @@ export function Home() {
           </div>
         ))}
       </div>
-
-      <button class="fab" onClick={() => go('/look/new')}>🎨 Make a look</button>
-    </main>
-  );
+    );
+  }
 }

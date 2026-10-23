@@ -13,6 +13,8 @@ export interface Settings {
   schedule: Schedule;
   recentColors: Rgb[];
   activeLookId?: string;
+  /** Eaveglow (★) palettes installed on the controller: name → file slot. */
+  customPalettes?: Record<string, number>;
 }
 
 type Key = keyof Omit<Settings, 'version'>;

@@ -48,8 +48,25 @@ try {
     check(errors.length === 0, `${scheme}: no page errors ${errors.join(' | ')}`);
     if (scheme === 'dark') break;
 
+    // Holidays: the coming-up card opens that holiday; a ★ palette look
+    // installs its palette on the controller.
+    const card = page.locator('.banner.coming');
+    if (await card.count()) {
+      await card.click();
+      await page.screenshot({ path: `${shots}holidays.png` });
+    }
+    await page.getByRole('button', { name: /^🎉 Holidays/ }).click();
+    await page.locator('.chips.holidays .chip', { hasText: 'Halloween' }).click();
+    await page.getByText('Candy Corn', { exact: true }).click();
+    await page.waitForSelector('.tile.active');
+    await page.waitForTimeout(800);
+    const ccPost = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1);
+    check(!!mock.files['/palette0.json'] && JSON.parse(mock.files['/palette0.json']).n === '★ Candy Corn', 'Candy Corn palette installed as /palette0.json');
+    check(ccPost?.body.seg[0].pal === 200, 'look uses the custom palette (id 200)');
+    await page.getByRole('button', { name: /^All/ }).click();
+
     // Apply a look.
-    await page.getByText('Candy Cane').click();
+    await page.getByText('Candy Cane', { exact: true }).click();
     await page.waitForSelector('.tile.active');
     const lookPost = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1);
     const fxNames = JSON.parse((await import('node:fs')).readFileSync(new URL('./wled16-effects.json', import.meta.url)));
