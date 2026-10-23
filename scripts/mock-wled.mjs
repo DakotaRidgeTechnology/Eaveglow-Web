@@ -32,7 +32,7 @@ export function startMockWled(port = 8099) {
       return send(res, 200, readFileSync(gz), 'text/html', { 'Content-Encoding': 'gzip' });
     }
     if (path === '/eaveglow-icon.png') return send(res, 200, readFileSync(new URL('../public/eaveglow-icon.png', import.meta.url)), 'image/png');
-    if (path === '/json') return send(res, 200, { state, info: { name: 'Roofline', ver: '16.0.1', arch: 'esp32', leds: { count: 200, maxseg: 32 } }, effects, palettes });
+    if (path === '/json') return send(res, 200, { state, info: { name: 'Roofline', ver: '16.0.1', arch: 'esp32', leds: { count: +(process.env.LEDS ?? 200), maxseg: 32 } }, effects, palettes });
     if (path === '/json/state') {
       if (req.method === 'POST') {
         const b = log.at(-1).body;

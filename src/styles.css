@@ -163,7 +163,7 @@ input[role='switch']:checked::after { transform: translateX(20px); }
 .zone .name-input { flex: 1; }
 .round { width: 44px; padding: 0; border-radius: 50%; font-size: 20px; flex: none; }
 .center { text-align: center; }
-.zone input[type='number'] { width: 90px; }
+.zone input.center { width: 90px; }
 .spacing .steppers { display: flex; gap: 10px; margin: 10px 0 4px; }
 .stepper { flex: 1; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: 14px; padding: 4px 6px 4px 12px; background: var(--card); }
 .stepper small { flex: 1; }

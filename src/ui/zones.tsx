@@ -1,9 +1,9 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { builtinLooks } from '../engine/library';
 import { LightSpacing, SOLID_SPACING, Zone, newId, sequential, spacingEquals, suggestedSpacing, validateLayout } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
-import { Chip, Header, SpacingPicker, StripPreview } from './common';
+import { Chip, Header, NumberField, SpacingPicker, StripPreview } from './common';
 
 const INCHES = [1, 2, 3, 4, 6, 8, 12, 18];
 
@@ -15,6 +15,28 @@ export function ZonesPage() {
   const [zones, setZones] = useState<Zone[]>(() => saved?.zones.length ? saved.zones : [{ id: newId(), name: 'Roofline', start: 0, length: saved?.totalPixels ?? ledCount ?? 150 }]);
   const [spacing, setSpacing] = useState<LightSpacing>(saved?.spacing ?? SOLID_SPACING);
   const [inches, setInches] = useState<number | undefined>(saved?.inchesBetweenLights);
+  const touched = useRef(!!saved);
+
+  // Opened before the controller answered: use its real LED count once known.
+  useEffect(() => {
+    if (!touched.current && ledCount) {
+      touched.current = true;
+      changeTotal(ledCount);
+    }
+  }, [ledCount]);
+
+  /** Changes the light count; parts that filled the whole house keep doing
+   * so (the last part grows or shrinks). */
+  function changeTotal(n: number) {
+    touched.current = true;
+    setZones((zs) => {
+      const sum = zs.reduce((a, z) => a + z.length, 0);
+      if (sum !== total || zs.length === 0) return zs;
+      const last = zs[zs.length - 1];
+      return [...zs.slice(0, -1), { ...last, length: Math.max(1, last.length + n - total) }];
+    });
+    setTotal(n);
+  }
 
   const layout = { totalPixels: total, zones: sequential(zones), spacing, inchesBetweenLights: inches };
   const preview = compileLook(layout, builtinLooks.find((l) => l.id === 'builtin.christmas_classic')!, new EffectCatalog(['Solid'], []), 64);
@@ -48,8 +70,18 @@ export function ZonesPage() {
       <Header title="House zones" back />
       <label class="field">
         How many lights are on your house?
-        <input type="number" inputMode="numeric" min={1} value={total} onInput={(e) => setTotal(Math.max(0, +e.currentTarget.value || 0))} />
-        {ledCount !== undefined && <small>Your controller reports {ledCount}</small>}
+        <NumberField value={total} min={1} onChange={changeTotal} ariaLabel="Number of lights" />
+        {ledCount !== undefined && (
+          <small>
+            Your controller reports {ledCount}
+            {ledCount !== total && (
+              <>
+                {' · '}
+                <button class="link" onClick={() => changeTotal(ledCount)}>Use {ledCount}</button>
+              </>
+            )}
+          </small>
+        )}
       </label>
 
       <h3>Parts of the house, in wiring order</h3>
@@ -69,7 +101,7 @@ export function ZonesPage() {
           </div>
           <div class="row">
             <button class="round" onClick={() => updateZone(i, { length: Math.max(1, z.length - 1) })}>−</button>
-            <input type="number" inputMode="numeric" class="center" value={z.length} onInput={(e) => updateZone(i, { length: Math.max(1, +e.currentTarget.value || 1) })} />
+            <NumberField class="center" value={z.length} min={1} onChange={(length) => updateZone(i, { length })} ariaLabel={`${z.name} lights`} />
             <button class="round" onClick={() => updateZone(i, { length: z.length + 1 })}>+</button>
             <span>lights</span>
           </div>

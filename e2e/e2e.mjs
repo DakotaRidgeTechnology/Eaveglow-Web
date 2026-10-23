@@ -18,6 +18,17 @@ const check = (ok, what) => {
 };
 
 try {
+  {
+    // Regression: opening #/zones directly used to show 150 instead of the
+    // controller's count, and changing the total didn't resize the part.
+    const page = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+    await page.goto(`${mock.url}/eaveglow.htm#/zones`);
+    await page.waitForTimeout(600);
+    check((await page.getByLabel('Number of lights').inputValue()) === '200', 'zones page uses the controller LED count');
+    await page.getByLabel('Number of lights').fill('120');
+    check((await page.getByLabel('Roofline lights').inputValue()) === '120', 'changing the total resizes the house part');
+    await page.context().close();
+  }
   for (const scheme of ['light', 'dark']) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: scheme, isMobile: true, hasTouch: true });
     const page = await ctx.newPage();

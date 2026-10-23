@@ -1,5 +1,5 @@
 import { ComponentChildren } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { BLACK, HouseLayout, LightSpacing, Rgb, SPACING_PRESETS, WledSegment, effectiveZones, rgbEquals, spacingEquals } from '../engine/model';
 
 export const css = (c: Rgb) => `rgb(${c[0]},${c[1]},${c[2]})`;
@@ -164,5 +164,34 @@ export function Dialog(props: { open: boolean; onClose: () => void; children: Co
     <dialog ref={ref} onClose={props.onClose} onClick={(e) => e.target === ref.current && props.onClose()}>
       {props.open && props.children}
     </dialog>
+  );
+}
+
+/** A whole-number field that lets you clear it and type freely; the value
+ * is applied as soon as it's valid and restored on blur if left invalid. */
+export function NumberField(props: { value: number; min?: number; onChange: (n: number) => void; class?: string; ariaLabel?: string }) {
+  const min = props.min ?? 0;
+  const [text, setText] = useState(String(props.value));
+  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    if (!focused) setText(String(props.value));
+  }, [props.value, focused]);
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      class={props.class}
+      aria-label={props.ariaLabel}
+      value={focused ? text : String(props.value)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onInput={(e) => {
+        const t = e.currentTarget.value.replace(/[^0-9]/g, '');
+        setText(t);
+        const n = parseInt(t, 10);
+        if (!isNaN(n) && n >= min) props.onChange(n);
+      }}
+    />
   );
 }
