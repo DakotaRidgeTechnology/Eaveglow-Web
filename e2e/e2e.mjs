@@ -74,6 +74,9 @@ try {
 
     // House zones: spacing every 4th, 3" apart, save → /eaveglow.json on the controller.
     await page.getByTitle('House zones').click();
+    await page.getByLabel('Roofline lights').fill('150');
+    await page.getByText('Add a part').click();
+    await page.locator('.zone .name-input').last().fill('Garage');
     await page.getByText('3"').click();
     await page.getByRole('button', { name: 'Every 4th' }).click();
     await page.screenshot({ path: `${shots}zones.png`, fullPage: true });
@@ -81,7 +84,7 @@ try {
     await page.getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(1200);
     const saved = mock.files['/eaveglow.json'] && JSON.parse(mock.files['/eaveglow.json']);
-    check(saved?.layout?.spacing?.skip === 3 && saved.layout.inchesBetweenLights === 3, 'settings saved to the controller file system');
+    check(saved?.layout?.spacing?.skip === 3 && saved.layout.inchesBetweenLights === 3 && saved.layout.zones.length === 2, 'settings (2 parts, spacing) saved to the controller');
 
     // Re-apply: spacing reaches WLED as spc.
     await page.getByText('Warm White').first().click();
@@ -94,10 +97,19 @@ try {
     await page.locator('.name-input').fill('Team Spirit');
     await page.getByRole('button', { name: 'Twinkle', exact: false }).first().click();
     await page.getByRole('button', { name: 'Gold' }).click();
+    // Different look for one part: Candy Cane on the garage only.
+    await page.getByText('Different look for a part').click();
+    const part = page.locator('.part-edit');
+    await part.getByRole('button', { name: 'Garage' }).click();
+    await part.getByRole('button', { name: 'Roofline' }).click();
+    await part.locator('select').selectOption({ label: '🍭 Candy Cane' });
     await page.screenshot({ path: `${shots}editor.png`, fullPage: true });
     await page.getByText('Save & turn on').click();
     await page.waitForSelector('.tile.active');
     await page.waitForTimeout(1000);
+    const mixed = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1).body.seg.filter((x) => x.stop);
+    const fxAt = (start) => fxNames[mixed.find((x) => x.start === start)?.fx];
+    check(mixed.length === 2 && fxAt(0) !== fxAt(150) && fxAt(150) === 'Railway', `different look per part: roofline ${fxAt(0)}, garage ${fxAt(150)}`);
     const custom = JSON.parse(mock.files['/eaveglow.json']).customLooks;
     check(custom.length === 1 && custom[0].name === 'Team Spirit', 'custom look saved to the controller');
 

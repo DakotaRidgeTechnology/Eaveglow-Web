@@ -192,3 +192,5 @@ dialog .primary { width: 100%; margin-top: 12px; }
 .chips.holidays .chip { font-size: 14px; min-height: 34px; }
 h3.section { margin: 18px 0 8px; align-items: baseline; }
 .theme em.new { color: var(--glow); font-style: normal; }
+.chips.parts .chip.on { background: var(--accent); color: var(--on-accent); }
+.part-edit select { flex: 1; }

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
+import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
+import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, rgbEquals, spacingLabel } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
 import { Chip, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
@@ -11,15 +12,31 @@ export function LookEditor(props: { lookId?: string }) {
   const { settings, store, snapshot, applyLook, toast, back } = useApp();
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
-  const layer = look.layers[0];
+  const [active, setActive] = useState(0);
+  const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
+  const selectLayer = (i: number, l = look) => {
+    setActive(i);
+    setCategory(styleForEffects(l.layers[i].effect)?.category ?? 'steady');
+    setThemes(l.layers[i].palette.length > 0);
+  };
   const [fxQuery, setFxQuery] = useState('');
   const style = styleForEffects(layer.effect);
   const layout = settings.layout ?? { totalPixels: snapshot?.info.ledCount ?? 100, zones: [] };
   const zones = effectiveZones(layout);
 
-  const setLayer = (patch: Partial<LookLayer>) => setLook({ ...look, layers: [{ ...layer, ...patch }] });
+  const setLayer = (patch: Partial<LookLayer>) =>
+    setLook({ ...look, layers: look.layers.map((l, i) => (i === active ? { ...l, ...patch } : l)) });
+  const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
+  const partLabel = (i: number) => (i === 0 ? '🏠 Everything else' : layerZoneIds(look.layers[i]).map(zoneName).join(' + ') || 'Pick parts');
+  const addPart = () => {
+    const used = new Set(look.layers.flatMap(layerZoneIds));
+    const free = zones.find((z) => !used.has(z.id)) ?? zones[0];
+    const next = addPartLayer(look, [free.id]);
+    setLook(next);
+    selectLayer(next.layers.length - 1, next);
+  };
 
   const catalog = useMemo(
     () => (snapshot ? new EffectCatalog(snapshot.effects, snapshot.palettes) : undefined),
@@ -89,6 +106,60 @@ export function LookEditor(props: { lookId?: string }) {
           </Chip>
         ))}
       </div>
+
+      <h3>Parts of the house</h3>
+      {zones.length > 1 ? (
+        <>
+          <div class="chips parts">
+            {look.layers.map((_, i) => (
+              <Chip key={i} selected={i === active} onClick={() => selectLayer(i)}>
+                {partLabel(i)}
+              </Chip>
+            ))}
+            <Chip onClick={addPart}>＋ Different look for a part</Chip>
+          </div>
+          {active > 0 && (
+            <div class="card part-edit">
+              <small>This look shows on:</small>
+              <div class="chips dense">
+                {zones.map((z) => {
+                  const ids = layerZoneIds(layer);
+                  const on = ids.includes(z.id);
+                  return (
+                    <Chip key={z.id} selected={on} onClick={() => setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}>
+                      {z.name}
+                    </Chip>
+                  );
+                })}
+              </div>
+              <div class="row">
+                <select
+                  value=""
+                  onChange={(e) => {
+                    const src = [...builtinLooks, ...settings.customLooks].find((l) => l.id === e.currentTarget.value);
+                    if (src) {
+                      const l = copyStyleFrom(layer, src);
+                      setLayer(l);
+                      setCategory(styleForEffects(l.effect)?.category ?? 'steady');
+                      setThemes(l.palette.length > 0);
+                    }
+                  }}
+                >
+                  <option value="">Start from a look…</option>
+                  {[...builtinLooks, ...settings.customLooks].map((l) => (
+                    <option key={l.id} value={l.id}>{l.emoji} {l.name}</option>
+                  ))}
+                </select>
+                <button onClick={() => (setLook(removeLayer(look, active)), selectLayer(0, removeLayer(look, active)))}>Remove</button>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <p class="hint">
+          <a href="#/zones">Split your house into parts</a> to give each part its own look.
+        </p>
+      )}
 
       <h3>Effect <small>{style?.label ?? layer.effect[0]}</small></h3>
       <div class="chips scroll">
@@ -186,7 +257,7 @@ export function LookEditor(props: { lookId?: string }) {
       />
       {layer.spacing && <SpacingPicker value={layer.spacing} onChange={(spacing) => setLayer({ spacing })} inches={layout.inchesBetweenLights} />}
 
-      {zones.length > 1 && (
+      {zones.length > 1 && active === 0 && (
         <>
           <h3>Where</h3>
           <div class="chips">
