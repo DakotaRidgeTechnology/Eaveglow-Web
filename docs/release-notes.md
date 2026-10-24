@@ -1,9 +1,9 @@
 Eaveglow is a simple phone app for WLED that lives on the controller itself. It's one small web page you upload to the ESP32 running WLED, so there's no extra hardware, no cloud account and no app store.
 
 <p>
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.0.0/docs/screenshots/home.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.0.0/docs/screenshots/editor.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.0.0/docs/screenshots/autopilot.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.0/docs/screenshots/home.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.0/docs/screenshots/editor.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.0/docs/screenshots/autopilot.png" width="240">
 </p>
 
 ## Install
@@ -13,6 +13,15 @@ Eaveglow is a simple phone app for WLED that lives on the controller itself. It'
 3. Open `http://<your-controller-ip>/eaveglow.htm` on your phone. On iPhone, use Share > Add to Home Screen.
 
 To update later, upload the new `eaveglow.htm.gz` over the old one. Your settings are kept.
+
+## New in 1.1.0
+
+- Recent looks at the top of Home, shared by every phone in the house
+- Sleep timer: turn the lights off in 30 minutes to 4 hours, using WLED's own nightlight
+- Special dates in autopilot for game days, birthdays and the like, once or every year
+- The timers you had in WLED are backed up before Eaveglow first replaces them, with a one-tap restore
+- A clear message when the controller can't be reached, which clears by itself when it's back
+- White now shows up in the light-theme preview strip
 
 ## What's in it
 

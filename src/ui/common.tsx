@@ -96,7 +96,7 @@ export function StripPreview(props: { layout: HouseLayout; segments: WledSegment
           g.beginPath();
           g.arc(p * px + px / 2, h / 2, Math.min(px * 0.42, h * 0.3), 0, Math.PI * 2);
           g.fill();
-        } else g.fillRect(p * px, 0, px + 0.5, h);
+        } else g.fillRect(p * px, 3, px + 0.5, h - 6); // inset: the dark track frames white on a white card
       }
     });
   });

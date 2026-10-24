@@ -109,3 +109,17 @@ how soon they come and shows a "coming up" card within 45 days.
   Season presets no longer used are deleted with `pdel`.
 - Date ranges have no year, so moving holidays drift: when the app opens and today's computed dates differ from
   `autopilot.syncedDates`, it rewrites the timers (presets are only saved if missing).
+- Special dates (`Autopilot.dates`, 'YYYY-MM-DD') beat seasons on shared days. One-time dates drop out once
+  past; WLED can't tell years apart, so they leave the controller at the next app-open re-sync. A date inside a
+  season splits it in two, which costs another set of rotation timers.
+
+## Sleep timer
+
+WLED's nightlight (`json.cpp`): `{nl: {on: true, dur: <minutes ≤255>, mode: 0, tbri: 0}}` switches the lights
+off when `dur` runs out; the state reports `nl.rem` (seconds left, −1 when off). `{nl: {on: false}}` cancels.
+
+## Timer backup
+
+Before Eaveglow first replaces timers that call presets it didn't make, `applySchedule` saves
+`cfg.timers.ins` to `/eaveglow-timers-backup.json` (never overwritten). "Restore the WLED timers you had before
+Eaveglow" on the Schedule page posts them back with `preservedConfig`, and turns the schedule and autopilot off.

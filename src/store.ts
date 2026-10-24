@@ -16,6 +16,8 @@ export interface Settings {
   activeLookId?: string;
   /** Eaveglow (★) palettes installed on the controller: name → file slot. */
   customPalettes?: Record<string, number>;
+  /** Look ids last applied, newest first (shown as "Recent" on Home). */
+  recentLooks?: string[];
   /** Seasonal autopilot (looks by date); unset until first opened. */
   autopilot?: Autopilot;
 }

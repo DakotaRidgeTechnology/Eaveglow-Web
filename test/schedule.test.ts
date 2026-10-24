@@ -1,6 +1,6 @@
 import { Schedule, ScheduleWindow, Weekdays } from '../src/engine/model';
 import { WLED015, WLED16, capabilitiesFor, compileSchedule } from '../src/engine/scheduleCompiler';
-import { OFF_PRESET, ON_PRESET, applySchedule, findSchedulePresets, freePresetIds, preservedConfig } from '../src/engine/scheduleService';
+import { OFF_PRESET, ON_PRESET, TIMERS_BACKUP, applySchedule, restoreOriginalTimers, findSchedulePresets, freePresetIds, preservedConfig } from '../src/engine/scheduleService';
 import { sunTimes } from '../src/engine/sunTimes';
 import { timezoneFor } from '../src/engine/timezones';
 import { WledClient } from '../src/engine/wledClient';
@@ -56,18 +56,28 @@ describe('sun and time zones', () => {
 });
 
 /** A pretend WLED controller behind `fetch`. */
-function fakeWled(opts: { on?: boolean; presets?: Record<string, any>; version?: string; failOn?: string } = {}) {
+function fakeWled(opts: { on?: boolean; presets?: Record<string, any>; version?: string; failOn?: string; timers?: any[] } = {}) {
+  const files: Record<string, string> = {};
   let on = opts.on ?? true;
   const presets: Record<string, any> = opts.presets ?? {};
   const posts: { path: string; body: any }[] = [];
-  const cfg = { hw: { led: { total: 300, rgbwm: 3, fps: 60, ins: [] } }, light: { gc: { bri: 2.2, col: 2.2, val: 2.2 } } };
+  const cfg: any = { hw: { led: { total: 300, rgbwm: 3, fps: 60, ins: [] } }, light: { gc: { bri: 2.2, col: 2.2, val: 2.2 } }, ...(opts.timers ? { timers: { ins: opts.timers } } : {}) };
   const fetchImpl = async (url: any, init?: RequestInit) => {
     const path = String(url);
-    const body = init?.body ? JSON.parse(String(init.body)) : undefined;
+    const body = typeof init?.body === 'string' ? JSON.parse(init.body) : undefined;
     if (init?.method === 'POST') posts.push({ path, body });
     const json = (v: any) => new Response(JSON.stringify(v), { status: 200 });
     if (path === '/json') return json({ state: { on, bri: 128, seg: [] }, info: { ver: opts.version ?? '16.0.1', arch: 'esp32', leds: { count: 300, maxseg: 32 } }, effects: [], palettes: [] });
-    if (path === '/json/cfg') return init?.method === 'POST' ? json({ success: true }) : json(cfg);
+    if (path === '/json/cfg') {
+      if (init?.method === 'POST' && body.timers) cfg.timers = body.timers;
+      return init?.method === 'POST' ? json({ success: true }) : json(cfg);
+    }
+    if (path === '/upload') {
+      const f = (init!.body as FormData).get('data') as File;
+      files[f.name] = await f.text();
+      return json({});
+    }
+    if (files[path] !== undefined) return new Response(files[path], { status: 200 });
     if (path === '/presets.json') return json(presets);
     if (path === '/json/state') {
       if (opts.failOn && body?.psave && body.n === opts.failOn) return new Response('', { status: 500 });
@@ -78,7 +88,7 @@ function fakeWled(opts: { on?: boolean; presets?: Record<string, any>; version?:
     }
     return new Response('', { status: 404 });
   };
-  return { client: new WledClient('', fetchImpl as typeof fetch), posts, presets, isOn: () => on };
+  return { client: new WledClient('', fetchImpl as typeof fetch), posts, presets, files, cfg, isOn: () => on };
 }
 
 const evening: Schedule = { enabled: true, windows: [win(clock(19), clock(22))] };
@@ -160,5 +170,27 @@ describe('season presets', () => {
     await applySchedule(w.client, evening, 'UTC', 0, at, seasons());
     await applySchedule(w.client, evening, 'UTC', 0, at);
     expect(Object.values(w.presets).some((p: any) => p.n?.startsWith('Eaveglow season: '))).toBe(false);
+  });
+});
+
+describe('timer backup', () => {
+  const morning = { en: 1, hour: 7, min: 0, macro: 3, dow: 127, start: { mon: 1, day: 1 }, end: { mon: 12, day: 31 } };
+
+  it('keeps the timers someone set up in WLED, once, and can put them back', async () => {
+    const w = fakeWled({ presets: { 3: { n: 'Morning' } }, timers: [morning] });
+    await applySchedule(w.client, evening, 'UTC', 0, at);
+    expect(JSON.parse(w.files[TIMERS_BACKUP]).timers).toEqual([morning]);
+    expect(w.cfg.timers.ins[0].macro).not.toBe(3);
+    await applySchedule(w.client, evening, 'UTC', 0, at); // doesn't overwrite the backup with Eaveglow's timers
+    expect(JSON.parse(w.files[TIMERS_BACKUP]).timers).toEqual([morning]);
+    expect(await restoreOriginalTimers(w.client)).toBe(true);
+    expect(w.cfg.timers.ins).toEqual([morning]);
+    expect(w.posts.at(-1)!.body.hw.led.rgbwm).toBe(3);
+  });
+
+  it('no backup when the only timers are Eaveglow\'s own', async () => {
+    const w = fakeWled({ presets: { 9: { n: ON_PRESET, on: true } }, timers: [{ ...morning, macro: 9 }] });
+    await applySchedule(w.client, evening, 'UTC', 0, at);
+    expect(w.files[TIMERS_BACKUP]).toBeUndefined();
   });
 });

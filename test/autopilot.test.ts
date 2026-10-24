@@ -1,4 +1,4 @@
-import { Autopilot, currentPeriod, datesFingerprint, defaultAutopilot, rotationDays, seasonPeriods } from '../src/engine/autopilot';
+import { Autopilot, SpecialDate, currentPeriod, datesFingerprint, defaultAutopilot, rotationDays, seasonPeriods } from '../src/engine/autopilot';
 import { builtinLooks, holidayGroups } from '../src/engine/library';
 import { ScheduleWindow, Weekdays } from '../src/engine/model';
 import { WLED015, WLED16, compileSchedule } from '../src/engine/scheduleCompiler';
@@ -101,5 +101,30 @@ describe('seasonal autopilot', () => {
     const ok = compileSchedule({ enabled: true, windows: [win(clock(19), clock(22))] }, { dated, plain: 4 }, 3, WLED015, oct24);
     expect(ok.errors).toEqual([]);
     expect(ok.timers[0]).toMatchObject({ macro: 1, start: md(10, 1), end: md(10, 31) });
+  });
+});
+
+describe('special dates', () => {
+  const special = (over: Partial<SpecialDate>): SpecialDate => ({ id: 'd1', name: 'Game day', start: '2026-10-29', end: '2026-10-29', lookIds: ['builtin.team_blue_white'], everyYear: false, enabled: true, ...over });
+  const withDates = (...dates: SpecialDate[]): Autopilot => ({ ...auto(), dates });
+
+  it('a one-time date beats Halloween on its days', () => {
+    const { periods } = seasonPeriods(withDates(special({})), holidayGroups, oct24);
+    expect(periods.find((p) => p.key === 'd1')).toMatchObject({ label: 'Game day', start: md(10, 29), end: md(10, 29), lookIds: ['builtin.team_blue_white'] });
+    expect(currentPeriod(periods, new Date(2026, 9, 29))?.key).toBe('d1');
+    expect(currentPeriod(periods, new Date(2026, 9, 30))?.key).toBe('halloween');
+  });
+
+  it('a past one-time date is dropped; a yearly one comes back', () => {
+    const past = special({ start: '2026-03-01', end: '2026-03-02' });
+    expect(seasonPeriods(withDates(past), holidayGroups, oct24).periods.some((p) => p.key === 'd1')).toBe(false);
+    const birthday = special({ name: 'Birthday', start: '2020-03-01', end: '2020-03-02', everyYear: true });
+    expect(seasonPeriods(withDates(birthday), holidayGroups, oct24).periods.find((p) => p.key === 'd1')).toMatchObject({ start: md(3, 1), end: md(3, 2) });
+  });
+
+  it('a yearly date across New Year wraps', () => {
+    const nye = special({ name: 'New Year party', start: '2025-12-31', end: '2026-01-01', everyYear: true });
+    const p = seasonPeriods(withDates(nye), holidayGroups, oct24).periods.find((x) => x.key === 'd1');
+    expect(p).toMatchObject({ start: md(12, 31), end: md(1, 1) });
   });
 });

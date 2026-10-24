@@ -1,7 +1,7 @@
 {
   "name": "eaveglow-web",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "description": "Eaveglow as a single web page served by the WLED controller itself.",
   "type": "module",

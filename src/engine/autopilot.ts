@@ -14,9 +14,23 @@ export interface Season {
   enabled: boolean;
 }
 
+/** A game day, birthday… ('YYYY-MM-DD' dates). One-time dates are dropped
+ * once they're past; WLED can't tell years apart, so they're only removed
+ * from the controller the next time the app is opened. */
+export interface SpecialDate {
+  id: string;
+  name: string;
+  start: string;
+  end: string;
+  lookIds: string[];
+  everyYear: boolean;
+  enabled: boolean;
+}
+
 export interface Autopilot {
   enabled: boolean;
   seasons: Season[];
+  dates?: SpecialDate[];
   /** The look for days outside every season. */
   everydayLookId: string;
   /** datesFingerprint of the periods last written to the controller. */
@@ -29,7 +43,7 @@ export interface MonthDay {
 }
 
 export interface Period {
-  /** Holiday id, or EVERYDAY. */
+  /** Holiday id, special date id, or EVERYDAY. */
   key: string;
   label: string;
   emoji: string;
@@ -108,6 +122,26 @@ function nextRange(s: Season, h: HolidayGroup, today: number): [number, number] 
   return null;
 }
 
+const parseDay = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return y && m && d ? dayIndex(new Date(y, m - 1, d)) : null;
+};
+
+/** The special date's next run of days (ending today or later). */
+function dateRange(d: SpecialDate, today: number): [number, number] | null {
+  const from = parseDay(d.start);
+  const to = parseDay(d.end || d.start) ?? from;
+  if (from === null || to === null || to < from) return null;
+  if (!d.everyYear) return to >= today ? [from, to] : null;
+  const start = new Date(from * DAY);
+  const year = new Date(today * DAY).getUTCFullYear();
+  for (const y of [year - 1, year, year + 1]) {
+    const f = dayIndex(new Date(y, start.getUTCMonth(), start.getUTCDate()));
+    if (f + (to - from) >= today) return [f, f + (to - from)];
+  }
+  return null;
+}
+
 export interface SeasonPlan {
   periods: Period[];
   /** Seasons whose holiday has no known date in the coming year. */
@@ -115,34 +149,39 @@ export interface SeasonPlan {
 }
 
 /**
- * Splits the year from today into periods. On days where seasons overlap the
- * shorter one wins (Thanksgiving week over the start of Christmas).
+ * Splits the year from today into periods. Special dates beat seasons; on
+ * days where seasons overlap the shorter one wins (Thanksgiving week over the
+ * start of Christmas).
  */
 export function seasonPeriods(autopilot: Autopilot, holidays: HolidayGroup[], today = new Date()): SeasonPlan {
   const t = dayIndex(today);
   const skipped: string[] = [];
-  const ranges: { season: Season; group: HolidayGroup; from: number; to: number }[] = [];
+  type Info = Omit<Period, 'start' | 'end'>;
+  const rotation = (ids: string[]) => (ids.length ? ids.slice(0, MAX_ROTATION) : [autopilot.everydayLookId]);
+  const ranges: { info: Info; special: boolean; from: number; to: number }[] = [];
   for (const season of autopilot.seasons) {
     const group = holidays.find((h) => h.id === season.holidayId);
     if (!season.enabled || !group) continue;
     const r = nextRange(season, group, t);
     if (!r) skipped.push(group.name);
-    else ranges.push({ season, group, from: r[0], to: r[1] });
+    else ranges.push({ info: { key: group.id, label: group.name, emoji: group.emoji, lookIds: rotation(season.lookIds) }, special: false, from: r[0], to: r[1] });
   }
-  ranges.sort((a, b) => a.to - a.from - (b.to - b.from));
+  for (const d of autopilot.dates ?? []) {
+    const r = d.enabled ? dateRange(d, t) : null;
+    if (r) ranges.push({ info: { key: d.id, label: d.name || 'Special date', emoji: '📅', lookIds: rotation(d.lookIds) }, special: true, from: r[0], to: r[1] });
+  }
+  ranges.sort((a, b) => Number(b.special) - Number(a.special) || a.to - a.from - (b.to - b.from));
 
   // Days until this date next year: 365, or 366 across a Feb 29.
   const now = new Date(t * DAY);
   const year = dayIndex(new Date(now.getUTCFullYear() + 1, now.getUTCMonth(), now.getUTCDate())) - t;
   const covers = (x: (typeof ranges)[number], i: number) => (i >= x.from && i <= x.to) || (i - year >= x.from && i - year <= x.to);
 
-  type Info = Omit<Period, 'start' | 'end'>;
   const everyday: Info = { key: EVERYDAY, label: 'Everyday', emoji: '🏡', lookIds: [autopilot.everydayLookId] };
   const days: Info[] = [];
   for (let i = t; i < t + year; i++) {
-    // Shortest first, so the shorter season wins on shared days.
-    const r = ranges.find((x) => covers(x, i));
-    days.push(r ? { key: r.group.id, label: r.group.name, emoji: r.group.emoji, lookIds: r.season.lookIds.length ? r.season.lookIds.slice(0, MAX_ROTATION) : [autopilot.everydayLookId] } : everyday);
+    // Special dates first, then shortest first, so they win on shared days.
+    days.push(ranges.find((x) => covers(x, i))?.info ?? everyday);
   }
 
   const runs: { info: Info; from: number; to: number }[] = [];

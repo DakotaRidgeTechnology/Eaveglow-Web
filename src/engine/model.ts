@@ -223,6 +223,8 @@ export interface WledState {
   on: boolean;
   bri: number;
   seg: WledSegment[];
+  /** WLED's nightlight, used as a sleep timer: seconds left, or −1. */
+  nl?: { on: boolean; rem: number };
 }
 
 export interface WledSnapshot {
@@ -248,4 +250,9 @@ export function parseSnapshot(json: any): WledSnapshot {
   };
 }
 
-export const parseState = (s: any): WledState => ({ on: !!s.on, bri: s.bri ?? 128, seg: s.seg ?? [] });
+export const parseState = (s: any): WledState => ({
+  on: !!s.on,
+  bri: s.bri ?? 128,
+  seg: s.seg ?? [],
+  ...(s.nl ? { nl: { on: !!s.nl.on, rem: s.nl.rem ?? -1 } } : {}),
+});

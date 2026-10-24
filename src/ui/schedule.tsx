@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { Autopilot, MAX_ROTATION, Season, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
+import { Autopilot, MAX_ROTATION, Season, SpecialDate, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
 import { builtinLooks, holidayGroups } from '../engine/library';
 import { GeoLocation, Look, Schedule, ScheduleTime, ScheduleWindow, Weekdays, newId } from '../engine/model';
 import { capabilitiesFor, compileSchedule, WLED16 } from '../engine/scheduleCompiler';
-import { datedPresets } from '../engine/scheduleService';
+import { TIMERS_BACKUP, datedPresets, restoreOriginalTimers } from '../engine/scheduleService';
 import { SunTimes, sunTimes } from '../engine/sunTimes';
 import { Chip, Dialog, Header, NumberField, Toggle } from './common';
 
@@ -12,6 +12,7 @@ const COUNTRIES: [string, string][] = [
   ['us', 'US'], ['ca', 'CA'], ['gb', 'GB'], ['au', 'AU'], ['de', 'DE'], ['fr', 'FR'], ['nl', 'NL'], ['mx', 'MX'], ['nz', 'NZ'], ['in', 'IN'],
 ];
 
+const isoDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const fmtClock = (h: number, m: number) => new Date(2000, 0, 1, h, m).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 const fmtDate = (d: Date) => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 
@@ -44,7 +45,12 @@ async function lookupZip(code: string, country: string): Promise<GeoLocation> {
 }
 
 export function SchedulePage() {
-  const { settings, snapshot, toast, saveSchedule } = useApp();
+  const { settings, snapshot, toast, saveSchedule, client, store } = useApp();
+  const [backup, setBackup] = useState<{ savedAt?: string; timers: unknown[] } | null>(null);
+  const [restoring, setRestoring] = useState(false);
+  useEffect(() => {
+    client.readFile(TIMERS_BACKUP).then((b) => Array.isArray(b?.timers) && setBackup(b), () => undefined);
+  }, [client]);
   const [schedule, setSchedule] = useState<Schedule>(() => structuredClone(settings.schedule));
   const looks = useMemo(() => [...builtinLooks, ...settings.customLooks], [settings.customLooks]);
   const [auto, setAuto] = useState<Autopilot>(() => structuredClone(settings.autopilot ?? defaultAutopilot(holidayGroups, builtinLooks)));
@@ -92,10 +98,11 @@ export function SchedulePage() {
     try {
       const r = await saveSchedule(schedule, auto);
       if (r.errors.length) return toast(r.errors.join(' '));
+      if (!backup) client.readFile(TIMERS_BACKUP).then((b) => Array.isArray(b?.timers) && setBackup(b), () => undefined);
       const lookName = (id: string) => looks.find((l) => l.id === id)?.name ?? id;
       setResult([
         schedule.enabled ? 'Your lights will now turn on and off by themselves, even when no phone is around.' : "Your lights won't switch automatically.",
-        ...(autoOn ? ['🗓 Autopilot looks:', ...periods.map((p) => `${p.emoji} ${describeMonthDay(p.start)} – ${describeMonthDay(p.end)}: ${p.lookIds.map(lookName).join(', ')}`)] : []),
+        ...(autoOn ? ['🗓 Autopilot looks:', ...periods.map((p) => `${p.emoji} ${p.label}, ${describeMonthDay(p.start)} – ${describeMonthDay(p.end)}: ${p.lookIds.map(lookName).join(', ')}`)] : []),
         'Any timers that were set up in WLED before were replaced.',
         ...r.warnings,
       ]);
@@ -206,6 +213,40 @@ export function SchedulePage() {
           />
         )}
       </Dialog>
+      {backup && (
+        <p class="center">
+          <button class="link" onClick={() => setRestoring(true)}>Restore the WLED timers you had before Eaveglow</button>
+        </p>
+      )}
+      <Dialog open={restoring} onClose={() => setRestoring(false)}>
+        <h2>Restore your old timers?</h2>
+        <p>
+          This puts back the {backup?.timers.length} WLED timer{backup?.timers.length === 1 ? '' : 's'} your controller had
+          {backup?.savedAt ? ` on ${new Date(backup.savedAt).toLocaleDateString()}` : ''}. Eaveglow's schedule and autopilot will be turned off.
+        </p>
+        <div class="buttons">
+          <button onClick={() => setRestoring(false)}>Cancel</button>
+          <button
+            class="primary"
+            onClick={async () => {
+              setRestoring(false);
+              try {
+                if (!(await restoreOriginalTimers(client))) return toast("Couldn't find the saved timers.");
+                const off = { ...schedule, enabled: false };
+                setSchedule(off);
+                store.update('schedule', off);
+                if (settings.autopilot) store.update('autopilot', { ...settings.autopilot, enabled: false, syncedDates: undefined });
+                setAuto({ ...auto, enabled: false });
+                toast('Your old WLED timers are back.');
+              } catch (e) {
+                toast(String(e instanceof Error ? e.message : e));
+              }
+            }}
+          >
+            Restore
+          </button>
+        </div>
+      </Dialog>
       <Dialog open={!!result} onClose={() => setResult(undefined)}>
         <h2>✅ {schedule.enabled ? 'Schedule saved' : 'Schedule turned off'}</h2>
         {result?.map((r) => <p key={r}>{r}</p>)}
@@ -234,29 +275,37 @@ function AutopilotCard(props: { autopilot: Autopilot; onChange: (a: Autopilot) =
     </select>
   );
   /** Chips for the holiday's looks (and any others picked); tap to include in the rotation. */
-  const rotation = (s: Season) => {
-    const shown = [...new Set([...looks.filter((l) => l.group === s.holidayId).map((l) => l.id), ...s.lookIds])];
+  /** Chips for a holiday's looks (and any others picked); tap to include in the rotation. */
+  const rotation = (group: string | undefined, ids: string[], set: (ids: string[]) => void) => {
+    const shown = [...new Set([...looks.filter((l) => group && l.group === group).map((l) => l.id), ...ids])];
     const toggle = (id: string) => {
-      const on = s.lookIds.includes(id);
-      if (on && s.lookIds.length === 1) return;
-      setSeason({ ...s, lookIds: on ? s.lookIds.filter((x) => x !== id) : [...s.lookIds, id].slice(0, MAX_ROTATION) });
+      const on = ids.includes(id);
+      if (on && ids.length === 1) return;
+      set(on ? ids.filter((x) => x !== id) : [...ids, id].slice(0, MAX_ROTATION));
     };
     return (
       <>
         <div class="chips dense rotation">
           {shown.map((id) => {
             const l = looks.find((x) => x.id === id);
-            return l ? <Chip key={id} selected={s.lookIds.includes(id)} onClick={() => toggle(id)}>{l.emoji} {l.name}</Chip> : null;
+            return l ? <Chip key={id} selected={ids.includes(id)} onClick={() => toggle(id)}>{l.emoji} {l.name}</Chip> : null;
           })}
         </div>
         <small class="hint">
-          {s.lookIds.length === 1 ? 'Same look every day.' : `A different look each day, ${s.lookIds.length} in turn.`}
-          {s.lookIds.length >= MAX_ROTATION ? ` Up to ${MAX_ROTATION}, one per day of the week.` : ''}
+          {ids.length === 1 ? 'Same look every day.' : `A different look each day, ${ids.length} in turn.`}
+          {ids.length >= MAX_ROTATION ? ` Up to ${MAX_ROTATION}, one per day of the week.` : ''}
         </small>
-        {s.lookIds.length < MAX_ROTATION && lookSelect('', (id) => setSeason({ ...s, lookIds: [...s.lookIds, id] }), 'Add another look', shown)}
+        {ids.length < MAX_ROTATION && lookSelect('', (id) => set([...ids, id]), 'Add another look', shown)}
       </>
     );
   };
+  const specials = auto.dates ?? [];
+  const setDate = (d: SpecialDate) => props.onChange({ ...auto, dates: specials.map((x) => (x.id === d.id ? d : x)) });
+  const addDate = () => {
+    const today = isoDate(new Date());
+    props.onChange({ ...auto, dates: [...specials, { id: newId('d'), name: '', start: today, end: today, lookIds: [looks[0].id], everyYear: false, enabled: true }] });
+  };
+
   return (
     <section class={'card autopilot' + (props.scheduleOn ? '' : ' dim')}>
       <fieldset disabled={!props.scheduleOn}>
@@ -280,7 +329,7 @@ function AutopilotCard(props: { autopilot: Autopilot; onChange: (a: Autopilot) =
                   </label>
                   {s.enabled && (
                     <>
-                      {rotation(s)}
+                      {rotation(s.holidayId, s.lookIds, (lookIds) => setSeason({ ...s, lookIds }))}
                       <div class="row days-around">
                         <NumberField value={s.daysBefore} ariaLabel={`${h.name} days before`} onChange={(n) => setSeason({ ...s, daysBefore: Math.min(n, 90) })} />
                         <small>days before,</small>
@@ -292,6 +341,30 @@ function AutopilotCard(props: { autopilot: Autopilot; onChange: (a: Autopilot) =
                 </div>
               );
             })}
+            <h4 class="dates-title">📅 Special dates</h4>
+            {specials.map((d) => (
+              <div key={d.id} class={'season special' + (d.enabled ? '' : ' off')}>
+                <div class="row">
+                  <input type="checkbox" aria-label="Use this date" checked={d.enabled} onChange={(e) => setDate({ ...d, enabled: e.currentTarget.checked })} />
+                  <input class="name-input" placeholder="Game day, birthday…" value={d.name} onInput={(e) => setDate({ ...d, name: e.currentTarget.value })} />
+                  <button class="icon" title="Remove date" onClick={() => props.onChange({ ...auto, dates: specials.filter((x) => x.id !== d.id) })}>🗑</button>
+                </div>
+                <div class="row">
+                  <input type="date" aria-label="From" value={d.start} onInput={(e) => { const v = e.currentTarget.value; v && setDate({ ...d, start: v, end: d.end < v ? v : d.end }); }} />
+                  <span>to</span>
+                  <input type="date" aria-label="To" value={d.end} min={d.start} onInput={(e) => { const v = e.currentTarget.value; v && setDate({ ...d, end: v < d.start ? d.start : v }); }} />
+                </div>
+                {rotation(undefined, d.lookIds, (lookIds) => setDate({ ...d, lookIds }))}
+                <label class="row">
+                  <input type="checkbox" checked={d.everyYear} onChange={(e) => setDate({ ...d, everyYear: e.currentTarget.checked })} />
+                  <small>Every year</small>
+                </label>
+              </div>
+            ))}
+            <button onClick={addDate}>＋ Add a date (game day, birthday…)</button>
+            {specials.some((d) => !d.everyYear) && (
+              <p class="hint">One-time dates are removed from your lights the next time Eaveglow is opened after they pass.</p>
+            )}
             <div class="season">
               <b>🏡 Rest of the year</b>
               {lookSelect(auto.everydayLookId, (everydayLookId) => props.onChange({ ...auto, everydayLookId }), 'Rest of the year look')}

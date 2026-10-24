@@ -86,7 +86,7 @@ try {
       await page.evaluate(() => window.scrollTo(0, 0));
       await shot(page, 'editor');
     } else {
-      await page.locator('.tile.active').waitFor();
+      await page.locator('.tile.active').first().waitFor();
       await shot(page, 'home-light');
     }
     await ctx.close();

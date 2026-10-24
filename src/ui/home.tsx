@@ -1,16 +1,25 @@
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { currentPeriod, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
 import { byUpcoming, describeDays } from '../engine/holidays';
 import { builtinLooks, holidayGroups, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
 import { CUSTOM_CATEGORY, Look, isBuiltIn } from '../engine/model';
-import { Chip, Header, StripPreview, Swatch } from './common';
+import { Chip, Dialog, Header, StripPreview, Swatch } from './common';
 
 const ALL = 'All';
+
+/** 42 min, 1 h, 1 h 30 min */
+const describeRemaining = (seconds: number) => {
+  const total = Math.max(1, Math.round(seconds / 60));
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  return [h ? `${h} h` : '', m ? `${m} min` : ''].filter(Boolean).join(' ');
+};
 const HOLIDAYS = 'Holidays';
 
 export function Home() {
-  const { snapshot, settings, client, refresh, applyLook, toast, go, store, saveSchedule } = useApp();
+  const { snapshot, offline, settings, client, refresh, applyLook, toast, go, store, saveSchedule } = useApp();
+  const [sleepOpen, setSleepOpen] = useState(false);
   const [autoWant, setAutoWant] = useState<boolean>();
   const [category, setCategory] = useState(ALL);
   const [holiday, setHoliday] = useState<string>();
@@ -58,6 +67,24 @@ export function Home() {
     }
   };
   const state = snapshot?.state;
+  const sleeping = state?.on && state.nl?.on && state.nl.rem > 0 ? state.nl.rem : 0;
+  // Keep the "turning off in…" countdown current.
+  useEffect(() => {
+    if (!sleeping) return;
+    const t = setInterval(() => void refresh(), 60000);
+    return () => clearInterval(t);
+  }, [!!sleeping, refresh]);
+  const sleep = async (minutes: number | null) => {
+    setSleepOpen(false);
+    try {
+      await client.setState(minutes ? { nl: { on: true, dur: minutes, mode: 0, tbri: 0 } } : { nl: { on: false } });
+      toast(minutes ? `The lights will turn off in ${minutes < 60 ? `${minutes} minutes` : `${minutes / 60} hour${minutes > 60 ? 's' : ''}`}.` : 'Sleep timer cancelled.');
+      await refresh();
+    } catch (e) {
+      toast(String(e instanceof Error ? e.message : e));
+    }
+  };
+  const recent = (settings.recentLooks ?? []).map((id) => looks.find((l) => l.id === id)).filter((l): l is Look => !!l);
   const layout = settings.layout ?? (snapshot ? { totalPixels: snapshot.info.ledCount, zones: [] } : undefined);
 
   const apply = async (look: Look) => {
@@ -97,7 +124,7 @@ export function Home() {
         </button>
       )}
 
-      <section class="card">
+      <section class={'card' + (offline ? ' stale' : '')}>
         <div class="row">
           <span class="big">⏻ Lights</span>
           <input type="checkbox" role="switch" class="power" checked={state?.on ?? false} disabled={!state} onChange={(e) => setPower(e.currentTarget.checked)} />
@@ -128,6 +155,18 @@ export function Home() {
             )}
           />
         )}
+        {state?.on && (
+          <div class="row spread sleep">
+            {sleeping ? (
+              <>
+                <span>🌙 Turning off in {describeRemaining(sleeping)}</span>
+                <button class="link" onClick={() => sleep(null)}>Cancel</button>
+              </>
+            ) : (
+              <button class="link" onClick={() => setSleepOpen(true)}>🌙 Sleep timer</button>
+            )}
+          </div>
+        )}
         <p class={'sync ' + store.status}>
           {store.status === 'error' ? `⚠️ Not saved to the controller: ${store.error}` : store.status === 'saving' ? 'Saving…' : ''}
         </p>
@@ -155,6 +194,13 @@ export function Home() {
             <small>{looks.filter((l) => l.group === next.group.id).length} looks to get ready →</small>
           </span>
         </button>
+      )}
+
+      {recent.length > 0 && category === ALL && !q && (
+        <>
+          <h3 class="section"><span>Recent</span></h3>
+          <div class="recent">{lookGrid(recent)}</div>
+        </>
       )}
 
       <div class="row spread">
@@ -202,6 +248,16 @@ export function Home() {
       )}
 
       <button class="fab" onClick={() => go('/look/new')}>🎨 Make a look</button>
+
+      <Dialog open={sleepOpen} onClose={() => setSleepOpen(false)}>
+        <h2>🌙 Turn off in…</h2>
+        <div class="sleep-choices">
+          {[30, 60, 120, 240].map((m) => (
+            <button key={m} onClick={() => sleep(m)}>{m < 60 ? `${m} min` : `${m / 60} hour${m > 60 ? 's' : ''}`}</button>
+          ))}
+        </div>
+        <button class="link" onClick={() => setSleepOpen(false)}>Never mind</button>
+      </Dialog>
     </main>
   );
 

@@ -204,3 +204,12 @@ h3.section { margin: 18px 0 8px; align-items: baseline; }
 .banner.autopilot small { display: block; }
 .chips.rotation { flex-wrap: wrap; }
 .chips.rotation .chip { font-size: 13px; }
+.card.stale { opacity: 0.55; }
+.sleep { margin: 4px 0 0; font-size: 15px; }
+.sleep-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+.recent .grid { display: flex; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+.recent .grid::-webkit-scrollbar { display: none; }
+.recent .tile { flex: 0 0 31%; }
+.dates-title { margin: 12px 0 4px; }
+.season.special .name-input { flex: 1; min-width: 0; }
+.season.special input[type="date"] { flex: 1; min-width: 0; }

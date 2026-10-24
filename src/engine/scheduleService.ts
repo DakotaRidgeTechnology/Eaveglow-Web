@@ -9,6 +9,7 @@ import { WledClient, WledError } from './wledClient';
 export const ON_PRESET = 'Eaveglow: Lights On';
 export const OFF_PRESET = 'Eaveglow: Lights Off';
 export const SEASON_PREFIX = 'Eaveglow season: ';
+export const TIMERS_BACKUP = '/eaveglow-timers-backup.json';
 const LEGACY_ON = ['Looks: Lights On'];
 const LEGACY_OFF = ['Looks: Lights Off'];
 
@@ -85,6 +86,7 @@ export async function applySchedule(
     warnings.push(`WLED doesn't know your time zone (${timezone}), so it uses a fixed UTC offset. Save the schedule again after daylight saving time changes.`);
   }
   const cfg = await client.fetchConfig();
+  await backupTimers(client, cfg);
   const loc = schedule.location;
   await client.setConfig({
     ...preservedConfig(cfg),
@@ -98,6 +100,30 @@ export async function applySchedule(
     await client.setTime(now);
   }
   return { errors: [], warnings };
+}
+
+const isEaveglowPreset = (p: any) =>
+  typeof p?.n === 'string' && (p.n.startsWith('Eaveglow') || [...LEGACY_ON, ...LEGACY_OFF].includes(p.n));
+
+/**
+ * The first time Eaveglow replaces timers someone set up in WLED, keep a
+ * copy on the controller so they can be put back (restoreOriginalTimers).
+ */
+async function backupTimers(client: WledClient, cfg: any) {
+  const timers: any[] = cfg?.timers?.ins ?? [];
+  if (!timers.length || (await client.readFile(TIMERS_BACKUP))) return;
+  const presets = await client.fetchPresets();
+  const theirs = timers.some((t) => t.en && t.macro && !isEaveglowPreset(presets[t.macro]));
+  if (theirs) await client.uploadFile(TIMERS_BACKUP, JSON.stringify({ savedAt: new Date().toISOString(), timers }));
+}
+
+/** Puts back the timers saved before Eaveglow's first schedule. */
+export async function restoreOriginalTimers(client: WledClient): Promise<boolean> {
+  const backup = await client.readFile(TIMERS_BACKUP);
+  if (!Array.isArray(backup?.timers)) return false;
+  const cfg = await client.fetchConfig();
+  await client.setConfig({ ...preservedConfig(cfg), timers: { ins: backup.timers } });
+  return true;
 }
 
 /** Creates the On/Off presets if missing, ending in the lights' original state. */

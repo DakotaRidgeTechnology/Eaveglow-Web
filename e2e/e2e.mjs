@@ -67,10 +67,21 @@ try {
 
     // Apply a look.
     await page.getByText('Candy Cane', { exact: true }).click();
-    await page.locator('.tile.active', { has: page.getByText('Candy Cane', { exact: true }) }).waitFor();
+    await page.locator('.tile.active', { has: page.getByText('Candy Cane', { exact: true }) }).first().waitFor();
     const lookPost = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1);
     const fxNames = JSON.parse((await import('node:fs')).readFileSync(new URL('./wled16-effects.json', import.meta.url)));
     check(!!lookPost && fxNames[lookPost.body.seg[0].fx] === 'Railway', 'applying Candy Cane sends the Railway effect to WLED');
+    await page.evaluate(() => window.scrollTo(0, 0));
+    check((await page.locator('.recent .tile .name').first().innerText()) === 'Candy Cane', 'Recent row shows the last look');
+
+    // Sleep timer (WLED nightlight).
+    await page.getByText('Sleep timer').click();
+    await page.getByRole('button', { name: '1 hour', exact: true }).click();
+    await page.getByText('Turning off in 1 h', { exact: false }).waitFor();
+    check(mock.log.some((l) => l.body?.nl?.dur === 60 && l.body.nl.tbri === 0), 'sleep timer sends nightlight for 60 min');
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await page.getByText('Sleep timer cancelled').waitFor();
+    check(mock.log.filter((l) => l.body?.nl).at(-1).body.nl.on === false, 'sleep timer can be cancelled');
 
     // House zones: spacing every 4th, 3" apart, save → /eaveglow.json on the controller.
     await page.getByTitle('House zones').click();
@@ -118,7 +129,7 @@ try {
     await page2.goto(`${mock.url}/eaveglow.htm`);
     await page2.waitForSelector('.tile');
     await page2.waitForTimeout(500);
-    check(await page2.getByText('Team Spirit').isVisible(), 'a second phone sees the custom look');
+    check(await page2.getByText('Team Spirit').first().isVisible(), 'a second phone sees the custom look');
 
     // Schedule: turn on, two windows, save → WLED timers.
     await page.getByTitle('Schedule').click();
@@ -132,18 +143,23 @@ try {
     check(JSON.stringify(timers) === JSON.stringify([[19, 0], [22, 0], [4, 0], [6, 0]]), `timers replaced: ${JSON.stringify(timers)}`);
     check(cfgPost.hw?.led?.rgbwm === 3 && cfgPost.light?.gc?.bri === 1, 'unrelated WLED settings preserved');
     check(Object.values(mock.presets).some((p) => p.n === 'Eaveglow: Lights On'), 'On/Off presets created');
+    const backup = mock.files['/eaveglow-timers-backup.json'];
+    check(scheme !== 'light' || (!!backup && JSON.parse(backup).timers[0].macro === 3), 'the old "Morning" WLED timer was backed up');
 
     if (scheme === 'light') {
       // Seasonal autopilot: looks by date, a different one each day.
       await page.getByRole('button', { name: 'OK', exact: true }).click();
       const before = JSON.stringify(mock.state.seg);
       await page.locator('.autopilot .toggle input').check();
+      await page.getByText('Add a date').click();
+      await page.getByPlaceholder('Game day, birthday…').fill('Game day');
       await page.waitForTimeout(200);
       await page.screenshot({ path: `${shots}autopilot.png`, fullPage: true });
       await page.getByText('Save to my lights').click();
       await page.getByText('Schedule saved').waitFor({ timeout: 20000 });
       const ins = mock.log.filter((l) => l.path === '/json/cfg').at(-1).body.timers.ins;
       const oct = ins.filter((t) => t.start.mon === 10 && t.start.day === 1 && t.hour === 19);
+      check(await page.getByText(/📅 Game day,/).isVisible(), 'special date (today) shows in the saved schedule');
       check(oct.length > 1 && new Set(oct.map((t) => t.macro)).size === oct.length && oct.reduce((m, t) => m | t.dow, 0) === 127, `Halloween rotates ${oct.length} looks by day`);
       check(ins.length <= 64 && ins.filter((t) => t.hour === 4).length === 1, `${ins.length} timers fit; Time 2 just turns on`);
       const season = Object.values(mock.presets).filter((p) => p.n?.startsWith('Eaveglow season: '));
@@ -162,6 +178,25 @@ try {
       check(offIns.length === 4 && offIns[0].start.mon === 1 && offIns[0].end.mon === 12, 'autopilot toggle off: back to plain on/off timers');
       await page.waitForTimeout(1500); // settings save is debounced
       check(JSON.parse(mock.files['/eaveglow.json']).autopilot?.enabled === false, 'autopilot setting saved');
+
+      // Restore the timers WLED had before Eaveglow.
+      await page.getByTitle('Schedule').click();
+      await page.getByText('Restore the WLED timers you had before Eaveglow').click();
+      await page.getByRole('button', { name: 'Restore', exact: true }).click();
+      await page.getByText('Your old WLED timers are back').waitFor();
+      const restored = mock.log.filter((l) => l.path === '/json/cfg').at(-1).body.timers.ins;
+      check(restored.length === 1 && restored[0].macro === 3 && restored[0].hour === 7, 'old WLED timers restored');
+      await page.getByRole('button', { name: 'Back' }).click();
+
+      // Controller unreachable: a clear banner, then it recovers by itself.
+      await new Promise((r) => mock.server.close(r) || setTimeout(r, 300));
+      mock.server.closeAllConnections?.();
+      await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+      await page.getByText("Couldn't reach your lights").waitFor({ timeout: 10000 });
+      check(true, 'offline banner shown when the controller is unreachable');
+      mock.server.listen(8099);
+      await page.getByText("Couldn't reach your lights").waitFor({ state: 'detached', timeout: 15000 });
+      check(true, 'banner clears when the controller is back');
     }
     await ctx.close();
   }

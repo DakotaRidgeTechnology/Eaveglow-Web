@@ -19,6 +19,8 @@ interface AppContext {
   store: SettingsStore;
   settings: Settings;
   snapshot?: WledSnapshot;
+  /** The last refresh failed: snapshot is out of date. */
+  offline: boolean;
   refresh: () => Promise<void>;
   toast: (message: string) => void;
   applyLook: (look: Look) => Promise<string[]>;
@@ -72,6 +74,13 @@ export function App() {
     }
   }, [client]);
 
+  // While the controller can't be reached, keep trying quietly.
+  useEffect(() => {
+    if (!error) return;
+    const t = setInterval(() => void refresh(), 10000);
+    return () => clearInterval(t);
+  }, [error, refresh]);
+
   useEffect(() => {
     void refresh();
     void store.load().then(() => resync());
@@ -114,6 +123,7 @@ export function App() {
       const { state, notes } = await lookState(look, await client.fetchSnapshot());
       await client.setState(state);
       store.update('activeLookId', look.id);
+      store.update('recentLooks', [look.id, ...(store.settings.recentLooks ?? []).filter((id) => id !== look.id)].slice(0, 6));
       void refresh();
       return notes;
     },
@@ -184,14 +194,15 @@ export function App() {
     }
   }, []);
 
-  const ctx: AppContext = { client, store, settings, snapshot, refresh, toast, applyLook, saveSchedule, go, back };
+  const ctx: AppContext = { client, store, settings, snapshot, offline: !!error, refresh, toast, applyLook, saveSchedule, go, back };
   const [page, arg] = path.split('/').filter(Boolean);
 
   return (
     <Ctx.Provider value={ctx}>
-      {error && !snapshot && (
-        <div class="banner error">
-          {error} <button class="link" onClick={refresh}>Retry</button>
+      {error && (
+        <div class="banner error" role="alert">
+          {error}
+          {snapshot && ' Showing what the lights were doing last.'} <button class="link" onClick={refresh}>Retry</button>
         </div>
       )}
       {page === 'look' ? (
