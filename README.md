@@ -2,19 +2,35 @@
 
 *Beautiful roofline lighting, made easy. Works with WLED.*
 
-Eaveglow's looks, zones, light spacing and schedules, as one small web page (about 36 KB) that lives
+Eaveglow's looks, zones, light spacing and schedules, as one small web page (about 40 KB) that lives
 **on the ESP32 running WLED**. There's nothing to install on phones, no app store, and nothing expires.
 Everyone on your Wi-Fi opens the same page and shares the same settings.
 
+<p>
+  <img src="docs/screenshots/home.png" width="240" alt="Home: looks, power, brightness and autopilot">
+  <img src="docs/screenshots/editor.png" width="240" alt="Look editor with a different look on the garage">
+  <img src="docs/screenshots/autopilot.png" width="240" alt="Seasonal autopilot settings">
+</p>
+
+<details>
+<summary>More screenshots</summary>
+<p>
+  <img src="docs/screenshots/holidays.png" width="240" alt="Holiday looks, soonest first">
+  <img src="docs/screenshots/zones.png" width="240" alt="House zones">
+  <img src="docs/screenshots/schedule.png" width="240" alt="Schedule with sunset on time">
+  <img src="docs/screenshots/home-dark.png" width="240" alt="Home in dark mode">
+</p>
+</details>
+
 ## Install on your controller (one time)
 
-You need the two files `eaveglow.htm.gz` and `eaveglow-icon.png`. Build them with `npm run build`, which puts
-them in `dist/`.
+You need the two files `eaveglow.htm.gz` and `eaveglow-icon.png`. Download them from the
+[latest release](https://github.com/DakotaRidgeTechnology/Eaveglow-Web/releases/latest), or build them yourself
+with `npm run build`, which puts them in `dist/`.
 
 **Option A: from a computer, with one command**
 
 ```sh
-cd web
 npm install
 npm run build
 npm run install-to -- 192.168.1.50      # your controller's IP or wled-xxxx.local
@@ -61,9 +77,14 @@ npm run build                    # dist/eaveglow.htm.gz, must stay ≤ 60 KB
 node scripts/mock-wled.mjs       # pretend WLED 16 on http://localhost:8099/eaveglow.htm
 WLED=192.168.1.50 npm run dev    # live dev server talking to a real controller
 node e2e/e2e.mjs                 # end-to-end in headless Chromium against the mock
+npm run screenshots              # README screenshots (docs/screenshots) from the mock
                                  # (set PLAYWRIGHT_PATH / CHROMIUM_PATH if Playwright isn't installed locally)
 ```
 
 The look, effect-style, palette, color and holiday library lives in `src/engine/library.json`. Edit it directly; the
 tests check that every look works on WLED 0.15 and 16.0.1 and that custom palettes are valid. (It was originally
 exported from the Flutter app in DakotaRidgeTechnology/Eaveglow, which is no longer updated.)
+
+## License
+
+[MIT](LICENSE) © 2026 Dakota Ridge Technology

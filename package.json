@@ -2,9 +2,11 @@
   "name": "eaveglow-web",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Eaveglow as a single web page served by the WLED controller itself.",
   "type": "module",
   "scripts": {
+    "screenshots": "node scripts/screenshots.mjs",
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/gzip.mjs",
     "test": "vitest run",
