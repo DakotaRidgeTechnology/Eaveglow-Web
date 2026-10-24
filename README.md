@@ -18,7 +18,7 @@ Everyone on your Wi-Fi opens the same page and shares the same settings.
   <img src="docs/screenshots/holidays.png" width="240" alt="Holiday looks, soonest first">
   <img src="docs/screenshots/zones.png" width="240" alt="House zones">
   <img src="docs/screenshots/schedule.png" width="240" alt="Schedule with sunset on time">
-  <img src="docs/screenshots/home-dark.png" width="240" alt="Home in dark mode">
+  <img src="docs/screenshots/home-light.png" width="240" alt="Home in light mode">
 </p>
 </details>
 

@@ -41,14 +41,14 @@ const shot = async (page, name, opts = {}) => {
 };
 
 try {
-  for (const scheme of ['light', 'dark']) {
+  for (const scheme of ['dark', 'light']) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: scheme, isMobile: true, hasTouch: true, timezoneId: 'America/Denver', locale: 'en-US' });
     const page = await ctx.newPage();
     await page.goto(`${mock.url}/eaveglow.htm`);
     await page.waitForSelector('.tile');
     await page.addStyleTag({ content: '.toasts { display: none !important; }' });
 
-    if (scheme === 'light') {
+    if (scheme === 'dark') {
       // Autopilot on (Schedule page), which also shows its banner on Home.
       await page.getByTitle('Schedule').click();
       await page.locator('.autopilot .toggle input').check();
@@ -87,7 +87,7 @@ try {
       await shot(page, 'editor');
     } else {
       await page.locator('.tile.active').waitFor();
-      await shot(page, 'home-dark');
+      await shot(page, 'home-light');
     }
     await ctx.close();
   }
