@@ -1,10 +1,16 @@
 name: Release
 
-# Push a tag like v1.0.0 to build, test and publish a GitHub release with the
-# two files to upload to a controller. Notes come from docs/release-notes.md.
+# Builds, tests and publishes a GitHub release with the two files to upload
+# to a controller. Either push a tag like v1.0.0, or run it from the Actions
+# tab with the version (it creates the tag). Notes: docs/release-notes.md.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag, e.g. v1.0.0'
+        required: true
 
 permissions:
   contents: write
@@ -24,6 +30,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/eaveglow.htm.gz dist/eaveglow-icon.png \
-            --title "Eaveglow ${GITHUB_REF_NAME#v}" --notes-file docs/release-notes.md
+          gh release create "$TAG" dist/eaveglow.htm.gz dist/eaveglow-icon.png \
+            --target "$GITHUB_SHA" --title "Eaveglow ${TAG#v}" --notes-file docs/release-notes.md
