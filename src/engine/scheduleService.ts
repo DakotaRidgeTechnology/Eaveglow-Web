@@ -91,6 +91,7 @@ export async function applySchedule(
     if: { ntp: { en: true, tz: tz.index, offset: tz.offsetSeconds, ...(loc ? { lt: loc.lat, ln: loc.lon } : {}) } },
     timers: { ins: compiled.timers },
   });
+  if (!seasons) await deleteSeasonPresets(client);
   // WLED recalculates sunrise/sunset when its clock jumps ≥60 s: nudge it.
   if (loc) {
     await client.setTime(new Date(now.getTime() - 61000));
@@ -143,32 +144,58 @@ export function datedPresets(periods: Period[], presetFor: (lookId: string) => n
  */
 async function ensureSeasonPresets(client: WledClient, seasons: SeasonInput, maxSegments: number): Promise<Map<string, number>> {
   const presets = await client.fetchPresets();
-  const byName = new Map<string, number>();
-  for (const [id, p] of Object.entries(presets)) if (p?.n?.startsWith(SEASON_PREFIX)) byName.set(p.n, Number(id));
-  const wanted = new Map<string, string>(); // preset name → look id
-  for (const p of seasons.periods) for (const id of p.lookIds) wanted.set(SEASON_PREFIX + seasons.nameOf(id), id);
+  const existing = seasonPresetIds(presets);
+  // Preset name for each look; two looks with the same name get "(2)".
+  const names = new Map<string, string>();
+  for (const id of new Set(seasons.periods.flatMap((p) => p.lookIds))) {
+    const base = SEASON_PREFIX + seasons.nameOf(id);
+    let name = base;
+    for (let k = 2; [...names.values()].includes(name); k++) name = `${base} (${k})`;
+    names.set(id, name);
+  }
 
-  const missing = [...wanted.keys()].filter((n) => !byName.has(n));
+  const ids = new Map<string, number>();
+  const missing: string[] = [];
+  for (const [lookId, name] of names) {
+    const id = existing.get(name);
+    if (id === undefined) missing.push(lookId);
+    else ids.set(lookId, id);
+  }
   const free = freePresetIds(presets, missing.length);
   if (free.length < missing.length) {
     throw new WledError('Your controller has no free preset slots for the seasons. Delete a preset in WLED and try again.');
   }
-  missing.forEach((n, i) => byName.set(n, free[i]));
+  missing.forEach((lookId, i) => ids.set(lookId, free[i]));
 
-  const toSave = seasons.resave ? [...wanted.keys()] : missing;
+  const toSave = seasons.resave ? [...names.keys()] : missing;
   if (toSave.length) {
     const before = await client.fetchState();
-    for (const name of toSave) {
-      const state: any = await seasons.stateFor(wanted.get(name)!);
-      const seg = [...(state.seg ?? [])];
+    try {
+      for (const lookId of toSave) {
+        const state: any = await seasons.stateFor(lookId);
+        const seg = [...(state.seg ?? [])];
+        for (let id = seg.length; id < maxSegments; id++) seg.push({ id, stop: 0 });
+        await client.setState({ ...state, seg, on: true, psave: ids.get(lookId), n: names.get(lookId), o: true });
+      }
+    } finally {
+      const seg: object[] = before.seg.map((s) => ({ ...s }));
       for (let id = seg.length; id < maxSegments; id++) seg.push({ id, stop: 0 });
-      await client.setState({ ...state, seg, on: true, psave: byName.get(name), n: name, o: true });
+      await client.setState({ on: before.on, bri: before.bri, seg });
     }
-    const seg: object[] = before.seg.map((s) => ({ ...s }));
-    for (let id = seg.length; id < maxSegments; id++) seg.push({ id, stop: 0 });
-    await client.setState({ on: before.on, bri: before.bri, seg });
   }
 
-  for (const [name, id] of byName) if (!wanted.has(name)) await client.setState({ pdel: id });
-  return new Map([...wanted].map(([name, lookId]) => [lookId, byName.get(name)!]));
+  const wanted = new Set(names.values());
+  for (const [name, id] of existing) if (!wanted.has(name)) await client.setState({ pdel: id });
+  return ids;
+}
+
+const seasonPresetIds = (presets: Record<string, any>) => {
+  const out = new Map<string, number>();
+  for (const [id, p] of Object.entries(presets)) if (p?.n?.startsWith(SEASON_PREFIX)) out.set(p.n, Number(id));
+  return out;
+};
+
+/** Removes season presets once autopilot is off. */
+async function deleteSeasonPresets(client: WledClient) {
+  for (const id of seasonPresetIds(await client.fetchPresets()).values()) await client.setState({ pdel: id });
 }

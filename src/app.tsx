@@ -124,17 +124,20 @@ export function App() {
     async (schedule: Schedule, autopilot: Autopilot | undefined, resave = true) => {
       const plan = autopilot?.enabled && schedule.enabled ? seasonPeriods(autopilot, holidayGroups) : undefined;
       const looks = [...builtinLooks, ...store.settings.customLooks];
+      // A deleted custom look falls back to the everyday look.
       const findLook = (id: string) => looks.find((l) => l.id === id) ?? looks.find((l) => l.id === autopilot?.everydayLookId) ?? looks[0];
+      const periods = plan?.periods.map((p) => ({ ...p, lookIds: [...new Set(p.lookIds.map((id) => findLook(id).id))] }));
+      let snap: WledSnapshot | undefined;
       const r = await applySchedule(
         client,
         schedule,
         browserTimezone(),
         browserUtcOffsetMinutes(),
         new Date(),
-        plan && {
-          periods: plan.periods,
+        periods && {
+          periods,
           resave,
-          stateFor: async (id) => (await lookState(findLook(id), await client.fetchSnapshot())).state,
+          stateFor: async (id) => (await lookState(findLook(id), (snap ??= await client.fetchSnapshot()))).state,
           nameOf: (id) => findLook(id).name,
         },
       );
@@ -155,8 +158,13 @@ export function App() {
     const { schedule, autopilot } = store.settings;
     if (!schedule.enabled || !autopilot?.enabled) return;
     if (datesFingerprint(seasonPeriods(autopilot, holidayGroups).periods) === autopilot.syncedDates) return;
-    await saveSchedule(schedule, autopilot, false).catch(() => undefined);
-  }, [store, saveSchedule]);
+    try {
+      const r = await saveSchedule(schedule, autopilot, false);
+      if (r.errors.length) throw new Error(r.errors.join(' '));
+    } catch (e) {
+      toast(`🗓 Couldn't update the autopilot dates on your lights: ${e instanceof Error ? e.message : e} Open Schedule and save to try again.`);
+    }
+  }, [store, saveSchedule, toast]);
 
   // In-app navigation is marked in history.state, so Back knows whether the
   // previous entry is an Eaveglow page.

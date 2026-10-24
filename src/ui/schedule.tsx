@@ -296,7 +296,7 @@ function AutopilotCard(props: { autopilot: Autopilot; onChange: (a: Autopilot) =
               <b>🏡 Rest of the year</b>
               {lookSelect(auto.everydayLookId, (everydayLookId) => props.onChange({ ...auto, everydayLookId }), 'Rest of the year look')}
             </div>
-            <p class="hint">Where seasons overlap, the shorter one wins. Picking a look by hand still works; autopilot switches back the next time the lights turn on.</p>
+            <p class="hint">Where seasons overlap, the shorter one wins. Picking a look by hand still works; autopilot picks the season's look again at Time 1's "on" time.</p>
           </>
         )}
       </fieldset>

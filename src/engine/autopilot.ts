@@ -77,11 +77,15 @@ function rotationFor(holidayId: string, looks: Look[]): string[] {
 
 /**
  * Which weekdays (WLED dow mask, bit 0 = Monday) show each look of a
- * rotation: day d shows look d mod n, so neighbouring days differ.
+ * rotation. Neighbouring days differ, Sunday → Monday included, whenever
+ * there are 3 or more looks.
  */
 export function rotationDays(count: number): number[] {
-  const masks = Array.from({ length: Math.min(count, MAX_ROTATION) }, () => 0);
-  for (let d = 0; d < 7; d++) masks[d % masks.length] |= 1 << d;
+  const n = Math.max(1, Math.min(count, MAX_ROTATION));
+  const seq = Array.from({ length: 7 }, (_, d) => d % n);
+  if (n >= 3 && seq[6] === seq[0]) seq[6] = [1, 2].find((k) => k !== seq[5])!;
+  const masks = Array.from({ length: n }, () => 0);
+  seq.forEach((look, d) => (masks[look] |= 1 << d));
   return masks;
 }
 
@@ -111,7 +115,7 @@ export interface SeasonPlan {
 }
 
 /**
- * Splits the next 365 days into periods. On days where seasons overlap the
+ * Splits the year from today into periods. On days where seasons overlap the
  * shorter one wins (Thanksgiving week over the start of Christmas).
  */
 export function seasonPeriods(autopilot: Autopilot, holidays: HolidayGroup[], today = new Date()): SeasonPlan {
@@ -127,11 +131,17 @@ export function seasonPeriods(autopilot: Autopilot, holidays: HolidayGroup[], to
   }
   ranges.sort((a, b) => a.to - a.from - (b.to - b.from));
 
+  // Days until this date next year: 365, or 366 across a Feb 29.
+  const now = new Date(t * DAY);
+  const year = dayIndex(new Date(now.getUTCFullYear() + 1, now.getUTCMonth(), now.getUTCDate())) - t;
+  const covers = (x: (typeof ranges)[number], i: number) => (i >= x.from && i <= x.to) || (i - year >= x.from && i - year <= x.to);
+
   type Info = Omit<Period, 'start' | 'end'>;
   const everyday: Info = { key: EVERYDAY, label: 'Everyday', emoji: '🏡', lookIds: [autopilot.everydayLookId] };
   const days: Info[] = [];
-  for (let i = t; i < t + 365; i++) {
-    const r = ranges.find((x) => i >= x.from && i <= x.to) ?? ranges.find((x) => i - 365 >= x.from && i - 365 <= x.to);
+  for (let i = t; i < t + year; i++) {
+    // Shortest first, so the shorter season wins on shared days.
+    const r = ranges.find((x) => covers(x, i));
     days.push(r ? { key: r.group.id, label: r.group.name, emoji: r.group.emoji, lookIds: r.season.lookIds.length ? r.season.lookIds.slice(0, MAX_ROTATION) : [autopilot.everydayLookId] } : everyday);
   }
 
@@ -143,11 +153,16 @@ export function seasonPeriods(autopilot: Autopilot, holidays: HolidayGroup[], to
   });
   // The year is a circle: the run before today continues the last one.
   if (runs.length > 1 && runs[0].info.key === runs.at(-1)!.info.key) {
-    runs.at(-1)!.to = runs[0].to + 365;
+    runs.at(-1)!.to = runs[0].to + year;
     runs.shift();
   }
   if (runs.length === 1) return { periods: [{ ...runs[0].info, start: { mon: 1, day: 1 }, end: { mon: 12, day: 31 } }], skipped };
-  return { periods: runs.map((r) => ({ ...r.info, start: fromIndex(r.from), end: fromIndex(r.to) })), skipped };
+  // A period ending Feb 28 also takes Feb 29, which WLED sees in leap years only.
+  const end = (i: number) => {
+    const d = fromIndex(i);
+    return d.mon === 2 && d.day === 28 ? { mon: 2, day: 29 } : d;
+  };
+  return { periods: runs.map((r) => ({ ...r.info, start: fromIndex(r.from), end: end(r.to) })), skipped };
 }
 
 const inRange = (p: Period, mon: number, day: number) => {

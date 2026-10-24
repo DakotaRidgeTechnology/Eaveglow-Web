@@ -38,12 +38,29 @@ describe('seasonal autopilot', () => {
     expect(datesFingerprint(seasonPeriods(a, holidayGroups, oct24).periods)).not.toBe(datesFingerprint(seasonPeriods(auto(), holidayGroups, oct24).periods));
   });
 
+  it('leap years: every day is covered and seasons keep their dates', () => {
+    for (const today of [new Date(2028, 0, 1), new Date(2027, 2, 1), new Date(2028, 1, 29)]) {
+      const { periods } = seasonPeriods(auto(), holidayGroups, today);
+      for (let d = new Date(2028, 0, 1); d.getFullYear() === 2028; d.setDate(d.getDate() + 1)) {
+        expect(currentPeriod(periods, d), `${today.toDateString()} → ${d.toDateString()}`).toBeDefined();
+      }
+    }
+    // Thanksgiving 2028 is Nov 23, so Christmas gets its full 30 days before Dec 25.
+    expect(find(auto(), 'christmas', new Date(2028, 0, 1))).toMatchObject({ start: md(11, 25), end: md(1, 1) });
+  });
+
   it('rotations change look every day and cover every weekday', () => {
     expect(rotationDays(1)).toEqual([0x7f]);
     const three = rotationDays(3);
     expect(three.reduce((a, b) => a | b)).toBe(0x7f);
     expect(three[0] & three[1]).toBe(0);
     expect(rotationDays(7)).toEqual([1, 2, 4, 8, 16, 32, 64]);
+    // Sunday (bit 6) and Monday (bit 0) differ for 3+ looks.
+    for (const n of [3, 4, 5, 6]) {
+      const masks = rotationDays(n);
+      expect(masks.every((m) => m > 0), `n=${n}`).toBe(true);
+      expect(masks.some((m) => m & 1 && m & 64), `n=${n}`).toBe(false);
+    }
     expect(find(auto(), 'halloween')!.lookIds.length).toBeGreaterThan(1);
   });
 

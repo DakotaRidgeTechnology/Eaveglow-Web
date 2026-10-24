@@ -56,7 +56,7 @@ describe('sun and time zones', () => {
 });
 
 /** A pretend WLED controller behind `fetch`. */
-function fakeWled(opts: { on?: boolean; presets?: Record<string, any>; version?: string } = {}) {
+function fakeWled(opts: { on?: boolean; presets?: Record<string, any>; version?: string; failOn?: string } = {}) {
   let on = opts.on ?? true;
   const presets: Record<string, any> = opts.presets ?? {};
   const posts: { path: string; body: any }[] = [];
@@ -70,8 +70,10 @@ function fakeWled(opts: { on?: boolean; presets?: Record<string, any>; version?:
     if (path === '/json/cfg') return init?.method === 'POST' ? json({ success: true }) : json(cfg);
     if (path === '/presets.json') return json(presets);
     if (path === '/json/state') {
-      if ('on' in body) on = body.on;
-      if ('psave' in body) presets[String(body.psave)] = { n: body.n, on: body.on };
+      if (opts.failOn && body?.psave && body.n === opts.failOn) return new Response('', { status: 500 });
+      if (body && 'on' in body) on = body.on;
+      if (body && 'psave' in body) presets[String(body.psave)] = { n: body.n, on: body.on };
+      if (body && 'pdel' in body) delete presets[String(body.pdel)];
       return json({ on, bri: 128, seg: [] });
     }
     return new Response('', { status: 404 });
@@ -124,5 +126,39 @@ describe('schedule service', () => {
     expect(freePresetIds({ '250': {}, '248': {} }, 2)).toEqual([249, 247]);
     expect(findSchedulePresets({ '3': { n: ON_PRESET, on: true } })).toEqual({ on: 3, off: undefined });
     expect(preservedConfig({})).toEqual({});
+  });
+});
+
+describe('season presets', () => {
+  const md = (mon: number, day: number) => ({ mon, day });
+  const periods = [
+    { key: 'halloween', label: 'Halloween', emoji: '🎃', lookIds: ['a', 'b', 'c'], start: md(10, 1), end: md(10, 31) },
+    { key: 'everyday', label: 'Everyday', emoji: '🏡', lookIds: ['w'], start: md(11, 1), end: md(9, 30) },
+  ];
+  const names: Record<string, string> = { a: 'Pumpkins', b: 'Pumpkins', c: 'Bats', w: 'Warm White' };
+  const seasons = (resave = true) => ({ periods, resave, stateFor: async (id: string) => ({ seg: [{ id: 0, fx: id.charCodeAt(0) }] }), nameOf: (id: string) => names[id] });
+
+  it('one preset per look (same names kept apart); every rotation timer calls a real preset', async () => {
+    const w = fakeWled({ on: false, presets: { 0: {}, 7: { n: 'Eaveglow season: Old Look' } } });
+    const r = await applySchedule(w.client, evening, 'UTC', 0, at, seasons());
+    expect(r.errors).toEqual([]);
+    const names = Object.values(w.presets).map((p: any) => p.n).filter((n) => n?.startsWith('Eaveglow season: ')).sort();
+    expect(names).toEqual(['Eaveglow season: Bats', 'Eaveglow season: Pumpkins', 'Eaveglow season: Pumpkins (2)', 'Eaveglow season: Warm White']);
+    const timers = w.posts.find((p) => p.path === '/json/cfg')!.body.timers.ins;
+    expect(timers.every((t: any) => t.macro > 0 && w.presets[t.macro])).toBe(true);
+    expect(w.isOn()).toBe(false); // put back after saving
+  });
+
+  it('puts the lights back even when saving a preset fails', async () => {
+    const w = fakeWled({ on: false, failOn: 'Eaveglow season: Bats' });
+    await expect(applySchedule(w.client, evening, 'UTC', 0, at, seasons())).rejects.toThrow();
+    expect(w.isOn()).toBe(false);
+  });
+
+  it('turning autopilot off deletes the season presets', async () => {
+    const w = fakeWled();
+    await applySchedule(w.client, evening, 'UTC', 0, at, seasons());
+    await applySchedule(w.client, evening, 'UTC', 0, at);
+    expect(Object.values(w.presets).some((p: any) => p.n?.startsWith('Eaveglow season: '))).toBe(false);
   });
 });

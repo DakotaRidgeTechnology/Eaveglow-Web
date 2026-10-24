@@ -49,7 +49,7 @@ export function Home() {
     setAutoWant(enabled);
     try {
       const a = { ...(auto ?? defaultAutopilot(holidayGroups, builtinLooks)), enabled };
-      const r = await saveSchedule(settings.schedule, a);
+      const r = await saveSchedule(settings.schedule, a, false);
       toast(r.errors.length ? r.errors.join(' ') : enabled ? '🗓 Autopilot is on' : 'Autopilot is off; the lights keep their current look.');
     } catch (e) {
       toast(String(e instanceof Error ? e.message : e));
@@ -64,7 +64,7 @@ export function Home() {
     setBusy(look.id);
     try {
       const warnings = await applyLook(look);
-      const note = autoOn && period ? ` Autopilot switches back to ${period.label.toLowerCase()} looks the next time the lights turn on.` : '';
+      const note = autoOn && period ? ` Autopilot picks the ${period.key === 'everyday' ? 'everyday' : period.label} look again at Time 1's "on" time.` : '';
       toast((warnings.length ? warnings.join(' ') : `${look.emoji} ${look.name} is on!`) + note);
     } catch (e) {
       toast(String(e instanceof Error ? e.message : e));

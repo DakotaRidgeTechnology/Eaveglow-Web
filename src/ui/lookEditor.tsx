@@ -29,7 +29,8 @@ export function LookEditor(props: { lookId?: string }) {
   const setLayer = (patch: Partial<LookLayer>) =>
     setLook({ ...look, layers: look.layers.map((l, i) => (i === active ? { ...l, ...patch } : l)) });
   const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
-  const partLabel = (i: number) => (i === 0 ? '🏠 Everything else' : layerZoneIds(look.layers[i]).map(zoneName).join(' + ') || 'Pick parts');
+  const partLabel = (i: number) =>
+    i === 0 ? (look.layers[0].target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look') : layerZoneIds(look.layers[i]).map(zoneName).join(' + ');
   const addPart = () => {
     const used = new Set(look.layers.flatMap(layerZoneIds));
     const free = zones.find((z) => !used.has(z.id)) ?? zones[0];
@@ -126,7 +127,12 @@ export function LookEditor(props: { lookId?: string }) {
                   const ids = layerZoneIds(layer);
                   const on = ids.includes(z.id);
                   return (
-                    <Chip key={z.id} selected={on} onClick={() => setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}>
+                    <Chip
+                      key={z.id}
+                      selected={on}
+                      // A part always covers at least one zone; use Remove to drop it.
+                      onClick={() => !(on && ids.length === 1) && setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}
+                    >
                       {z.name}
                     </Chip>
                   );
