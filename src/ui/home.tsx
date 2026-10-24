@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
+import { currentPeriod, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
 import { byUpcoming, describeDays } from '../engine/holidays';
 import { builtinLooks, holidayGroups, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
 import { CUSTOM_CATEGORY, Look, isBuiltIn } from '../engine/model';
@@ -9,7 +10,8 @@ const ALL = 'All';
 const HOLIDAYS = 'Holidays';
 
 export function Home() {
-  const { snapshot, settings, client, refresh, applyLook, toast, go, store } = useApp();
+  const { snapshot, settings, client, refresh, applyLook, toast, go, store, saveSchedule } = useApp();
+  const [autoWant, setAutoWant] = useState<boolean>();
   const [category, setCategory] = useState(ALL);
   const [holiday, setHoliday] = useState<string>();
   const [query, setQuery] = useState('');
@@ -40,6 +42,21 @@ export function Home() {
           .map((u) => ({ ...u, looks: shown.filter((l) => l.group === u.group.id) }))
           .filter((s) => s.looks.length)
       : null;
+  const auto = settings.autopilot;
+  const autoOn = !!auto?.enabled && settings.schedule.enabled;
+  const period = useMemo(() => (autoOn ? currentPeriod(seasonPeriods(auto!, holidayGroups).periods) : undefined), [auto, autoOn]);
+  const setAutopilot = async (enabled: boolean) => {
+    setAutoWant(enabled);
+    try {
+      const a = { ...(auto ?? defaultAutopilot(holidayGroups, builtinLooks)), enabled };
+      const r = await saveSchedule(settings.schedule, a);
+      toast(r.errors.length ? r.errors.join(' ') : enabled ? '🗓 Autopilot is on' : 'Autopilot is off; the lights keep their current look.');
+    } catch (e) {
+      toast(String(e instanceof Error ? e.message : e));
+    } finally {
+      setAutoWant(undefined);
+    }
+  };
   const state = snapshot?.state;
   const layout = settings.layout ?? (snapshot ? { totalPixels: snapshot.info.ledCount, zones: [] } : undefined);
 
@@ -47,7 +64,8 @@ export function Home() {
     setBusy(look.id);
     try {
       const warnings = await applyLook(look);
-      toast(warnings.length ? warnings.join(' ') : `${look.emoji} ${look.name} is on!`);
+      const note = autoOn && period ? ` Autopilot switches back to ${period.label.toLowerCase()} looks the next time the lights turn on.` : '';
+      toast((warnings.length ? warnings.join(' ') : `${look.emoji} ${look.name} is on!`) + note);
     } catch (e) {
       toast(String(e instanceof Error ? e.message : e));
     } finally {
@@ -114,6 +132,20 @@ export function Home() {
           {store.status === 'error' ? `⚠️ Not saved to the controller: ${store.error}` : store.status === 'saving' ? 'Saving…' : ''}
         </p>
       </section>
+
+      {auto && settings.schedule.enabled && category === ALL && (
+        <div class="banner autopilot">
+          <span>
+            <b>🗓 Autopilot</b>
+            <small>
+              {autoOn && period
+                ? `${period.emoji} ${period.key === 'everyday' ? 'Everyday look' : period.label} until ${describeMonthDay(period.end)}${period.lookIds.length > 1 ? ' · new look each day' : ''}`
+                : 'Off: the lights keep whatever look you pick.'}
+            </small>
+          </span>
+          <input type="checkbox" role="switch" aria-label="Seasonal autopilot" checked={autoWant ?? autoOn} disabled={autoWant !== undefined} onChange={(e) => setAutopilot(e.currentTarget.checked)} />
+        </div>
+      )}
 
       {next && category === ALL && (
         <button class="banner coming" onClick={() => pickCategory(HOLIDAYS, next.group.id)}>

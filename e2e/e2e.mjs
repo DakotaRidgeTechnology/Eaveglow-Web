@@ -67,7 +67,7 @@ try {
 
     // Apply a look.
     await page.getByText('Candy Cane', { exact: true }).click();
-    await page.waitForSelector('.tile.active');
+    await page.locator('.tile.active', { has: page.getByText('Candy Cane', { exact: true }) }).waitFor();
     const lookPost = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1);
     const fxNames = JSON.parse((await import('node:fs')).readFileSync(new URL('./wled16-effects.json', import.meta.url)));
     check(!!lookPost && fxNames[lookPost.body.seg[0].fx] === 'Railway', 'applying Candy Cane sends the Railway effect to WLED');
@@ -122,7 +122,7 @@ try {
 
     // Schedule: turn on, two windows, save → WLED timers.
     await page.getByTitle('Schedule').click();
-    await page.locator('.card .toggle input').check();
+    await page.locator('.card .toggle input').first().check();
     await page.getByText('Add another time').click();
     await page.screenshot({ path: `${shots}schedule.png`, fullPage: true });
     await page.getByText('Save to my lights').click();
@@ -132,6 +132,37 @@ try {
     check(JSON.stringify(timers) === JSON.stringify([[19, 0], [22, 0], [4, 0], [6, 0]]), `timers replaced: ${JSON.stringify(timers)}`);
     check(cfgPost.hw?.led?.rgbwm === 3 && cfgPost.light?.gc?.bri === 1, 'unrelated WLED settings preserved');
     check(Object.values(mock.presets).some((p) => p.n === 'Eaveglow: Lights On'), 'On/Off presets created');
+
+    if (scheme === 'light') {
+      // Seasonal autopilot: looks by date, a different one each day.
+      await page.getByRole('button', { name: 'OK', exact: true }).click();
+      const before = JSON.stringify(mock.state.seg);
+      await page.locator('.autopilot .toggle input').check();
+      await page.waitForTimeout(200);
+      await page.screenshot({ path: `${shots}autopilot.png`, fullPage: true });
+      await page.getByText('Save to my lights').click();
+      await page.getByText('Schedule saved').waitFor({ timeout: 20000 });
+      const ins = mock.log.filter((l) => l.path === '/json/cfg').at(-1).body.timers.ins;
+      const oct = ins.filter((t) => t.start.mon === 10 && t.start.day === 1 && t.hour === 19);
+      check(oct.length > 1 && new Set(oct.map((t) => t.macro)).size === oct.length && oct.reduce((m, t) => m | t.dow, 0) === 127, `Halloween rotates ${oct.length} looks by day`);
+      check(ins.length <= 64 && ins.filter((t) => t.hour === 4).length === 1, `${ins.length} timers fit; Time 2 just turns on`);
+      const season = Object.values(mock.presets).filter((p) => p.n?.startsWith('Eaveglow season: '));
+      check(season.length > 5 && season.every((p) => p.on && p.seg?.length), `${season.length} season presets saved`);
+      check(oct.every((t) => mock.presets[t.macro]?.n?.startsWith('Eaveglow season: ')), 'season timers call season presets');
+      check(JSON.stringify(mock.state.seg) === before, 'lights put back after saving presets');
+      await page.getByRole('button', { name: 'OK', exact: true }).click();
+      await page.getByRole('button', { name: 'Back' }).click();
+      const sw = page.getByLabel('Seasonal autopilot');
+      await sw.waitFor();
+      check(await sw.isChecked(), 'Home shows autopilot on');
+      await page.screenshot({ path: `${shots}home-autopilot.png` });
+      await sw.uncheck();
+      await page.getByText('Autopilot is off').waitFor({ timeout: 20000 });
+      const offIns = mock.log.filter((l) => l.path === '/json/cfg').at(-1).body.timers.ins;
+      check(offIns.length === 4 && offIns[0].start.mon === 1 && offIns[0].end.mon === 12, 'autopilot toggle off: back to plain on/off timers');
+      await page.waitForTimeout(1500); // settings save is debounced
+      check(JSON.parse(mock.files['/eaveglow.json']).autopilot?.enabled === false, 'autopilot setting saved');
+    }
     await ctx.close();
   }
 } finally {

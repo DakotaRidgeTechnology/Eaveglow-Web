@@ -93,3 +93,19 @@ how soon they come and shows a "coming up" card within 45 days.
 | `GET/POST /json/cfg` | Timers, time zone and location for schedules |
 | `GET /presets.json` | Find or place the schedule's On/Off presets |
 | mDNS `_wled._tcp` | Discovery |
+
+## Seasonal autopilot
+
+- WLED checks every timer (including sunrise/sunset) with `isTodayInDateRange(monthStart, dayStart, monthEnd, dayEnd)`
+  before applying its preset (`wled00/ntp.cpp`), and ranges may wrap the year (Nov 27 – Jan 1). WLED 0.15 has
+  date ranges on its 8 clock slots only.
+- `seasonPeriods` (`src/engine/autopilot.ts`) splits the year into periods: each enabled season is its holiday's
+  next date ± days before/after; on overlapping days the shorter season wins; gaps get the everyday look.
+- Each season rotates through up to 7 looks by weekday (`rotationDays`: day d shows look d mod n, `dow` bit 0 =
+  Monday). Time 1's "on" time gets one timer per look per period; other windows turn on with the plain
+  "Eaveglow: Lights On" preset, keeping the day's look. Defaults use ~45 of the 64 timers (ESP32).
+- Each look is saved once as an API preset `Eaveglow season: <look name>` (`seg` + `on: true`, deleting leftover
+  segments up to `maxseg`). `psave` also applies the state, so the previous `on`/`bri`/`seg` is restored after.
+  Season presets no longer used are deleted with `pdel`.
+- Date ranges have no year, so moving holidays drift: when the app opens and today's computed dates differ from
+  `autopilot.syncedDates`, it rewrites the timers (presets are only saved if missing).

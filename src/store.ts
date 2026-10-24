@@ -1,5 +1,6 @@
 // Settings shared by everyone in the house: saved as /eaveglow.json on the
 // controller (WLED's file system), with a local copy so the page opens fast.
+import { Autopilot } from './engine/autopilot';
 import { HouseLayout, Look, Rgb, Schedule, initialSchedule } from './engine/model';
 import { WledClient } from './engine/wledClient';
 
@@ -15,6 +16,8 @@ export interface Settings {
   activeLookId?: string;
   /** Eaveglow (★) palettes installed on the controller: name → file slot. */
   customPalettes?: Record<string, number>;
+  /** Seasonal autopilot (looks by date); unset until first opened. */
+  autopilot?: Autopilot;
 }
 
 type Key = keyof Omit<Settings, 'version'>;

@@ -1,11 +1,12 @@
-import { useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { GeoLocation, Schedule, ScheduleTime, ScheduleWindow, Weekdays, newId } from '../engine/model';
+import { Autopilot, MAX_ROTATION, Season, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
+import { builtinLooks, holidayGroups } from '../engine/library';
+import { GeoLocation, Look, Schedule, ScheduleTime, ScheduleWindow, Weekdays, newId } from '../engine/model';
 import { capabilitiesFor, compileSchedule, WLED16 } from '../engine/scheduleCompiler';
-import { applySchedule } from '../engine/scheduleService';
+import { datedPresets } from '../engine/scheduleService';
 import { SunTimes, sunTimes } from '../engine/sunTimes';
-import { browserTimezone, browserUtcOffsetMinutes } from '../engine/timezones';
-import { Dialog, Header, Toggle } from './common';
+import { Chip, Dialog, Header, NumberField, Toggle } from './common';
 
 const COUNTRIES: [string, string][] = [
   ['us', 'US'], ['ca', 'CA'], ['gb', 'GB'], ['au', 'AU'], ['de', 'DE'], ['fr', 'FR'], ['nl', 'NL'], ['mx', 'MX'], ['nz', 'NZ'], ['in', 'IN'],
@@ -43,8 +44,10 @@ async function lookupZip(code: string, country: string): Promise<GeoLocation> {
 }
 
 export function SchedulePage() {
-  const { settings, store, client, snapshot, toast } = useApp();
+  const { settings, snapshot, toast, saveSchedule } = useApp();
   const [schedule, setSchedule] = useState<Schedule>(() => structuredClone(settings.schedule));
+  const looks = useMemo(() => [...builtinLooks, ...settings.customLooks], [settings.customLooks]);
+  const [auto, setAuto] = useState<Autopilot>(() => structuredClone(settings.autopilot ?? defaultAutopilot(holidayGroups, builtinLooks)));
   const [zip, setZip] = useState('');
   const [country, setCountry] = useState('us');
   const [locError, setLocError] = useState<string>();
@@ -53,7 +56,9 @@ export function SchedulePage() {
   const [result, setResult] = useState<string[]>();
 
   const caps = snapshot ? capabilitiesFor(snapshot.info.ver, snapshot.info.arch) : WLED16;
-  const check = compileSchedule(schedule, 1, 2, caps);
+  const periods = useMemo(() => seasonPeriods(auto, holidayGroups).periods, [auto]);
+  const autoOn = auto.enabled && schedule.enabled;
+  const check = compileSchedule(schedule, autoOn ? { dated: datedPresets(periods, () => 1), plain: 1 } : 1, 2, caps);
   const loc = schedule.location;
   const sun = loc ? sunTimes(new Date(), loc.lat, loc.lon) : null;
 
@@ -85,11 +90,12 @@ export function SchedulePage() {
   const save = async () => {
     setSaving(true);
     try {
-      const r = await applySchedule(client, schedule, browserTimezone(), browserUtcOffsetMinutes());
+      const r = await saveSchedule(schedule, auto);
       if (r.errors.length) return toast(r.errors.join(' '));
-      store.update('schedule', schedule);
+      const lookName = (id: string) => looks.find((l) => l.id === id)?.name ?? id;
       setResult([
         schedule.enabled ? 'Your lights will now turn on and off by themselves, even when no phone is around.' : "Your lights won't switch automatically.",
+        ...(autoOn ? ['🗓 Autopilot looks:', ...periods.map((p) => `${p.emoji} ${describeMonthDay(p.start)} – ${describeMonthDay(p.end)}: ${p.lookIds.map(lookName).join(', ')}`)] : []),
         'Any timers that were set up in WLED before were replaced.',
         ...r.warnings,
       ]);
@@ -179,6 +185,8 @@ export function SchedulePage() {
         </section>
       </fieldset>
 
+      <AutopilotCard autopilot={auto} onChange={setAuto} looks={looks} scheduleOn={schedule.enabled} />
+
       {schedule.enabled && check.errors.map((e) => <p key={e} class="hint warn">⚠️ {e}</p>)}
       <div class="buttons">
         <button class="primary" disabled={saving || (schedule.enabled && check.errors.length > 0)} onClick={save}>
@@ -204,6 +212,95 @@ export function SchedulePage() {
         <button class="primary" onClick={() => setResult(undefined)}>OK</button>
       </Dialog>
     </main>
+  );
+}
+
+function AutopilotCard(props: { autopilot: Autopilot; onChange: (a: Autopilot) => void; looks: Look[]; scheduleOn: boolean }) {
+  const { autopilot: auto, looks } = props;
+  const dates = useMemo(() => {
+    // Each season's own dates, before overlaps are worked out.
+    const out: Record<string, string> = {};
+    for (const s of auto.seasons) {
+      const p = seasonPeriods({ ...auto, seasons: [{ ...s, enabled: true }] }, holidayGroups).periods.find((x) => x.key === s.holidayId);
+      if (p) out[s.holidayId] = `${describeMonthDay(p.start)} – ${describeMonthDay(p.end)}`;
+    }
+    return out;
+  }, [auto]);
+  const setSeason = (s: Season) => props.onChange({ ...auto, seasons: auto.seasons.map((x) => (x.holidayId === s.holidayId ? s : x)) });
+  const lookSelect = (value: string, onPick: (id: string) => void, label: string, exclude: string[] = []) => (
+    <select aria-label={label} value={value} onChange={(e) => e.currentTarget.value && onPick(e.currentTarget.value)}>
+      {value === '' && <option value="">＋ Add another look…</option>}
+      {looks.filter((l) => !exclude.includes(l.id)).map((l) => <option key={l.id} value={l.id}>{l.emoji} {l.name}</option>)}
+    </select>
+  );
+  /** Chips for the holiday's looks (and any others picked); tap to include in the rotation. */
+  const rotation = (s: Season) => {
+    const shown = [...new Set([...looks.filter((l) => l.group === s.holidayId).map((l) => l.id), ...s.lookIds])];
+    const toggle = (id: string) => {
+      const on = s.lookIds.includes(id);
+      if (on && s.lookIds.length === 1) return;
+      setSeason({ ...s, lookIds: on ? s.lookIds.filter((x) => x !== id) : [...s.lookIds, id].slice(0, MAX_ROTATION) });
+    };
+    return (
+      <>
+        <div class="chips dense rotation">
+          {shown.map((id) => {
+            const l = looks.find((x) => x.id === id);
+            return l ? <Chip key={id} selected={s.lookIds.includes(id)} onClick={() => toggle(id)}>{l.emoji} {l.name}</Chip> : null;
+          })}
+        </div>
+        <small class="hint">
+          {s.lookIds.length === 1 ? 'Same look every day.' : `A different look each day, ${s.lookIds.length} in turn.`}
+          {s.lookIds.length >= MAX_ROTATION ? ` Up to ${MAX_ROTATION}, one per day of the week.` : ''}
+        </small>
+        {s.lookIds.length < MAX_ROTATION && lookSelect('', (id) => setSeason({ ...s, lookIds: [...s.lookIds, id] }), 'Add another look', shown)}
+      </>
+    );
+  };
+  return (
+    <section class={'card autopilot' + (props.scheduleOn ? '' : ' dim')}>
+      <fieldset disabled={!props.scheduleOn}>
+        <Toggle
+          label={<b>🗓 Seasonal autopilot</b>}
+          hint={props.scheduleOn ? 'Picks the look by date at Time 1\'s "on" time.' : 'Turn on Automatic on & off to use autopilot.'}
+          checked={auto.enabled}
+          onChange={(enabled) => props.onChange({ ...auto, enabled })}
+        />
+        {auto.enabled && (
+          <>
+            {auto.seasons.map((s) => {
+              const h = holidayGroups.find((g) => g.id === s.holidayId);
+              if (!h) return null;
+              return (
+                <div key={s.holidayId} class={'season' + (s.enabled ? '' : ' off')}>
+                  <label class="row">
+                    <input type="checkbox" checked={s.enabled} onChange={(e) => setSeason({ ...s, enabled: e.currentTarget.checked })} />
+                    <b>{h.emoji} {h.name}</b>
+                    <small class="hint">{dates[s.holidayId] ?? 'no date this year'}</small>
+                  </label>
+                  {s.enabled && (
+                    <>
+                      {rotation(s)}
+                      <div class="row days-around">
+                        <NumberField value={s.daysBefore} ariaLabel={`${h.name} days before`} onChange={(n) => setSeason({ ...s, daysBefore: Math.min(n, 90) })} />
+                        <small>days before,</small>
+                        <NumberField value={s.daysAfter} ariaLabel={`${h.name} days after`} onChange={(n) => setSeason({ ...s, daysAfter: Math.min(n, 90) })} />
+                        <small>after</small>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+            <div class="season">
+              <b>🏡 Rest of the year</b>
+              {lookSelect(auto.everydayLookId, (everydayLookId) => props.onChange({ ...auto, everydayLookId }), 'Rest of the year look')}
+            </div>
+            <p class="hint">Where seasons overlap, the shorter one wins. Picking a look by hand still works; autopilot switches back the next time the lights turn on.</p>
+          </>
+        )}
+      </fieldset>
+    </section>
   );
 }
 

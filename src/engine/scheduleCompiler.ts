@@ -35,25 +35,46 @@ export interface CompiledSchedule {
   warnings: string[];
 }
 
+type MonthDay = { mon: number; day: number };
+
+/** A preset the "on" times call between two dates (seasonal autopilot). */
+export interface DatedPreset {
+  preset: number;
+  start: MonthDay;
+  end: MonthDay;
+  /** Only on these weekdays (a daily look rotation). */
+  dow?: number;
+}
+
+/** Seasonal "on" presets for the first time window; the others turn on
+ * with `plain` (keeping the day's look), which saves WLED timers. */
+export interface SeasonalOn {
+  dated: DatedPreset[];
+  plain: number;
+}
+
 interface Event {
   time: ScheduleTime;
   days: number;
   preset: number;
+  range?: DatedPreset;
 }
 
-const timer = (en: boolean, hour: number, min: number, macro: number, dow = Weekdays.all): WledTimer => ({
+const YEAR = { start: { mon: 1, day: 1 }, end: { mon: 12, day: 31 } };
+
+const timer = (en: boolean, hour: number, min: number, macro: number, dow = Weekdays.all, range = YEAR): WledTimer => ({
   en: en ? 1 : 0,
   hour,
   min,
   macro,
   dow,
-  start: { mon: 1, day: 1 },
-  end: { mon: 12, day: 31 },
+  start: { ...range.start },
+  end: { ...range.end },
 });
 
 export function compileSchedule(
   schedule: Schedule,
-  onPreset: number,
+  onPreset: number | SeasonalOn,
   offPreset: number,
   caps: TimerCapabilities,
   today = new Date(),
@@ -75,14 +96,25 @@ export function compileSchedule(
       const off = clampOffset(w.off, caps, warnings, name);
       // A window like 7 PM - 2 AM turns off the next morning.
       const offDays = approxMinutes(off, sun) <= approxMinutes(on, sun) ? Weekdays.nextDay(w.days) : w.days;
-      events.push({ time: on, days: w.days, preset: onPreset });
+      if (typeof onPreset === 'number') events.push({ time: on, days: w.days, preset: onPreset });
+      else if (i > 0) events.push({ time: on, days: w.days, preset: onPreset.plain });
+      else {
+        for (const range of onPreset.dated) {
+          const days = w.days & (range.dow ?? Weekdays.all);
+          if (days) events.push({ time: on, days, preset: range.preset, range });
+        }
+      }
       events.push({ time: off, days: offDays, preset: offPreset });
     });
   }
 
   const timers = caps.legacy ? legacyTimers(events, errors) : timers16(events);
   if (!caps.legacy && timers.length > caps.maxTimers) {
-    errors.push(`Your controller allows ${caps.maxTimers / 2} time windows at most.`);
+    errors.push(
+      typeof onPreset === 'number'
+        ? `Your controller allows ${caps.maxTimers / 2} time windows at most.`
+        : `Seasons and times need ${timers.length} WLED timers but your controller allows ${caps.maxTimers}. Turn off some seasons or times.`,
+    );
   }
   return { timers, errors, warnings };
 }
@@ -104,18 +136,23 @@ function approxMinutes(t: ScheduleTime, sun: SunTimes | null): number {
 const timers16 = (events: Event[]): WledTimer[] =>
   events.map((e) =>
     e.time.kind === 'clock'
-      ? timer(true, e.time.hour, e.time.minute, e.preset, e.days)
-      : timer(true, e.time.kind === 'sunrise' ? 255 : 254, e.time.offset, e.preset, e.days),
+      ? timer(true, e.time.hour, e.time.minute, e.preset, e.days, e.range)
+      : timer(true, e.time.kind === 'sunrise' ? 255 : 254, e.time.offset, e.preset, e.days, e.range),
   );
 
-/** WLED 0.15 reads timers by position: 8 clock, then sunrise, then sunset (hour 255). */
+/** WLED 0.15 reads timers by position: 8 clock, then sunrise, then sunset
+ * (hour 255). Only the clock slots have date ranges. */
 function legacyTimers(events: Event[], errors: string[]): WledTimer[] {
   const clock = events.filter((e) => !isSun(e.time));
   const sunrise = events.filter((e) => e.time.kind === 'sunrise');
   const sunset = events.filter((e) => e.time.kind === 'sunset');
   if (clock.length > 8) errors.push('Your controller (WLED 0.15) allows 8 clock times at most. Update WLED to 16 for more.');
   if (sunrise.length > 1 || sunset.length > 1) {
-    errors.push('Your controller (WLED 0.15) allows one sunrise and one sunset time. Update WLED to 16 for more.');
+    if ([...sunrise, ...sunset].some((e) => e.range)) {
+      errors.push('On WLED 0.15, seasons need a clock time for "on", not sunrise or sunset. Update WLED to 16 to use both.');
+    } else {
+      errors.push('Your controller (WLED 0.15) allows one sunrise and one sunset time. Update WLED to 16 for more.');
+    }
   }
   const sunSlot = (list: Event[]) => {
     const e = list[0];
@@ -124,7 +161,7 @@ function legacyTimers(events: Event[], errors: string[]): WledTimer[] {
   const out: WledTimer[] = [];
   for (let i = 0; i < 8; i++) {
     const e = clock[i];
-    out.push(e && e.time.kind === 'clock' ? timer(true, e.time.hour, e.time.minute, e.preset, e.days) : timer(false, 0, 0, 0));
+    out.push(e && e.time.kind === 'clock' ? timer(true, e.time.hour, e.time.minute, e.preset, e.days, e.range) : timer(false, 0, 0, 0));
   }
   out.push(sunSlot(sunrise), sunSlot(sunset));
   return out;

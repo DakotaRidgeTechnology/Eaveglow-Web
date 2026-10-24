@@ -1,6 +1,10 @@
 import { createContext } from 'preact';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/hooks';
-import { Look, WledSnapshot } from './engine/model';
+import { Autopilot, datesFingerprint, seasonPeriods } from './engine/autopilot';
+import { builtinLooks, holidayGroups } from './engine/library';
+import { Look, Schedule, WledSnapshot } from './engine/model';
+import { ScheduleResult, applySchedule } from './engine/scheduleService';
+import { browserTimezone, browserUtcOffsetMinutes } from './engine/timezones';
 import { CustomPaletteInstaller, customPalettesIn, paletteSlots } from './engine/customPalettes';
 import { EffectCatalog, compileLook, toStateJson } from './engine/segmentCompiler';
 import { WledClient } from './engine/wledClient';
@@ -18,6 +22,9 @@ interface AppContext {
   refresh: () => Promise<void>;
   toast: (message: string) => void;
   applyLook: (look: Look) => Promise<string[]>;
+  /** Writes the schedule (and seasons, if autopilot is on) to the
+   * controller, then saves both to settings. */
+  saveSchedule: (schedule: Schedule, autopilot: Autopilot | undefined, resave?: boolean) => Promise<ScheduleResult>;
   go: (route: string) => void;
   /** Back to the previous Eaveglow page, or Home if there isn't one (e.g.
    * a home-screen web app that reopened directly on this page). */
@@ -67,7 +74,7 @@ export function App() {
 
   useEffect(() => {
     void refresh();
-    void store.load();
+    void store.load().then(() => resync());
     const onVisible = () => document.visibilityState === 'visible' && void refresh();
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
@@ -79,9 +86,9 @@ export function App() {
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 4000);
   }, []);
 
-  const applyLook = useCallback(
-    async (look: Look) => {
-      const snap = await client.fetchSnapshot();
+  /** The WLED state that shows a look, installing ★ palettes it needs. */
+  const lookState = useCallback(
+    async (look: Look, snap: WledSnapshot) => {
       const layout = store.settings.layout ?? { totalPixels: snap.info.ledCount, zones: [] };
       // Install any Eaveglow (★) palettes this look uses; if that's not
       // possible the look falls back to a similar built-in palette.
@@ -97,13 +104,59 @@ export function App() {
       }
       const catalog = new EffectCatalog(snap.effects, snap.palettes, extra);
       const compiled = compileLook(layout, look, catalog, snap.info.maxSegments);
-      await client.setState(toStateJson(compiled, snap.state.seg.length));
+      return { state: toStateJson(compiled, snap.state.seg.length), notes: [...notes, ...compiled.warnings] };
+    },
+    [store, installer],
+  );
+
+  const applyLook = useCallback(
+    async (look: Look) => {
+      const { state, notes } = await lookState(look, await client.fetchSnapshot());
+      await client.setState(state);
       store.update('activeLookId', look.id);
       void refresh();
-      return [...notes, ...compiled.warnings];
+      return notes;
     },
-    [client, store, refresh, installer],
+    [client, store, refresh, lookState],
   );
+
+  const saveSchedule = useCallback(
+    async (schedule: Schedule, autopilot: Autopilot | undefined, resave = true) => {
+      const plan = autopilot?.enabled && schedule.enabled ? seasonPeriods(autopilot, holidayGroups) : undefined;
+      const looks = [...builtinLooks, ...store.settings.customLooks];
+      const findLook = (id: string) => looks.find((l) => l.id === id) ?? looks.find((l) => l.id === autopilot?.everydayLookId) ?? looks[0];
+      const r = await applySchedule(
+        client,
+        schedule,
+        browserTimezone(),
+        browserUtcOffsetMinutes(),
+        new Date(),
+        plan && {
+          periods: plan.periods,
+          resave,
+          stateFor: async (id) => (await lookState(findLook(id), await client.fetchSnapshot())).state,
+          nameOf: (id) => findLook(id).name,
+        },
+      );
+      if (r.errors.length) return r;
+      store.update('schedule', schedule);
+      if (autopilot) store.update('autopilot', { ...autopilot, syncedDates: plan ? datesFingerprint(plan.periods) : undefined });
+      void refresh();
+      const skipped = plan?.skipped.length ? [`No date is known for ${plan.skipped.join(', ')} this year, so it was skipped.`] : [];
+      return { errors: [], warnings: [...skipped, ...r.warnings] };
+    },
+    [client, store, refresh, lookState],
+  );
+
+  // Moving holidays (Easter, Thanksgiving…) fall on different days each
+  // year, and WLED's date ranges have no year: re-date the timers when the
+  // dates computed today differ from the ones last written.
+  const resync = useCallback(async () => {
+    const { schedule, autopilot } = store.settings;
+    if (!schedule.enabled || !autopilot?.enabled) return;
+    if (datesFingerprint(seasonPeriods(autopilot, holidayGroups).periods) === autopilot.syncedDates) return;
+    await saveSchedule(schedule, autopilot, false).catch(() => undefined);
+  }, [store, saveSchedule]);
 
   // In-app navigation is marked in history.state, so Back knows whether the
   // previous entry is an Eaveglow page.
@@ -123,7 +176,7 @@ export function App() {
     }
   }, []);
 
-  const ctx: AppContext = { client, store, settings, snapshot, refresh, toast, applyLook, go, back };
+  const ctx: AppContext = { client, store, settings, snapshot, refresh, toast, applyLook, saveSchedule, go, back };
   const [page, arg] = path.split('/').filter(Boolean);
 
   return (

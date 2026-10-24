@@ -39,7 +39,8 @@ export function startMockWled(port = 8099) {
         if ('on' in b) state.on = b.on;
         if ('bri' in b) state.bri = b.bri;
         if (b.seg) state.seg = b.seg.filter((s) => s.stop !== 0);
-        if (b.psave) presets[b.psave] = { n: b.n, on: b.on };
+        if (b.psave) presets[b.psave] = { n: b.n, on: b.on, ...(b.seg ? { seg: b.seg } : {}) };
+        if (b.pdel) delete presets[b.pdel];
       }
       return send(res, 200, state);
     }

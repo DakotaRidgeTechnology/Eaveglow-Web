@@ -194,3 +194,13 @@ h3.section { margin: 18px 0 8px; align-items: baseline; }
 .theme em.new { color: var(--glow); font-style: normal; }
 .chips.parts .chip.on { background: var(--accent); color: var(--on-accent); }
 .part-edit select { flex: 1; }
+.autopilot fieldset { border: none; padding: 0; margin: 0; }
+.season { border-top: 1px solid var(--line); padding: 8px 0; display: grid; gap: 6px; }
+.season.off b { opacity: 0.6; }
+.season .row { margin: 0; flex-wrap: wrap; }
+.season select { width: 100%; }
+.days-around input { width: 52px; text-align: center; }
+.banner.autopilot { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--accent-soft); border: none; }
+.banner.autopilot small { display: block; }
+.chips.rotation { flex-wrap: wrap; }
+.chips.rotation .chip { font-size: 13px; }
