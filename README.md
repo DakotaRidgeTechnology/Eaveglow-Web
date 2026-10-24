@@ -61,7 +61,15 @@ To update, rebuild and upload `eaveglow.htm.gz` again. Your settings are kept.
   Eaveglow's own (★) and get installed on the controller as WLED custom palettes when first used.
 - **House zones and light spacing:** e.g. light every 4th LED, with a street-distance preview.
 - **Schedules:** several on/off windows, sunrise/sunset with offsets. Saving replaces WLED's timers.
+- **A different look on each part of the house**, e.g. warm white on the garage while the roofline twinkles.
+- **Seasonal autopilot:** looks change by date for each holiday (a new look each night if you like), plus special
+  dates such as game days and birthdays, and an everyday look the rest of the year.
+- **Recent looks and a sleep timer** on Home.
 - **Shared settings:** settings live on the controller, so every phone sees the same setup.
+- **Backup:** download everything to your phone or computer and restore it later (House zones → Backup).
+  WLED's own backup doesn't include it.
+- **Local only:** no cloud, account or subscription. The one optional exception is an update check, off by
+  default, that asks GitHub once a day for a newer version (House zones → About).
 
 Sunrise/sunset needs a zip/postal code or coordinates, because browsers don't allow location access on plain
 `http` pages, which is how the controller serves the app.

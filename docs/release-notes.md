@@ -22,6 +22,8 @@ To update later, upload the new `eaveglow.htm.gz` over the old one. Your setting
 - The timers you had in WLED are backed up before Eaveglow first replaces them, with a one-tap restore
 - A clear message when the controller can't be reached, which clears by itself when it's back
 - White now shows up in the light-theme preview strip
+- Backup: download everything you've set up (looks, house parts, schedule, autopilot) to your phone or computer, and restore it later, from House zones. WLED's own backup doesn't include it.
+- Optional update check, off by default: turn it on per phone under House zones > About and it asks GitHub once a day whether there's a newer version. Nothing else leaves your network.
 
 ## What's in it
 

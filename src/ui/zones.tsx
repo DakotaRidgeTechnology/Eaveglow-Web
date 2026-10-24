@@ -3,7 +3,10 @@ import { useApp } from '../app';
 import { builtinLooks } from '../engine/library';
 import { LightSpacing, SOLID_SPACING, Zone, newId, sequential, spacingEquals, suggestedSpacing, validateLayout } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
-import { Chip, Header, NumberField, SpacingPicker, StripPreview } from './common';
+import { backupFileName, makeBackup, readBackup } from '../engine/backup';
+import { RELEASES, UpdateCheck, checkForUpdate, setUpdateChecks, updateChecksEnabled } from '../engine/updates';
+import { Settings } from '../store';
+import { Chip, Dialog, Header, NumberField, SpacingPicker, StripPreview, Toggle } from './common';
 
 const INCHES = [1, 2, 3, 4, 6, 8, 12, 18];
 
@@ -128,6 +131,129 @@ export function ZonesPage() {
       <div class="buttons">
         <button class="primary" onClick={save}>Save</button>
       </div>
+
+      <BackupCard />
+      <AboutCard />
     </main>
+  );
+}
+
+/** Download everything set up in Eaveglow to this device, or put it back. */
+function BackupCard() {
+  const { store, settings, toast, saveSchedule, back } = useApp();
+  const file = useRef<HTMLInputElement>(null);
+  const [pending, setPending] = useState<{ settings: Settings; savedAt?: string; summary: string }>();
+  const [busy, setBusy] = useState(false);
+
+  const download = async () => {
+    await store.flush().catch(() => undefined);
+    const blob = new Blob([JSON.stringify(makeBackup(store.settings), null, 1)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = backupFileName();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  };
+
+  const pick = async (f: File | undefined) => {
+    if (!f) return;
+    try {
+      setPending(readBackup(await f.text()));
+    } catch (e) {
+      toast(e instanceof Error ? e.message : String(e));
+    } finally {
+      if (file.current) file.current.value = '';
+    }
+  };
+
+  const restore = async () => {
+    if (!pending) return;
+    setBusy(true);
+    try {
+      // Palette file slots belong to this controller; keep its own.
+      const next = { ...pending.settings, customPalettes: settings.customPalettes };
+      await store.replace(next);
+      if (next.schedule?.enabled) {
+        const r = await saveSchedule(next.schedule, next.autopilot);
+        if (r.errors.length) toast(`Backup restored, but the schedule couldn't be saved: ${r.errors.join(' ')}`);
+        else toast('Backup restored, and your schedule is back on your lights.');
+      } else toast('Backup restored.');
+      setPending(undefined);
+      back();
+    } catch (e) {
+      toast(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section class="card backup">
+      <b>💾 Backup</b>
+      <p class="hint">Your looks, house parts, schedule and autopilot live on the controller. WLED's own backup doesn't include them, so keep a copy before updating WLED or swapping hardware.</p>
+      <div class="row">
+        <button onClick={download}>⬇️ Download backup</button>
+        <button onClick={() => file.current?.click()}>Restore from backup…</button>
+      </div>
+      <input ref={file} type="file" accept=".json,application/json" hidden aria-label="Backup file" onChange={(e) => pick(e.currentTarget.files?.[0])} />
+      <Dialog open={!!pending} onClose={() => !busy && setPending(undefined)}>
+        <h2>Restore this backup?</h2>
+        <p>
+          {pending?.savedAt ? `From ${new Date(pending.savedAt).toLocaleDateString()}: ` : ''}
+          {pending?.summary}
+        </p>
+        <p class="hint">This replaces everything set up in Eaveglow on these lights, for every phone in the house.</p>
+        <div class="buttons">
+          <button class="primary" disabled={busy} onClick={restore}>{busy ? 'Restoring…' : 'Restore'}</button>
+          <button disabled={busy} onClick={() => setPending(undefined)}>Cancel</button>
+        </div>
+      </Dialog>
+    </section>
+  );
+}
+
+/** Version, and the optional once-a-day update check (off by default). */
+function AboutCard() {
+  const [enabled, setEnabled] = useState(updateChecksEnabled);
+  const [result, setResult] = useState<UpdateCheck | 'checking'>();
+  const check = async () => {
+    setResult('checking');
+    setResult(await checkForUpdate(__APP_VERSION__, true));
+  };
+  return (
+    <section class="card">
+      <b>Eaveglow {__APP_VERSION__}</b>
+      <Toggle
+        label="Check online for updates"
+        hint="Off by default. When on, this phone asks GitHub once a day if there's a newer version. Nothing else leaves your network."
+        checked={enabled}
+        onChange={(on) => {
+          setUpdateChecks(on);
+          setEnabled(on);
+          if (on) void check();
+          else setResult(undefined);
+        }}
+      />
+      {enabled && (
+        <p class="hint">
+          {result === 'checking' ? (
+            'Checking…'
+          ) : result?.status === 'available' ? (
+            <>Version {result.update.version} is available. <a href={result.update.url} target="_blank" rel="noopener">See what's new and download</a></>
+          ) : result?.status === 'current' ? (
+            <>You're up to date. <button class="link" onClick={check}>Check again</button></>
+          ) : result?.status === 'failed' ? (
+            <>Couldn't reach GitHub (is this phone online?). <button class="link" onClick={check}>Try again</button></>
+          ) : (
+            <button class="link" onClick={check}>Check now</button>
+          )}
+        </p>
+      )}
+      <p class="hint">
+        <a href={RELEASES} target="_blank" rel="noopener">All releases on GitHub</a>
+      </p>
+    </section>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { currentPeriod, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
 import { byUpcoming, describeDays } from '../engine/holidays';
+import { UpdateInfo, checkForUpdate } from '../engine/updates';
 import { builtinLooks, holidayGroups, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
 import { CUSTOM_CATEGORY, Look, isBuiltIn } from '../engine/model';
 import { Chip, Dialog, Header, StripPreview, Swatch } from './common';
@@ -20,6 +21,11 @@ const HOLIDAYS = 'Holidays';
 export function Home() {
   const { snapshot, offline, settings, client, refresh, applyLook, toast, go, store, saveSchedule } = useApp();
   const [sleepOpen, setSleepOpen] = useState(false);
+  const [update, setUpdate] = useState<UpdateInfo>();
+  // Only on phones where online update checks were turned on (House zones → About).
+  useEffect(() => {
+    void checkForUpdate(__APP_VERSION__).then((r) => r.status === 'available' && setUpdate(r.update));
+  }, []);
   const [autoWant, setAutoWant] = useState<boolean>();
   const [category, setCategory] = useState(ALL);
   const [holiday, setHoliday] = useState<string>();
@@ -117,6 +123,12 @@ export function Home() {
         </button>
         <button class="icon" title="House zones" onClick={() => go('/zones')}>🏠</button>
       </Header>
+
+      {update && (
+        <a class="banner action" href={update.url} target="_blank" rel="noopener">
+          ✨ Eaveglow {update.version} is available. See what's new and how to update →
+        </a>
+      )}
 
       {!settings.layout && snapshot && (
         <button class="banner action" onClick={() => go('/zones')}>

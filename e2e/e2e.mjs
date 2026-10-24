@@ -188,6 +188,27 @@ try {
       check(restored.length === 1 && restored[0].macro === 3 && restored[0].hour === 7, 'old WLED timers restored');
       await page.getByRole('button', { name: 'Back' }).click();
 
+      // Backup: download, lose the custom look, restore it from the file.
+      await page.getByTitle('House zones').click();
+      check(await page.getByText(/^Eaveglow \d+\.\d+\.\d+$/).isVisible(), 'About shows the app version');
+      check(!(await page.getByRole('switch', { name: /Check online for updates/ }).isChecked()), 'online update checks are off by default');
+      const [download] = await Promise.all([page.waitForEvent('download'), page.getByText('Download backup').click()]);
+      const backupPath = `${shots}backup.json`;
+      await download.saveAs(backupPath);
+      const backupJson = JSON.parse((await import('node:fs')).readFileSync(backupPath, 'utf8'));
+      check(download.suggestedFilename().startsWith('eaveglow-backup-') && backupJson.settings.customLooks[0]?.name === 'Team Spirit', 'backup downloads with the custom look');
+      const wiped = JSON.parse(mock.files['/eaveglow.json']);
+      mock.files['/eaveglow.json'] = JSON.stringify({ ...wiped, customLooks: [] });
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      await page.waitForTimeout(800);
+      await page.locator('input[aria-label="Backup file"]').setInputFiles(backupPath);
+      await page.getByText('1 custom look', { exact: false }).waitFor();
+      await page.getByRole('button', { name: 'Restore', exact: true }).click();
+      await page.getByText('Backup restored', { exact: false }).waitFor({ timeout: 30000 });
+      await page.waitForTimeout(800);
+      check(JSON.parse(mock.files['/eaveglow.json']).customLooks[0]?.name === 'Team Spirit', 'restoring the backup brings the custom look back');
+
       // Controller unreachable: a clear banner, then it recovers by itself.
       await new Promise((r) => mock.server.close(r) || setTimeout(r, 300));
       mock.server.closeAllConnections?.();

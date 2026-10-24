@@ -123,3 +123,12 @@ off when `dur` runs out; the state reports `nl.rem` (seconds left, −1 when off
 Before Eaveglow first replaces timers that call presets it didn't make, `applySchedule` saves
 `cfg.timers.ins` to `/eaveglow-timers-backup.json` (never overwritten). "Restore the WLED timers you had before
 Eaveglow" on the Schedule page posts them back with `preservedConfig`, and turns the schedule and autopilot off.
+
+## Backup and update checks
+
+- House zones → Backup downloads `makeBackup(settings)` (`src/engine/backup.ts`): `/eaveglow.json` without
+  `customPalettes` (palette file slots belong to one controller; the installer re-adds palettes on use) or
+  `autopilot.syncedDates`. Restore accepts that file or a raw `/eaveglow.json`, replaces every setting
+  (`SettingsStore.replace`), and re-saves the schedule so timers and season presets are rewritten.
+- The only request that leaves the network is the optional update check (`src/engine/updates.ts`): off by
+  default, per device (localStorage), at most once a day, `GET api.github.com/repos/…/releases/latest` (CORS `*`).

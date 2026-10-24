@@ -213,3 +213,6 @@ h3.section { margin: 18px 0 8px; align-items: baseline; }
 .dates-title { margin: 12px 0 4px; }
 .season.special .name-input { flex: 1; min-width: 0; }
 .season.special input[type="date"] { flex: 1; min-width: 0; }
+.backup .row { flex-wrap: wrap; }
+.backup .row button { flex: 1; }
+a.banner { color: inherit; text-decoration: none; }

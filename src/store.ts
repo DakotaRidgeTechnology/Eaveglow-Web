@@ -104,6 +104,16 @@ export class SettingsStore {
     this.timer = setTimeout(() => void this.flush(), this.delayMs);
   }
 
+  /** Replaces every setting (restoring a backup) and saves it now. */
+  replace(settings: Settings): Promise<void> {
+    const next = normalize(settings);
+    for (const k of Object.keys({ ...this.settings, ...next }) as (keyof Settings)[]) if (k !== 'version') this.dirty.add(k as Key);
+    this.settings = next;
+    writeLocal(next);
+    this.emit();
+    return this.flush();
+  }
+
   /** Writes pending changes to the controller now. */
   async flush(): Promise<void> {
     clearTimeout(this.timer);
