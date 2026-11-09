@@ -2,7 +2,7 @@
 // controller (WLED's file system), with a local copy so the page opens fast.
 import { Autopilot } from './engine/autopilot';
 import { Controller, Prop } from './engine/props';
-import { HouseLayout, Look, Rgb, Schedule, initialSchedule } from './engine/model';
+import { HouseLayout, Look, Rgb, Schedule, Show, initialSchedule } from './engine/model';
 import { WledClient } from './engine/wledClient';
 
 export const SETTINGS_FILE = '/eaveglow.json';
@@ -24,6 +24,14 @@ export interface Settings {
   props?: Prop[];
   /** Seasonal autopilot (looks by date); unset until first opened. */
   autopilot?: Autopilot;
+  /** Choreographed sequences of looks. */
+  shows?: Show[];
+  /** Look ids hidden from the Home grid. */
+  hiddenLooks?: string[];
+  /** Look transition time in tenths of a second (WLED tt). Default 7 (0.7s). */
+  transition?: number;
+  /** Strip voltage for power calculation (default 5). */
+  stripVoltage?: number;
 }
 
 type Key = keyof Omit<Settings, 'version'>;
@@ -35,7 +43,11 @@ export const defaultSettings = (): Settings => ({
   recentColors: [],
 });
 
-const normalize = (s: any): Settings => ({ ...defaultSettings(), ...(s && typeof s === 'object' ? s : {}), version: 1 });
+const normalize = (s: unknown): Settings => ({
+  ...defaultSettings(),
+  ...(s && typeof s === 'object' ? (s as Partial<Settings>) : {}),
+  version: 1,
+});
 
 function readLocal(): Settings | null {
   try {
@@ -70,7 +82,10 @@ export class SettingsStore {
   private listeners = new Set<() => void>();
   private flushing?: Promise<void>;
 
-  constructor(private client: WledClient, private delayMs = 600) {
+  constructor(
+    private client: WledClient,
+    private delayMs = 600
+  ) {
     this.settings = readLocal() ?? defaultSettings();
   }
 
@@ -89,7 +104,8 @@ export class SettingsStore {
       const remote = await this.client.readFile(SETTINGS_FILE);
       if (remote) {
         const merged = normalize(remote);
-        for (const k of this.dirty) (merged as any)[k] = this.settings[k];
+        for (const k of this.dirty)
+          (merged as unknown as Record<string, unknown>)[k] = this.settings[k];
         this.settings = merged;
         writeLocal(this.settings);
         this.emit();
@@ -111,7 +127,8 @@ export class SettingsStore {
   /** Replaces every setting (restoring a backup) and saves it now. */
   replace(settings: Settings): Promise<void> {
     const next = normalize(settings);
-    for (const k of Object.keys({ ...this.settings, ...next }) as (keyof Settings)[]) if (k !== 'version') this.dirty.add(k as Key);
+    for (const k of Object.keys({ ...this.settings, ...next }) as (keyof Settings)[])
+      if (k !== 'version') this.dirty.add(k as Key);
     this.settings = next;
     writeLocal(next);
     this.emit();
@@ -131,9 +148,10 @@ export class SettingsStore {
       try {
         const remote = normalize(await this.client.readFile(SETTINGS_FILE));
         const merged: Settings = { ...remote };
-        for (const k of keys) (merged as any)[k] = this.settings[k];
+        for (const k of keys) (merged as unknown as Record<string, unknown>)[k] = this.settings[k];
         // Keep anything edited while we were saving.
-        for (const k of this.dirty) (merged as any)[k] = this.settings[k];
+        for (const k of this.dirty)
+          (merged as unknown as Record<string, unknown>)[k] = this.settings[k];
         await this.client.uploadFile(SETTINGS_FILE, JSON.stringify(merged));
         this.settings = merged;
         writeLocal(merged);

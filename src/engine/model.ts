@@ -36,7 +36,8 @@ export const SPACING_PRESETS: [string, LightSpacing][] = [
   ['Groups of 3', { lit: 3, skip: 3 }],
 ];
 
-export const spacingEquals = (a: LightSpacing, b: LightSpacing) => a.lit === b.lit && a.skip === b.skip;
+export const spacingEquals = (a: LightSpacing, b: LightSpacing) =>
+  a.lit === b.lit && a.skip === b.skip;
 
 export function spacingLabel(s: LightSpacing): string {
   const preset = SPACING_PRESETS.find(([, p]) => spacingEquals(p, s));
@@ -59,7 +60,8 @@ export interface HouseLayout {
 
 /** Zones sorted along the strip, or one zone for the whole strip. */
 export function effectiveZones(layout: HouseLayout): Zone[] {
-  if (layout.zones.length === 0) return [{ id: 'all', name: 'Whole house', start: 0, length: layout.totalPixels }];
+  if (layout.zones.length === 0)
+    return [{ id: 'all', name: 'Whole house', start: 0, length: layout.totalPixels }];
   return [...layout.zones].sort((a, b) => a.start - b.start);
 }
 
@@ -79,8 +81,10 @@ export function validateLayout(layout: HouseLayout): string[] {
   const sorted = effectiveZones(layout);
   sorted.forEach((z, i) => {
     if (z.length <= 0) problems.push(`"${z.name}" needs at least one pixel.`);
-    if (z.start + z.length > layout.totalPixels) problems.push(`"${z.name}" goes past the last pixel (${layout.totalPixels}).`);
-    if (i > 0 && z.start < sorted[i - 1].start + sorted[i - 1].length) problems.push(`"${z.name}" overlaps "${sorted[i - 1].name}".`);
+    if (z.start + z.length > layout.totalPixels)
+      problems.push(`"${z.name}" goes past the last pixel (${layout.totalPixels}).`);
+    if (i > 0 && z.start < sorted[i - 1].start + sorted[i - 1].length)
+      problems.push(`"${z.name}" overlaps "${sorted[i - 1].name}".`);
   });
   return problems;
 }
@@ -107,36 +111,56 @@ export function targetMatches(t: LayerTarget, zone: Zone, index: number): boolea
 }
 
 export interface LookLayer {
-  target: LayerTarget;
+  t: LayerTarget;
   /** WLED effect names in order of preference. */
-  effect: string[];
+  e: string[];
   /** WLED palette names in order of preference; empty = "Default" (uses colors). */
-  palette: string[];
-  colors: Rgb[];
-  speed: number;
-  intensity: number;
+  p: string[];
+  c: Rgb[];
+  s: number;
+  i: number;
   /** Light spacing for this layer; undefined = the house setting. */
-  spacing?: LightSpacing;
-  reverse?: boolean;
+  sp?: LightSpacing;
   /** Drawn on top of the look's other layers on every Nth lit light (e.g. 4:
    * one twinkling light, then three of the layer below). Covers the whole
    * house; `target` is ignored. */
-  overlayEvery?: number;
+  o?: number;
 }
 
 export interface Look {
   id: string;
   name: string;
   emoji: string;
-  layers: LookLayer[];
   category?: string;
+  l: LookLayer[];
   /** Holiday id within the Holidays category (e.g. 'halloween'). */
-  group?: string;
+  h?: string;
 }
 
 export const CUSTOM_CATEGORY = 'My Looks';
 
+export interface ShowStep {
+  lookId: string;
+  duration: number; // seconds
+}
+
+export interface Show {
+  id: string;
+  name: string;
+  emoji: string;
+  steps: ShowStep[];
+  loop: boolean;
+}
+
 export const isBuiltIn = (l: Look) => l.id.startsWith('builtin.');
+
+export const newShow = (): Show => ({
+  id: newId('show'),
+  name: 'My Show',
+  emoji: '🎬',
+  steps: [],
+  loop: true,
+});
 
 // ── Schedule ────────────────────────────────────────────────────
 
@@ -147,7 +171,8 @@ export type ScheduleTime =
 
 export const isSun = (t: ScheduleTime) => t.kind !== 'clock';
 
-export const timeEquals = (a: ScheduleTime, b: ScheduleTime) => JSON.stringify(a) === JSON.stringify(b);
+export const timeEquals = (a: ScheduleTime, b: ScheduleTime) =>
+  JSON.stringify(a) === JSON.stringify(b);
 
 /** Days as a bitmask: bit 0 = Monday … bit 6 = Sunday (WLED timer "dow"). */
 export const Weekdays = {
@@ -191,11 +216,18 @@ export interface Schedule {
 export const initialSchedule = (): Schedule => ({
   enabled: false,
   windows: [
-    { id: newId('w'), enabled: true, on: { kind: 'clock', hour: 19, minute: 0 }, off: { kind: 'clock', hour: 22, minute: 0 }, days: Weekdays.all },
+    {
+      id: newId('w'),
+      enabled: true,
+      on: { kind: 'clock', hour: 19, minute: 0 },
+      off: { kind: 'clock', hour: 22, minute: 0 },
+      days: Weekdays.all,
+    },
   ],
 });
 
-export const usesSun = (s: Schedule) => s.windows.some((w) => w.enabled && (isSun(w.on) || isSun(w.off)));
+export const usesSun = (s: Schedule) =>
+  s.windows.some((w) => w.enabled && (isSun(w.on) || isSun(w.off)));
 
 // ── WLED ────────────────────────────────────────────────────────
 
@@ -213,6 +245,7 @@ export interface WledSegment {
   ix?: number;
   pal?: number;
   rev?: boolean;
+  cct?: number;
 }
 
 export interface WledInfo {
@@ -221,6 +254,8 @@ export interface WledInfo {
   arch: string;
   ledCount: number;
   maxSegments: number;
+  /** Estimated power draw in 0.1mA units (WLED's pwr field). */
+  powerMa?: number;
 }
 
 export interface WledState {
@@ -238,25 +273,32 @@ export interface WledSnapshot {
   palettes: string[];
 }
 
-export function parseSnapshot(json: any): WledSnapshot {
-  const info = json.info ?? {};
+export function parseSnapshot(json: unknown): WledSnapshot {
+  const j = json as Record<string, unknown>;
+  const info = (j.info ?? {}) as Record<string, unknown>;
+  const leds = (info.leds ?? {}) as Record<string, unknown>;
   return {
     info: {
-      name: info.name ?? 'WLED',
-      ver: info.ver ?? '',
-      arch: info.arch ?? '',
-      ledCount: info.leds?.count ?? 0,
-      maxSegments: info.leds?.maxseg ?? 16,
+      name: (info.name as string) ?? 'WLED',
+      ver: (info.ver as string) ?? '',
+      arch: (info.arch as string) ?? '',
+      ledCount: (leds.count as number) ?? 0,
+      maxSegments: (leds.maxseg as number) ?? 16,
+      powerMa: (leds.pwr as number) ?? undefined,
     },
-    state: parseState(json.state ?? {}),
-    effects: json.effects ?? [],
-    palettes: json.palettes ?? [],
+    state: parseState(j.state ?? {}),
+    effects: (j.effects as string[]) ?? [],
+    palettes: (j.palettes as string[]) ?? [],
   };
 }
 
-export const parseState = (s: any): WledState => ({
-  on: !!s.on,
-  bri: s.bri ?? 128,
-  seg: s.seg ?? [],
-  ...(s.nl ? { nl: { on: !!s.nl.on, rem: s.nl.rem ?? -1 } } : {}),
-});
+export const parseState = (s: unknown): WledState => {
+  const st = (s ?? {}) as Record<string, unknown>;
+  const nl = st.nl as Record<string, unknown> | undefined;
+  return {
+    on: !!st.on,
+    bri: (st.bri as number) ?? 128,
+    seg: (st.seg as WledSegment[]) ?? [],
+    ...(nl ? { nl: { on: !!nl.on, rem: (nl.rem as number) ?? -1 } } : {}),
+  };
+};

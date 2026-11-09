@@ -13,16 +13,25 @@ export const TIMERS_BACKUP = '/eaveglow-timers-backup.json';
 const LEGACY_ON = ['Looks: Lights On'];
 const LEGACY_OFF = ['Looks: Lights Off'];
 
-export function findSchedulePresets(presets: Record<string, any>): { on?: number; off?: number } {
+export function findSchedulePresets(presets: Record<string, unknown>): {
+  on?: number;
+  off?: number;
+} {
   const find = (names: string[], on: boolean) => {
-    for (const [id, p] of Object.entries(presets)) if (p && names.includes(p.n) && p.on === on) return Number(id);
+    for (const [id, p] of Object.entries(presets)) {
+      const pr = p as Record<string, unknown>;
+      if (pr && names.includes(pr.n as string) && pr.on === on) return Number(id);
+    }
     return undefined;
   };
-  return { on: find([ON_PRESET, ...LEGACY_ON], true), off: find([OFF_PRESET, ...LEGACY_OFF], false) };
+  return {
+    on: find([ON_PRESET, ...LEGACY_ON], true),
+    off: find([OFF_PRESET, ...LEGACY_OFF], false),
+  };
 }
 
 /** Free preset ids, highest first (WLED allows 1-250). */
-export function freePresetIds(presets: Record<string, any>, count: number): number[] {
+export function freePresetIds(presets: Record<string, unknown>, count: number): number[] {
   const used = new Set(Object.keys(presets).map(Number));
   const out: number[] = [];
   for (let id = 250; id >= 1 && out.length < count; id--) if (!used.has(id)) out.push(id);
@@ -30,10 +39,14 @@ export function freePresetIds(presets: Record<string, any>, count: number): numb
 }
 
 /** Settings WLED resets on any partial /json/cfg post unless they're sent. */
-export function preservedConfig(cfg: any): object {
-  const led = cfg?.hw?.led;
-  const gc = cfg?.light?.gc;
-  const pick = (o: any, keys: string[]) => Object.fromEntries(keys.filter((k) => k in o).map((k) => [k, o[k]]));
+export function preservedConfig(cfg: unknown): object {
+  const c = (cfg ?? {}) as Record<string, unknown>;
+  const led = (c.hw as Record<string, unknown> | undefined)?.led as
+    Record<string, unknown> | undefined;
+  const gc = (c.light as Record<string, unknown> | undefined)?.gc as
+    Record<string, unknown> | undefined;
+  const pick = (o: Record<string, unknown>, keys: string[]) =>
+    Object.fromEntries(keys.filter((k) => k in o).map((k) => [k, o[k]]));
   return {
     ...(led ? { hw: { led: pick(led, ['rgbwm', 'fps']) } } : {}),
     ...(gc ? { light: { gc: pick(gc, ['bri', 'col', 'val']) } } : {}),
@@ -60,13 +73,22 @@ export async function applySchedule(
   timezone: string,
   utcOffsetMinutes: number,
   now = new Date(),
-  seasons?: SeasonInput,
+  seasons?: SeasonInput
 ): Promise<ScheduleResult> {
   const snap = await client.fetchSnapshot();
   const caps = capabilitiesFor(snap.info.ver, snap.info.arch);
-  const placeholder = (presetFor: (lookId: string) => number, plain: number): SeasonalOn | number =>
+  const placeholder = (
+    presetFor: (lookId: string) => number,
+    plain: number
+  ): SeasonalOn | number =>
     seasons ? { dated: datedPresets(seasons.periods, presetFor), plain } : plain;
-  const check = compileSchedule(schedule, placeholder(() => 1, 1), 1, caps, now);
+  const check = compileSchedule(
+    schedule,
+    placeholder(() => 1, 1),
+    1,
+    caps,
+    now
+  );
   if (check.errors.length) return check;
 
   let presets: { on?: number; off?: number } = {};
@@ -78,19 +100,34 @@ export async function applySchedule(
       presetFor = (id) => ids.get(id) ?? 0;
     }
   }
-  const compiled = compileSchedule(schedule, placeholder(presetFor, presets.on ?? 0), presets.off ?? 0, caps, now);
+  const compiled = compileSchedule(
+    schedule,
+    placeholder(presetFor, presets.on ?? 0),
+    presets.off ?? 0,
+    caps,
+    now
+  );
 
   const warnings = [...compiled.warnings];
   const tz = timezoneFor(timezone, utcOffsetMinutes);
   if (!tz.exact) {
-    warnings.push(`WLED doesn't know your time zone (${timezone}), so it uses a fixed UTC offset. Save the schedule again after daylight saving time changes.`);
+    warnings.push(
+      `WLED doesn't know your time zone (${timezone}), so it uses a fixed UTC offset. Save the schedule again after daylight saving time changes.`
+    );
   }
   const cfg = await client.fetchConfig();
   await backupTimers(client, cfg);
   const loc = schedule.location;
   await client.setConfig({
     ...preservedConfig(cfg),
-    if: { ntp: { en: true, tz: tz.index, offset: tz.offsetSeconds, ...(loc ? { lt: loc.lat, ln: loc.lon } : {}) } },
+    if: {
+      ntp: {
+        en: true,
+        tz: tz.index,
+        offset: tz.offsetSeconds,
+        ...(loc ? { lt: loc.lat, ln: loc.lon } : {}),
+      },
+    },
     timers: { ins: compiled.timers },
   });
   if (!seasons) await deleteSeasonPresets(client);
@@ -102,32 +139,50 @@ export async function applySchedule(
   return { errors: [], warnings };
 }
 
-const isEaveglowPreset = (p: any) =>
-  typeof p?.n === 'string' && (p.n.startsWith('Eaveglow') || [...LEGACY_ON, ...LEGACY_OFF].includes(p.n));
+const isEaveglowPreset = (p: unknown) => {
+  const pr = p as Record<string, unknown> | null;
+  return (
+    typeof pr?.n === 'string' &&
+    (pr.n.startsWith('Eaveglow') || [...LEGACY_ON, ...LEGACY_OFF].includes(pr.n))
+  );
+};
 
 /**
  * The first time Eaveglow replaces timers someone set up in WLED, keep a
  * copy on the controller so they can be put back (restoreOriginalTimers).
  */
-async function backupTimers(client: WledClient, cfg: any) {
-  const timers: any[] = cfg?.timers?.ins ?? [];
+async function backupTimers(client: WledClient, cfg: unknown) {
+  const cfgRecord = (cfg ?? {}) as Record<string, unknown>;
+  const timers: unknown[] =
+    ((cfgRecord.timers as Record<string, unknown> | undefined)?.ins as unknown[]) ?? [];
   if (!timers.length || (await client.readFile(TIMERS_BACKUP))) return;
   const presets = await client.fetchPresets();
-  const theirs = timers.some((t) => t.en && t.macro && !isEaveglowPreset(presets[t.macro]));
-  if (theirs) await client.uploadFile(TIMERS_BACKUP, JSON.stringify({ savedAt: new Date().toISOString(), timers }));
+  const theirs = timers.some((t) => {
+    const tr = t as Record<string, unknown>;
+    return tr.en && tr.macro && !isEaveglowPreset(presets[tr.macro as number]);
+  });
+  if (theirs)
+    await client.uploadFile(
+      TIMERS_BACKUP,
+      JSON.stringify({ savedAt: new Date().toISOString(), timers })
+    );
 }
 
 /** Puts back the timers saved before Eaveglow's first schedule. */
 export async function restoreOriginalTimers(client: WledClient): Promise<boolean> {
   const backup = await client.readFile(TIMERS_BACKUP);
-  if (!Array.isArray(backup?.timers)) return false;
+  const backupData = backup as { timers?: unknown[] } | null;
+  if (!Array.isArray(backupData?.timers)) return false;
   const cfg = await client.fetchConfig();
-  await client.setConfig({ ...preservedConfig(cfg), timers: { ins: backup.timers } });
+  await client.setConfig({ ...preservedConfig(cfg), timers: { ins: backupData!.timers } });
   return true;
 }
 
 /** Creates the On/Off presets if missing, ending in the lights' original state. */
-async function ensurePresets(client: WledClient, wasOn: boolean): Promise<{ on: number; off: number }> {
+async function ensurePresets(
+  client: WledClient,
+  wasOn: boolean
+): Promise<{ on: number; off: number }> {
   const presets = await client.fetchPresets();
   const found = findSchedulePresets(presets);
   if (found.on !== undefined && found.off !== undefined) return { on: found.on, off: found.off };
@@ -136,7 +191,9 @@ async function ensurePresets(client: WledClient, wasOn: boolean): Promise<{ on: 
   const on = found.on ?? free[next++];
   const off = found.off ?? free[next++];
   if (on === undefined || off === undefined) {
-    throw new WledError('Your controller has no free preset slots for the schedule. Delete a preset in WLED and try again.');
+    throw new WledError(
+      'Your controller has no free preset slots for the schedule. Delete a preset in WLED and try again.'
+    );
   }
   const saveOn = () => client.setState({ psave: on, n: ON_PRESET, o: true, on: true });
   const saveOff = () => client.setState({ psave: off, n: OFF_PRESET, o: true, on: false });
@@ -155,10 +212,18 @@ async function ensurePresets(client: WledClient, wasOn: boolean): Promise<{ on: 
 }
 
 /** One dated "on" preset per look of each period, on its rotation days. */
-export function datedPresets(periods: Period[], presetFor: (lookId: string) => number): DatedPreset[] {
+export function datedPresets(
+  periods: Period[],
+  presetFor: (lookId: string) => number
+): DatedPreset[] {
   return periods.flatMap((p) => {
     const days = rotationDays(p.lookIds.length);
-    return days.map((dow, i) => ({ preset: presetFor(p.lookIds[i]), start: p.start, end: p.end, dow }));
+    return days.map((dow, i) => ({
+      preset: presetFor(p.lookIds[i]),
+      start: p.start,
+      end: p.end,
+      dow,
+    }));
   });
 }
 
@@ -168,7 +233,11 @@ export function datedPresets(periods: Period[], presetFor: (lookId: string) => n
  * lights are put back the way they were afterwards. Season presets no
  * longer used are deleted.
  */
-async function ensureSeasonPresets(client: WledClient, seasons: SeasonInput, maxSegments: number): Promise<Map<string, number>> {
+async function ensureSeasonPresets(
+  client: WledClient,
+  seasons: SeasonInput,
+  maxSegments: number
+): Promise<Map<string, number>> {
   const presets = await client.fetchPresets();
   const existing = seasonPresetIds(presets);
   // Preset name for each look; two looks with the same name get "(2)".
@@ -189,7 +258,9 @@ async function ensureSeasonPresets(client: WledClient, seasons: SeasonInput, max
   }
   const free = freePresetIds(presets, missing.length);
   if (free.length < missing.length) {
-    throw new WledError('Your controller has no free preset slots for the seasons. Delete a preset in WLED and try again.');
+    throw new WledError(
+      'Your controller has no free preset slots for the seasons. Delete a preset in WLED and try again.'
+    );
   }
   missing.forEach((lookId, i) => ids.set(lookId, free[i]));
 
@@ -198,10 +269,17 @@ async function ensureSeasonPresets(client: WledClient, seasons: SeasonInput, max
     const before = await client.fetchState();
     try {
       for (const lookId of toSave) {
-        const state: any = await seasons.stateFor(lookId);
-        const seg = [...(state.seg ?? [])];
+        const state = (await seasons.stateFor(lookId)) as Record<string, unknown>;
+        const seg = [...((state.seg as unknown[]) ?? [])];
         for (let id = seg.length; id < maxSegments; id++) seg.push({ id, stop: 0 });
-        await client.setState({ ...state, seg, on: true, psave: ids.get(lookId), n: names.get(lookId), o: true });
+        await client.setState({
+          ...state,
+          seg,
+          on: true,
+          psave: ids.get(lookId),
+          n: names.get(lookId),
+          o: true,
+        });
       }
     } finally {
       const seg: object[] = before.seg.map((s) => ({ ...s }));
@@ -215,13 +293,17 @@ async function ensureSeasonPresets(client: WledClient, seasons: SeasonInput, max
   return ids;
 }
 
-const seasonPresetIds = (presets: Record<string, any>) => {
+const seasonPresetIds = (presets: Record<string, unknown>) => {
   const out = new Map<string, number>();
-  for (const [id, p] of Object.entries(presets)) if (p?.n?.startsWith(SEASON_PREFIX)) out.set(p.n, Number(id));
+  for (const [id, p] of Object.entries(presets)) {
+    const pr = p as Record<string, unknown>;
+    if (typeof pr?.n === 'string' && pr.n.startsWith(SEASON_PREFIX)) out.set(pr.n, Number(id));
+  }
   return out;
 };
 
 /** Removes season presets once autopilot is off. */
 async function deleteSeasonPresets(client: WledClient) {
-  for (const id of seasonPresetIds(await client.fetchPresets()).values()) await client.setState({ pdel: id });
+  for (const id of seasonPresetIds(await client.fetchPresets()).values())
+    await client.setState({ pdel: id });
 }

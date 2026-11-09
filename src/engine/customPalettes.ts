@@ -16,18 +16,24 @@ export function paletteSlots(version: string, arch: string): PaletteSlots {
   return { base: 200, max: arch.toLowerCase().includes('8266') ? 10 : 129 };
 }
 
-const hex = (c: number[]) => c.map((v) => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+const hex = (c: number[]) =>
+  c
+    .map((v) => v.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
 
 /** The WLED palette file: {"n": name, "palette": [pos, "RRGGBB", …]}. */
 export function paletteFile(p: PalettePreset): string {
   const n = p.stops.length;
-  const positions = p.positions ?? p.stops.map((_, i) => Math.round((i * 255) / Math.max(1, n - 1)));
+  const positions =
+    p.positions ?? p.stops.map((_, i) => Math.round((i * 255) / Math.max(1, n - 1)));
   return JSON.stringify({ n: p.wled, palette: p.stops.flatMap((c, i) => [positions[i], hex(c)]) });
 }
 
 /** Custom palettes a look's layers want (first choice only). */
-export const customPalettesIn = (palettes: string[][]) =>
-  [...new Set(palettes.map((p) => p[0]).filter((n): n is string => !!n && isCustomPalette(n)))];
+export const customPalettesIn = (palettes: string[][]) => [
+  ...new Set(palettes.map((p) => p[0]).filter((n): n is string => !!n && isCustomPalette(n))),
+];
 
 export class CustomPaletteInstaller {
   private verified = new Set<string>();
@@ -35,19 +41,23 @@ export class CustomPaletteInstaller {
   constructor(
     private client: WledClient,
     private getMap: () => Record<string, number>,
-    private saveMap: (m: Record<string, number>) => void,
+    private saveMap: (m: Record<string, number>) => void
   ) {}
 
   private async read(index: number): Promise<{ n?: string } | null | 'missing'> {
     const j = await this.client.readFile(`/palette${index}.json`);
-    return j === null ? 'missing' : j;
+    if (j === null) return 'missing';
+    return j as { n?: string };
   }
 
   /**
    * Makes sure the named palettes are on the controller. Returns name → WLED
    * palette id for the ones available; others are left for the fallback.
    */
-  async ensure(names: string[], slots: PaletteSlots): Promise<{ ids: Record<string, number>; failed: string[] }> {
+  async ensure(
+    names: string[],
+    slots: PaletteSlots
+  ): Promise<{ ids: Record<string, number>; failed: string[] }> {
     const map = { ...this.getMap() };
     const ids: Record<string, number> = {};
     const failed: string[] = [];
@@ -83,7 +93,11 @@ export class CustomPaletteInstaller {
   }
 
   /** Uploads into the lowest free slot (or adopts an existing copy). */
-  private async install(preset: PalettePreset, map: Record<string, number>, slots: PaletteSlots): Promise<number> {
+  private async install(
+    preset: PalettePreset,
+    map: Record<string, number>,
+    slots: PaletteSlots
+  ): Promise<number> {
     const taken = new Set(Object.values(map));
     for (let i = 0; i < slots.max; i++) {
       if (taken.has(i)) continue;

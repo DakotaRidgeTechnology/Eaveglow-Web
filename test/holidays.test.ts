@@ -1,6 +1,16 @@
-import { CustomPaletteInstaller, customPalettesIn, paletteFile, paletteSlots } from '../src/engine/customPalettes';
+import {
+  CustomPaletteInstaller,
+  customPalettesIn,
+  paletteFile,
+  paletteSlots,
+} from '../src/engine/customPalettes';
 import { byUpcoming, daysUntil, describeDays, easter, holidayDate } from '../src/engine/holidays';
-import { builtinLooks, holidayGroups, paletteByWledName, palettePresets } from '../src/engine/library';
+import {
+  builtinLooks,
+  holidayGroups,
+  paletteByWledName,
+  palettePresets,
+} from '../src/engine/library';
 import { EffectCatalog, compileLook } from '../src/engine/segmentCompiler';
 import { WledClient } from '../src/engine/wledClient';
 import { wled16Effects, wled16Palettes } from './fixtures_wled16';
@@ -31,7 +41,7 @@ describe('holiday dates', () => {
   });
 
   it('every holiday has looks, Halloween/Christmas/Easter/July 4th have lots', () => {
-    const count = (id: string) => builtinLooks.filter((l) => l.group === id).length;
+    const count = (id: string) => builtinLooks.filter((l) => l.h === id).length;
     for (const h of holidayGroups) expect(count(h.id), h.name).toBeGreaterThan(0);
     expect(count('halloween')).toBeGreaterThanOrEqual(15);
     expect(count('christmas')).toBeGreaterThanOrEqual(20);
@@ -44,7 +54,20 @@ describe('custom palettes', () => {
   it('writes WLED palette files, with hard stops where defined', () => {
     const glory = JSON.parse(paletteFile(paletteByWledName('★ Old Glory')!));
     expect(glory.n).toBe('★ Old Glory');
-    expect(glory.palette).toEqual([0, 'FF0000', 84, 'FF0000', 85, 'FFFFFF', 169, 'FFFFFF', 170, '0030FF', 255, '0030FF']);
+    expect(glory.palette).toEqual([
+      0,
+      'FF0000',
+      84,
+      'FF0000',
+      85,
+      'FFFFFF',
+      169,
+      'FFFFFF',
+      170,
+      '0030FF',
+      255,
+      '0030FF',
+    ]);
     const candy = JSON.parse(paletteFile(paletteByWledName('★ Candy Corn')!));
     expect(candy.palette.length / 2).toBe(4);
     for (const p of palettePresets.filter((x) => x.wled.startsWith('★'))) {
@@ -70,15 +93,23 @@ describe('custom palettes', () => {
         uploads.push(file.name);
         return new Response('ok');
       }
-      return files[path] !== undefined ? new Response(files[path]) : new Response('', { status: 404 });
+      return files[path] !== undefined
+        ? new Response(files[path])
+        : new Response('', { status: 404 });
     };
     return { client: new WledClient('', fetchImpl as typeof fetch), files, uploads };
   }
 
   it('installs into free slots, skipping your own palettes, and reuses them next time', async () => {
-    const c = controller({ '/palette0.json': JSON.stringify({ palette: [0, 'FF0000', 255, '0000FF'] }) });
+    const c = controller({
+      '/palette0.json': JSON.stringify({ palette: [0, 'FF0000', 255, '0000FF'] }),
+    });
     let map: Record<string, number> = {};
-    const installer = new CustomPaletteInstaller(c.client, () => map, (m) => (map = m));
+    const installer = new CustomPaletteInstaller(
+      c.client,
+      () => map,
+      (m) => (map = m)
+    );
     const slots = paletteSlots('16.0.1', 'esp32');
     const r = await installer.ensure(['★ Candy Corn', '★ Peppermint'], slots);
     expect(c.uploads).toEqual(['/palette1.json', '/palette2.json']);
@@ -89,7 +120,11 @@ describe('custom palettes', () => {
 
     // A new phone (empty map) finds the existing copy instead of duplicating it.
     let map2: Record<string, number> = {};
-    const r2 = await new CustomPaletteInstaller(c.client, () => map2, (m) => (map2 = m)).ensure(['★ Peppermint'], slots);
+    const r2 = await new CustomPaletteInstaller(
+      c.client,
+      () => map2,
+      (m) => (map2 = m)
+    ).ensure(['★ Peppermint'], slots);
     expect(r2.ids['★ Peppermint']).toBe(198);
     expect(c.uploads.length).toBe(2);
   });
@@ -100,14 +135,22 @@ describe('custom palettes', () => {
     const plain = compileLook(layout, look, new EffectCatalog(wled16Effects, wled16Palettes));
     expect(wled16Palettes[plain.segments[0].pal!]).toBe('Orangery');
     expect(plain.warnings).toEqual([]);
-    const withCustom = compileLook(layout, look, new EffectCatalog(wled16Effects, wled16Palettes, { '★ Candy Corn': 199 }));
+    const withCustom = compileLook(
+      layout,
+      look,
+      new EffectCatalog(wled16Effects, wled16Palettes, { '★ Candy Corn': 199 })
+    );
     expect(withCustom.segments[0].pal).toBe(199);
-    expect(customPalettesIn(look.layers.map((l) => l.palette))).toEqual(['★ Candy Corn']);
+    expect(customPalettesIn(look.l.map((l) => l.p))).toEqual(['★ Candy Corn']);
   });
 
   it('reports palettes it could not install (PIN lock)', async () => {
     const c = controller({}, true);
-    const r = await new CustomPaletteInstaller(c.client, () => ({}), () => {}).ensure(['★ Grinch'], paletteSlots('16.0.1', 'esp32'));
+    const r = await new CustomPaletteInstaller(
+      c.client,
+      () => ({}),
+      () => {}
+    ).ensure(['★ Grinch'], paletteSlots('16.0.1', 'esp32'));
     expect(r.failed).toEqual(['★ Grinch']);
     expect(r.ids).toEqual({});
   });

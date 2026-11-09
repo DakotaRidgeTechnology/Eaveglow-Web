@@ -1,7 +1,7 @@
 {
   "name": "eaveglow-web",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "license": "MIT",
   "description": "Eaveglow as a single web page served by the WLED controller itself.",
   "type": "module",
@@ -10,17 +10,40 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/gzip.mjs",
     "test": "vitest run",
-    "install-to": "node scripts/install.mjs"
+    "install-to": "node scripts/install.mjs",
+    "lint": "eslint src/",
+    "format": "prettier --write src/",
+    "prepare": "husky"
   },
   "dependencies": {
     "preact": "^10.29.8"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@preact/preset-vite": "^2.10.6",
+    "@testing-library/preact": "^3.2.6",
     "@types/node": "^22.20.5",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-preact": "^0.1.0",
+    "happy-dom": "^21.0.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "terser": "^5.51.2",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
     "vite": "^6.4.5",
     "vite-plugin-singlefile": "^2.3.4",
     "vitest": "^3.2.7"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   }
 }

@@ -1,70 +1,154 @@
 import { useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
-import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
-import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, rgbEquals, spacingLabel } from '../engine/model';
+import {
+  addPartLayer,
+  copyStyleFrom,
+  layerZoneIds,
+  removeLayer,
+  setLayerZones,
+} from '../engine/lookEdits';
+import {
+  builtinLooks,
+  colorGroups,
+  effectStyles,
+  isCustomPalette,
+  newCustomLook,
+  paletteCandidates,
+  palettePresets,
+  styleCategories,
+  styleForEffects,
+} from '../engine/library';
+import {
+  CUSTOM_CATEGORY,
+  LayerTarget,
+  Look,
+  LookLayer,
+  Rgb,
+  SOLID_SPACING,
+  effectiveZones,
+  rgbEquals,
+  spacingLabel,
+} from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
-import { Chip, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
+import {
+  Chip,
+  GradientBar,
+  Header,
+  SpacingPicker,
+  StripPreview,
+  Toggle,
+  css,
+  hexToRgb,
+  rgbToHex,
+} from './common';
+import { ColorRow } from './lookEditor/ColorRow';
+import { Slider } from './lookEditor/Slider';
 
-const EMOJIS = ['✨', '🎄', '🎅', '❄️', '🎃', '👻', '❤️', '🍀', '🐣', '🇺🇸', '🎆', '🦃', '🕎', '🪔', '🏈', '⚽', '🏀', '⚾', '🏒', '🎉', '🎂', '🌈', '🌊', '🔥', '🌙', '⭐', '🌸', '🦄'];
+const EMOJIS = [
+  '✨',
+  '🎄',
+  '🎅',
+  '❄️',
+  '🎃',
+  '👻',
+  '❤️',
+  '🍀',
+  '🐣',
+  '🇺🇸',
+  '🎆',
+  '🦃',
+  '🕎',
+  '🪔',
+  '🏈',
+  '⚽',
+  '🏀',
+  '⚾',
+  '🏒',
+  '🎉',
+  '🎂',
+  '🌈',
+  '🌊',
+  '🔥',
+  '🌙',
+  '⭐',
+  '🌸',
+  '🦄',
+];
 
 export function LookEditor(props: { lookId?: string }) {
   const { settings, store, snapshot, applyLook, toast, back } = useApp();
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
   const [active, setActive] = useState(0);
-  const layer = look.layers[active] ?? look.layers[0];
-  const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
-  const [themes, setThemes] = useState(layer.palette.length > 0);
+  const layer = look.l[active] ?? look.l[0];
+  const [category, setCategory] = useState(() => styleForEffects(layer.e)?.category ?? 'steady');
+  const [themes, setThemes] = useState(layer.p.length > 0);
   const selectLayer = (i: number, l = look) => {
     setActive(i);
-    setCategory(styleForEffects(l.layers[i].effect)?.category ?? 'steady');
-    setThemes(l.layers[i].palette.length > 0);
+    setCategory(styleForEffects(l.l[i].e)?.category ?? 'steady');
+    setThemes(l.l[i].p.length > 0);
   };
   const [fxQuery, setFxQuery] = useState('');
-  const style = styleForEffects(layer.effect);
+  const style = styleForEffects(layer.e);
   const layout = settings.layout ?? { totalPixels: snapshot?.info.ledCount ?? 100, zones: [] };
   const zones = effectiveZones(layout);
 
   const setLayer = (patch: Partial<LookLayer>) =>
-    setLook({ ...look, layers: look.layers.map((l, i) => (i === active ? { ...l, ...patch } : l)) });
+    setLook({ ...look, l: look.l.map((l, i) => (i === active ? { ...l, ...patch } : l)) });
   const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
   const partLabel = (i: number) =>
-    i === 0 ? (look.layers[0].target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look') : layerZoneIds(look.layers[i]).map(zoneName).join(' + ');
+    i === 0
+      ? look.l[0].t.kind === 'all'
+        ? '🏠 Everything else'
+        : '🏠 Main look'
+      : layerZoneIds(look.l[i]).map(zoneName).join(' + ');
   const addPart = () => {
-    const used = new Set(look.layers.flatMap(layerZoneIds));
+    const used = new Set(look.l.flatMap(layerZoneIds));
     const free = zones.find((z) => !used.has(z.id)) ?? zones[0];
     const next = addPartLayer(look, [free.id]);
     setLook(next);
-    selectLayer(next.layers.length - 1, next);
+    selectLayer(next.l.length - 1, next);
   };
 
   const catalog = useMemo(
     () => (snapshot ? new EffectCatalog(snapshot.effects, snapshot.palettes) : undefined),
-    [snapshot],
+    [snapshot]
   );
   const available = (cat: string) =>
-    effectStyles.filter((s) => s.category === cat && (!catalog || catalog.effectId(s.wled) !== undefined));
+    effectStyles.filter(
+      (s) => s.category === cat && (!catalog || catalog.effectId(s.wled) !== undefined)
+    );
   const devicePalettes = new Set(snapshot?.palettes.map((p) => p.toLowerCase()));
   // Eaveglow's own (★) themes are installed on the controller when used.
-  const themeList = palettePresets.filter((p) => isCustomPalette(p.wled) || !snapshot || devicePalettes.has(p.wled.toLowerCase()));
-  const preview = compileLook(layout, look, catalog ?? new EffectCatalog([...layer.effect, 'Solid'], palettePresets.map((p) => p.wled)), 64);
+  const themeList = palettePresets.filter(
+    (p) => isCustomPalette(p.wled) || !snapshot || devicePalettes.has(p.wled.toLowerCase())
+  );
+  const preview = compileLook(
+    layout,
+    look,
+    catalog ??
+      new EffectCatalog(
+        [...layer.e, 'Solid'],
+        palettePresets.map((p) => p.wled)
+      ),
+    64
+  );
 
   const toggleColor = (c: Rgb) => {
-    let colors = [...layer.colors];
+    let colors = [...layer.c];
     if (colors.some((x) => rgbEquals(x, c))) {
       if (colors.length > 1) colors = colors.filter((x) => !rgbEquals(x, c));
     } else {
       if (colors.length === 3) colors.shift();
       colors.push(c);
     }
-    setLayer({ colors });
+    setLayer({ c: colors });
   };
 
   const addCustom = (c: Rgb) => {
     const recent = [c, ...settings.recentColors.filter((x) => !rgbEquals(x, c))].slice(0, 8);
     store.update('recentColors', recent);
-    if (!layer.colors.some((x) => rgbEquals(x, c))) toggleColor(c);
+    if (!layer.c.some((x) => rgbEquals(x, c))) toggleColor(c);
   };
 
   const save = async (apply: boolean) => {
@@ -82,24 +166,74 @@ export function LookEditor(props: { lookId?: string }) {
   };
 
   const remove = () => {
-    store.update('customLooks', settings.customLooks.filter((l) => l.id !== look.id));
+    store.update(
+      'customLooks',
+      settings.customLooks.filter((l) => l.id !== look.id)
+    );
     back();
   };
 
-  const target = layer.target;
-  const setTarget = (t: LayerTarget) => setLayer({ target: t });
+  const target = layer.t;
+  const setTarget = (t: LayerTarget) => setLayer({ t });
   const effects = snapshot?.effects.filter((e) => e && e !== 'RSVD' && e !== '-') ?? [];
 
   return (
     <main>
       <Header title={existing ? 'Edit look' : 'Make a look'} back>
-        {existing && <button class="icon" title="Delete" onClick={remove}>🗑</button>}
+        <button
+          class="icon"
+          title="Export look"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(JSON.stringify(look));
+              toast('Look copied to clipboard');
+            } catch {
+              toast('Could not copy to clipboard');
+            }
+          }}
+        >
+          📋
+        </button>
+        <button
+          class="icon"
+          title="Import look"
+          onClick={async () => {
+            try {
+              const text = await navigator.clipboard.readText();
+              const imported = JSON.parse(text) as Look;
+              if (!imported.name || !imported.l) throw new Error('Invalid look');
+              imported.id = `custom.${Date.now()}`;
+              setLook(imported);
+              toast('Look imported');
+            } catch {
+              toast('Could not read a valid look from clipboard');
+            }
+          }}
+        >
+          📥
+        </button>
+        {existing && (
+          <button class="icon" title="Delete" onClick={remove}>
+            🗑
+          </button>
+        )}
       </Header>
       <div class="sticky">
-        <StripPreview layout={layout} segments={preview.segments} previews={preview.previewColors} showZones={false} />
+        <StripPreview
+          layout={layout}
+          segments={preview.segments}
+          previews={preview.previewColors}
+          showZones={false}
+        />
       </div>
 
-      <input class="name-input" value={look.name} placeholder="Name" onInput={(e) => setLook({ ...look, name: e.currentTarget.value })} />
+      <input
+        class="name-input"
+        value={look.name}
+        placeholder="Name"
+        aria-label="Look name"
+        onInput={(e) => setLook({ ...look, name: e.currentTarget.value })}
+      />
       <div class="chips scroll">
         {EMOJIS.map((e) => (
           <Chip key={e} selected={look.emoji === e} onClick={() => setLook({ ...look, emoji: e })}>
@@ -112,13 +246,13 @@ export function LookEditor(props: { lookId?: string }) {
       {zones.length > 1 ? (
         <>
           <div class="chips parts">
-            {look.layers.map((l, i) =>
+            {look.l.map((l, i) =>
               // Overlays (e.g. Magic Icicles' twinkling lights) aren't a part of the house; they're kept as they are.
-              l.overlayEvery ? null : (
+              l.o ? null : (
                 <Chip key={i} selected={i === active} onClick={() => selectLayer(i)}>
                   {partLabel(i)}
                 </Chip>
-              ),
+              )
             )}
             <Chip onClick={addPart}>＋ Different look for a part</Chip>
           </div>
@@ -134,7 +268,16 @@ export function LookEditor(props: { lookId?: string }) {
                       key={z.id}
                       selected={on}
                       // A part always covers at least one zone; use Remove to drop it.
-                      onClick={() => !(on && ids.length === 1) && setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}
+                      onClick={() =>
+                        !(on && ids.length === 1) &&
+                        setLook(
+                          setLayerZones(
+                            look,
+                            active,
+                            on ? ids.filter((x) => x !== z.id) : [...ids, z.id]
+                          )
+                        )
+                      }
                     >
                       {z.name}
                     </Chip>
@@ -145,21 +288,32 @@ export function LookEditor(props: { lookId?: string }) {
                 <select
                   value=""
                   onChange={(e) => {
-                    const src = [...builtinLooks, ...settings.customLooks].find((l) => l.id === e.currentTarget.value);
+                    const src = [...builtinLooks, ...settings.customLooks].find(
+                      (l) => l.id === e.currentTarget.value
+                    );
                     if (src) {
                       const l = copyStyleFrom(layer, src);
                       setLayer(l);
-                      setCategory(styleForEffects(l.effect)?.category ?? 'steady');
-                      setThemes(l.palette.length > 0);
+                      setCategory(styleForEffects(l.e)?.category ?? 'steady');
+                      setThemes(l.p.length > 0);
                     }
                   }}
                 >
                   <option value="">Start from a look…</option>
                   {[...builtinLooks, ...settings.customLooks].map((l) => (
-                    <option key={l.id} value={l.id}>{l.emoji} {l.name}</option>
+                    <option key={l.id} value={l.id}>
+                      {l.emoji} {l.name}
+                    </option>
                   ))}
                 </select>
-                <button onClick={() => (setLook(removeLayer(look, active)), selectLayer(0, removeLayer(look, active)))}>Remove</button>
+                <button
+                  onClick={() => (
+                    setLook(removeLayer(look, active)),
+                    selectLayer(0, removeLayer(look, active))
+                  )}
+                >
+                  Remove
+                </button>
               </div>
             </div>
           )}
@@ -170,7 +324,9 @@ export function LookEditor(props: { lookId?: string }) {
         </p>
       )}
 
-      <h3>Effect <small>{style?.label ?? layer.effect[0]}</small></h3>
+      <h3>
+        Effect <small>{style?.label ?? layer.e[0]}</small>
+      </h3>
       <div class="chips scroll">
         {styleCategories.map((c) => (
           <Chip key={c.id} selected={c.id === category} onClick={() => setCategory(c.id)}>
@@ -180,7 +336,7 @@ export function LookEditor(props: { lookId?: string }) {
       </div>
       <div class="chips dense">
         {available(category).map((s) => (
-          <Chip key={s.id} selected={s.id === style?.id} onClick={() => setLayer({ effect: s.wled })}>
+          <Chip key={s.id} selected={s.id === style?.id} onClick={() => setLayer({ e: s.wled })}>
             {s.emoji} {s.label}
           </Chip>
         ))}
@@ -188,13 +344,19 @@ export function LookEditor(props: { lookId?: string }) {
       {effects.length > 0 && (
         <details class="all-fx">
           <summary>All {effects.length} effects on your lights</summary>
-          <input class="search" placeholder="Search effects" value={fxQuery} onInput={(e) => setFxQuery(e.currentTarget.value)} />
+          <input
+            class="search"
+            placeholder="Search effects"
+            aria-label="Search effects"
+            value={fxQuery}
+            onInput={(e) => setFxQuery(e.currentTarget.value)}
+          />
           <ul>
             {effects
               .filter((e) => e.toLowerCase().includes(fxQuery.toLowerCase()))
               .map((e) => (
                 <li key={e}>
-                  <button class={layer.effect[0] === e ? 'on' : ''} onClick={() => setLayer({ effect: [e] })}>
+                  <button class={layer.e[0] === e ? 'on' : ''} onClick={() => setLayer({ e: [e] })}>
                     {e}
                   </button>
                 </li>
@@ -205,8 +367,12 @@ export function LookEditor(props: { lookId?: string }) {
 
       <h3>Colors</h3>
       <div class="segmented">
-        <button class={!themes ? 'on' : ''} onClick={() => (setThemes(false), setLayer({ palette: [] }))}>🎨 My colors</button>
-        <button class={themes ? 'on' : ''} onClick={() => setThemes(true)}>🌈 Color themes</button>
+        <button class={!themes ? 'on' : ''} onClick={() => (setThemes(false), setLayer({ p: [] }))}>
+          🎨 My colors
+        </button>
+        <button class={themes ? 'on' : ''} onClick={() => setThemes(true)}>
+          🌈 Color themes
+        </button>
       </div>
       {!themes ? (
         <>
@@ -215,31 +381,50 @@ export function LookEditor(props: { lookId?: string }) {
               <button
                 key={i}
                 class="slot"
-                style={layer.colors[i] ? { background: css(layer.colors[i]) } : undefined}
-                onClick={() => layer.colors[i] && toggleColor(layer.colors[i])}
-                title={layer.colors[i] ? 'Remove' : ''}
+                style={layer.c[i] ? { background: css(layer.c[i]) } : undefined}
+                onClick={() => layer.c[i] && toggleColor(layer.c[i])}
+                title={layer.c[i] ? 'Remove' : ''}
               >
-                {layer.colors[i] ? '' : '+'}
+                {layer.c[i] ? '' : '+'}
                 <small>{['1st', '2nd', '3rd'][i]}</small>
               </button>
             ))}
             <label class="button tonal">
               🎯 Any color
-              <input type="color" value={rgbToHex(layer.colors[layer.colors.length - 1] ?? [255, 0, 0])} onChange={(e) => addCustom(hexToRgb(e.currentTarget.value))} />
+              <input
+                type="color"
+                value={rgbToHex(layer.c[layer.c.length - 1] ?? [255, 0, 0])}
+                onChange={(e) => addCustom(hexToRgb(e.currentTarget.value))}
+              />
             </label>
           </div>
           <p class="hint">Tap colors to add (up to 3). Tap a chosen color above to remove it.</p>
           {settings.recentColors.length > 0 && (
-            <ColorRow title="Recent" colors={settings.recentColors.map((rgb) => ({ name: rgbToHex(rgb), rgb }))} selected={layer.colors} onToggle={toggleColor} />
+            <ColorRow
+              title="Recent"
+              colors={settings.recentColors.map((rgb) => ({ name: rgbToHex(rgb), rgb }))}
+              selected={layer.c}
+              onToggle={toggleColor}
+            />
           )}
           {colorGroups.map((g) => (
-            <ColorRow key={g.name} title={g.name} colors={g.colors} selected={layer.colors} onToggle={toggleColor} />
+            <ColorRow
+              key={g.name}
+              title={g.name}
+              colors={g.colors}
+              selected={layer.c}
+              onToggle={toggleColor}
+            />
           ))}
         </>
       ) : (
         <div class="themes">
           {themeList.map((p) => (
-            <button key={p.wled} class={'theme' + (layer.palette[0] === p.wled ? ' on' : '')} onClick={() => setLayer({ palette: paletteCandidates(p) })}>
+            <button
+              key={p.wled}
+              class={'theme' + (layer.p[0] === p.wled ? ' on' : '')}
+              onClick={() => setLayer({ p: paletteCandidates(p) })}
+            >
               <span>
                 {p.emoji} {p.label}
                 {isCustomPalette(p.wled) && <em class="new"> ★</em>}
@@ -251,27 +436,54 @@ export function LookEditor(props: { lookId?: string }) {
       )}
 
       {!style?.noSpeed && (
-        <Slider label="Speed" left="🐢" right="🐇" value={layer.speed} onChange={(speed) => setLayer({ speed })} />
+        <Slider
+          label="Speed"
+          left="🐢"
+          right="🐇"
+          value={layer.s}
+          onChange={(speed) => setLayer({ s: speed })}
+        />
       )}
       {!style?.noAmount && (
-        <Slider label="Amount" left="🤏" right="🙌" value={layer.intensity} onChange={(intensity) => setLayer({ intensity })} />
+        <Slider
+          label="Amount"
+          left="🤏"
+          right="🙌"
+          value={layer.i}
+          onChange={(intensity) => setLayer({ i: intensity })}
+        />
       )}
 
       <h3>Light spacing</h3>
       <Toggle
         label="Use my house setting"
         hint={spacingLabel(layout.spacing ?? SOLID_SPACING)}
-        checked={!layer.spacing}
-        onChange={(useHouse) => setLayer({ spacing: useHouse ? undefined : layout.spacing ?? SOLID_SPACING })}
+        checked={!layer.sp}
+        onChange={(useHouse) =>
+          setLayer({ sp: useHouse ? undefined : (layout.spacing ?? SOLID_SPACING) })
+        }
       />
-      {layer.spacing && <SpacingPicker value={layer.spacing} onChange={(spacing) => setLayer({ spacing })} inches={layout.inchesBetweenLights} />}
+      {layer.sp && (
+        <SpacingPicker
+          value={layer.sp}
+          onChange={(spacing) => setLayer({ sp: spacing })}
+          inches={layout.inchesBetweenLights}
+        />
+      )}
 
       {zones.length > 1 && active === 0 && (
         <>
           <h3>Where</h3>
           <div class="chips">
-            <Chip selected={target.kind === 'all'} onClick={() => setTarget({ kind: 'all' })}>Whole house</Chip>
-            <Chip selected={target.kind === 'alternateZones'} onClick={() => setTarget({ kind: 'alternateZones', phase: 0 })}>Every other part</Chip>
+            <Chip selected={target.kind === 'all'} onClick={() => setTarget({ kind: 'all' })}>
+              Whole house
+            </Chip>
+            <Chip
+              selected={target.kind === 'alternateZones'}
+              onClick={() => setTarget({ kind: 'alternateZones', phase: 0 })}
+            >
+              Every other part
+            </Chip>
             {zones.map((z) => {
               const on = target.kind === 'zones' && target.zoneIds.includes(z.id);
               return (
@@ -279,7 +491,8 @@ export function LookEditor(props: { lookId?: string }) {
                   key={z.id}
                   selected={on}
                   onClick={() => {
-                    const ids = target.kind === 'zones' ? target.zoneIds.filter((id) => id !== z.id) : [];
+                    const ids =
+                      target.kind === 'zones' ? target.zoneIds.filter((id) => id !== z.id) : [];
                     if (!on) ids.push(z.id);
                     setTarget(ids.length ? { kind: 'zones', zoneIds: ids } : { kind: 'all' });
                   }}
@@ -294,40 +507,11 @@ export function LookEditor(props: { lookId?: string }) {
 
       {preview.warnings.length > 0 && <p class="hint warn">{preview.warnings.join(' ')}</p>}
       <div class="buttons">
-        <button class="primary" onClick={() => save(true)}>💡 Save & turn on</button>
+        <button class="primary" onClick={() => save(true)}>
+          💡 Save & turn on
+        </button>
         <button onClick={() => save(false)}>Save</button>
       </div>
     </main>
-  );
-}
-
-function ColorRow(props: { title: string; colors: { name: string; rgb: Rgb }[]; selected: Rgb[]; onToggle: (c: Rgb) => void }) {
-  return (
-    <>
-      <h4>{props.title}</h4>
-      <div class="dots">
-        {props.colors.map((c) => {
-          const on = props.selected.some((s) => rgbEquals(s, c.rgb));
-          return (
-            <button key={c.name} class={'dot' + (on ? ' on' : '')} style={{ background: css(c.rgb) }} title={c.name} aria-label={c.name} onClick={() => props.onToggle(c.rgb)}>
-              {on ? '✓' : ''}
-            </button>
-          );
-        })}
-      </div>
-    </>
-  );
-}
-
-function Slider(props: { label: string; left: string; right: string; value: number; onChange: (v: number) => void }) {
-  return (
-    <>
-      <h3>{props.label}</h3>
-      <div class="row">
-        <span>{props.left}</span>
-        <input type="range" min={0} max={255} value={props.value} onInput={(e) => props.onChange(+e.currentTarget.value)} />
-        <span>{props.right}</span>
-      </div>
-    </>
   );
 }

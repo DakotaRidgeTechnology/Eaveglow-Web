@@ -9,9 +9,23 @@ const wled = process.env.WLED ? `http://${process.env.WLED}` : undefined;
 export default defineConfig({
   plugins: [preact(), viteSingleFile()],
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
-  build: { target: 'es2020', assetsInlineLimit: 100000000, cssCodeSplit: false, reportCompressedSize: false },
+  build: {
+    target: 'es2020',
+    minify: 'terser',
+    terserOptions: {
+      compress: { drop_console: true, drop_debugger: true },
+      mangle: { toplevel: true },
+    },
+    assetsInlineLimit: 100000000,
+    cssCodeSplit: false,
+    reportCompressedSize: false,
+  },
   server: wled
-    ? { proxy: Object.fromEntries(['/json', '/presets.json', '/upload', '/eaveglow.json'].map((p) => [p, wled])) }
+    ? {
+        proxy: Object.fromEntries(
+          ['/json', '/presets.json', '/upload', '/eaveglow.json'].map((p) => [p, wled])
+        ),
+      }
     : undefined,
   test: { globals: true, environment: 'node' },
 });
