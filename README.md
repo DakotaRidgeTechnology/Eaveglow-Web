@@ -65,8 +65,8 @@ To update, rebuild and upload `eaveglow.htm.gz` again. Your settings are kept.
 - **Seasonal autopilot:** looks change by date for each holiday (a new look each night if you like), plus special
   dates such as game days and birthdays, and an everyday look the rest of the year.
 - **Recent looks and a sleep timer** on Home.
-- **Props on other controllers:** candy canes with diagonal stripes (from the prop's xLights model file) and path
-  lights that follow the look, on another WLED controller. Eaveglow drives each controller itself, so layouts and
+- **Props on other controllers:** candy canes with diagonal stripes (from the prop's xLights model file), path
+  lights and pixel-wrapped trees that follow the look, on another WLED controller. Eaveglow drives each controller itself, so layouts and
   spacing don't have to match, and writes the schedule to all of them (House zones → Props).
 - **Shared settings:** settings live on the controller, so every phone sees the same setup.
 - **Backup:** download everything to your phone or computer and restore it later (House zones → Backup).

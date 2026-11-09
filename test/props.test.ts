@@ -59,6 +59,21 @@ describe('props', () => {
     expect(new Set(top)).toEqual(new Set([0, 1]));
   });
 
+  it('each tree gets its own copy of the look; trees share one when segments run out', () => {
+    const trees: Prop = { id: 't', name: 'Trees', kind: 'trees', controllerId: 'c3', start: 0, count: 3, perTree: 10 };
+    const fx = (s: any) => wled16Effects[s.fx];
+    const each = compileController([trees], look('magic_icicles'), cat, 30, 32);
+    expect(each.segments.map((s) => [s.start, s.stop, fx(s), s.spc])).toEqual([
+      [0, 10, 'Solid', 0], [0, 10, 'Fairytwinkle', 3],
+      [10, 20, 'Solid', 0], [10, 20, 'Fairytwinkle', 3],
+      [20, 30, 'Solid', 0], [20, 30, 'Fairytwinkle', 3],
+    ]);
+    expect(each.warnings).toEqual([]);
+    const tight = compileController([trees], look('magic_icicles'), cat, 30, 4);
+    expect(tight.segments.map((s) => [s.start, s.stop, fx(s)])).toEqual([[0, 30, 'Solid'], [0, 30, 'Fairytwinkle']]);
+    expect(tight.warnings.join()).toMatch(/trees share one look/);
+  });
+
   it('the pixel map puts each stripe together and maps every pixel once', () => {
     const m = buildLedmap(15, [canes(), path(12, 3)]);
     // band 0 is nodes 2, 4, 6 → pixels 1, 3, 5 of cane 1 and 7, 9, 11 of cane 2; band 1 the rest.

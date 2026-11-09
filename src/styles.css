@@ -239,3 +239,5 @@ select {
 .controller .prop > *, .season > * { min-width: 0; }
 .prop .brightness { margin: 0; }
 .prop .brightness .pct { width: 44px; text-align: right; color: var(--muted); }
+.controller > .row:last-child { flex-wrap: wrap; }
+.controller > .row:last-child button { padding: 8px 12px; font-size: 15px; white-space: nowrap; }

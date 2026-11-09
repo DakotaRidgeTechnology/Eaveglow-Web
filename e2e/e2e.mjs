@@ -12,6 +12,8 @@ mkdirSync(shots, { recursive: true });
 const mock = startMockWled(8099);
 // A second controller for props: 2 six-light test canes on output 1, 5 path lights on output 2.
 const props = startMockWled(8096, { leds: 17, name: 'Props', outputs: [[0, 12], [12, 5]] });
+// A third controller with three 100-light trees.
+const trees = startMockWled(8093, { leds: 300, name: 'Trees' });
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox'] });
 let failures = 0;
 const check = (ok, what) => {
@@ -234,6 +236,12 @@ try {
       // Only the first 3 lights of the 5 on output 2 are path lights (the rest, e.g. arches, stay off).
       await page.getByLabel('Path lights count').fill('3');
       await page.getByText('The other 2 lights on this output', { exact: false }).waitFor();
+      // Trees on a third controller.
+      await page.getByPlaceholder('IP address').fill('localhost:8093');
+      await page.getByRole('button', { name: 'Add', exact: true }).first().click();
+      await page.getByText('WLED 16.0.1 · 300 lights').waitFor();
+      await page.locator('.controller', { hasText: 'localhost:8093' }).getByText('＋ Trees').click();
+      await page.getByText('300 lights of 300 on this output', { exact: false }).waitFor();
       await page.screenshot({ path: `${shots}props.png`, fullPage: true });
       await page.getByRole('button', { name: 'Save', exact: true }).click();
       await page.getByText('Props saved', { exact: false }).waitFor({ timeout: 20000 });
@@ -248,6 +256,9 @@ try {
       const offSeg = props.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1)?.body.seg.find((x) => x.start === 15);
       check(offSeg?.stop === 17 && offSeg.on === false, 'the rest of output 2 is turned off');
       check(JSON.stringify(mock.state.seg) !== '[]', 'main controller still has its look');
+      const treeSeg = trees.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1)?.body.seg.filter((x) => x.stop) ?? [];
+      check(JSON.stringify(treeSeg.map((x) => [x.start, x.stop])) === '[[0,100],[100,200],[200,300]]', `each tree gets its own copy of the look: ${JSON.stringify(treeSeg.map((x) => [x.start, x.stop]))}`);
+      check(!trees.files['/ledmap.json'], 'no pixel map written where there are no candy canes');
 
       // The schedule goes to the prop controller too.
       await page.getByRole('button', { name: 'Back', exact: true }).click(); // House zones → Home
@@ -256,6 +267,7 @@ try {
       await page.getByText('Save to my lights').click();
       await page.getByText('Schedule saved').waitFor({ timeout: 20000 });
       check(props.log.some((l) => l.path === '/json/cfg' && l.body.timers?.ins?.length), 'schedule written to the prop controller');
+      check(trees.log.some((l) => l.path === '/json/cfg' && l.body.timers?.ins?.length), 'schedule written to the tree controller');
       await page.getByRole('button', { name: 'OK', exact: true }).click();
       await page.getByRole('button', { name: 'Back' }).click();
 
@@ -282,6 +294,7 @@ try {
   await browser.close();
   mock.server.close();
   props.server.close();
+  trees.server.close();
 }
 console.log(failures ? `\n${failures} check(s) failed` : '\nAll end-to-end checks passed');
 process.exit(failures ? 1 : 0);

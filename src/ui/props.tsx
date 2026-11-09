@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { builtinLooks } from '../engine/library';
 import { newId } from '../engine/model';
-import { CANE_COLORS, Controller, DEFAULT_STRIPE_WIDTH, Prop, propLength, stripeBands } from '../engine/props';
+import { CANE_COLORS, Controller, DEFAULT_PER_TREE, DEFAULT_STRIPE_WIDTH, Prop, lightsEach, propLength, stripeBands } from '../engine/props';
 import { ForeignLedmapError } from '../engine/propSync';
 import { PropModel, parseXModel } from '../engine/xmodel';
 import { Dialog, Header, NumberField, css, hexToRgb, rgbToHex } from './common';
@@ -69,7 +69,9 @@ export function PropsPage() {
       ...props,
       kind === 'candyCanes'
         ? { id: newId('p'), name: 'Candy canes', kind, controllerId: c.id, start: out.start, count: 1, stripeWidth: DEFAULT_STRIPE_WIDTH, colors: [...CANE_COLORS] as Prop['colors'] }
-        : { id: newId('p'), name: 'Path lights', kind, controllerId: c.id, start: out.start, count: out.len || 1 },
+        : kind === 'trees'
+          ? { id: newId('p'), name: 'Trees', kind, controllerId: c.id, start: out.start, count: Math.max(1, Math.floor(out.len / DEFAULT_PER_TREE)), perTree: DEFAULT_PER_TREE }
+          : { id: newId('p'), name: 'Path lights', kind, controllerId: c.id, start: out.start, count: out.len || 1 },
     ]);
   };
 
@@ -129,6 +131,7 @@ export function PropsPage() {
             <div class="row">
               <button onClick={() => addProp(c, 'candyCanes')}>＋ Candy canes</button>
               <button onClick={() => addProp(c, 'pathLights')}>＋ Path lights</button>
+              <button onClick={() => addProp(c, 'trees')}>＋ Trees</button>
             </div>
           </section>
         );
@@ -171,7 +174,7 @@ export function PropsPage() {
 function PropCard(props: { prop: Prop; outputs: Output[]; onChange: (p: Prop) => void; onRemove: () => void }) {
   const { prop: p, outputs, onChange } = props;
   const { toast } = useApp();
-  const perProp = p.kind === 'candyCanes' ? p.model?.nodes.length ?? 0 : 1;
+  const perProp = lightsEach(p);
   const output = outputs.find((x) => x.start === p.start);
   const pickOutput = (start: number) => {
     const o = outputs.find((x) => x.start === start);
@@ -190,7 +193,7 @@ function PropCard(props: { prop: Prop; outputs: Output[]; onChange: (p: Prop) =>
   return (
     <div class="prop">
       <div class="row">
-        <span class="big-emoji">{p.kind === 'candyCanes' ? '🍭' : '🔦'}</span>
+        <span class="big-emoji">{p.kind === 'candyCanes' ? '🍭' : p.kind === 'trees' ? '🎄' : '🔦'}</span>
         <input class="name-input" value={p.name} onInput={(e) => onChange({ ...p, name: e.currentTarget.value })} />
         <button class="icon" title="Remove prop" onClick={props.onRemove}>🗑</button>
       </div>
@@ -213,7 +216,20 @@ function PropCard(props: { prop: Prop; outputs: Output[]; onChange: (p: Prop) =>
         />
         <span class="pct">{p.brightness ?? 100}%</span>
       </label>
-      {p.kind === 'candyCanes' ? (
+      {p.kind === 'trees' ? (
+        <>
+          <div class="row">
+            <NumberField value={p.count} min={1} ariaLabel={`${p.name} count`} onChange={(count) => onChange({ ...p, count })} />
+            <span>trees ×</span>
+            <NumberField value={p.perTree ?? DEFAULT_PER_TREE} min={1} ariaLabel={`${p.name} lights per tree`} onChange={(perTree) => onChange({ ...p, perTree })} />
+            <span>lights</span>
+          </div>
+          <small class="hint">
+            {propLength(p)} lights{output ? ` of ${output.len} on this output` : ''}. Each tree shows its own copy of the current look.
+            {output && propLength(p) > output.len ? ' That is more than this output has: check the numbers.' : ''}
+          </small>
+        </>
+      ) : p.kind === 'candyCanes' ? (
         <>
           <label class="field">
             <small>xLights model of one cane (.xmodel, from the prop maker)</small>
