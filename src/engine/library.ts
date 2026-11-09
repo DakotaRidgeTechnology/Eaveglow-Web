@@ -40,35 +40,82 @@ export interface HolidayGroup {
 /** Eaveglow's own palettes (★), installed on the controller when used. */
 export const CUSTOM_PALETTE_PREFIX = '★ ';
 export const isCustomPalette = (name: string) => name.startsWith(CUSTOM_PALETTE_PREFIX);
-export const paletteCandidates = (p: PalettePreset) => (p.fallback ? [p.wled, p.fallback] : [p.wled]);
+export const paletteCandidates = (p: PalettePreset) =>
+  p.fallback ? [p.wled, p.fallback] : [p.wled];
 
 export interface ColorGroup {
   name: string;
   colors: { name: string; rgb: Rgb }[];
 }
 
-export const lookCategories: string[] = data.lookCategories;
-export const builtinLooks = data.looks as unknown as Look[];
-export const styleCategories: StyleCategory[] = data.styleCategories;
-export const effectStyles = data.styles as EffectStyle[];
-export const palettePresets = data.palettes as unknown as PalettePreset[];
-export const colorGroups = data.colorGroups as unknown as ColorGroup[];
-export const holidayGroups: HolidayGroup[] = data.holidays;
+export const lookCategories: string[] = data.lc;
+export const builtinLooks = data.l.map((l) => ({
+  id: l.i,
+  name: l.n,
+  emoji: l.e,
+  category: l.c,
+  h: l.h,
+  l: l.l,
+})) as unknown as Look[];
+export const styleCategories: StyleCategory[] = data.sc.map((s: Record<string, unknown>) => ({
+  id: s.i as string,
+  label: s.l as string,
+  emoji: s.e as string,
+}));
+export const effectStyles = data.s.map((s) => ({
+  id: s.i,
+  label: s.l,
+  emoji: s.e,
+  category: s.c,
+  wled: s.w,
+  noSpeed: s.ns,
+  noAmount: s.na,
+})) as EffectStyle[];
+export const palettePresets = data.p.map((p) => ({
+  label: p.l,
+  emoji: p.e,
+  wled: p.w,
+  stops: p.s,
+  positions: p.po,
+  fallback: p.f,
+})) as unknown as PalettePreset[];
+export const colorGroups = data.cg.map((g) => ({
+  name: g.n,
+  colors: g.c.map((c) => ({ name: c.n, rgb: c.r })),
+})) as unknown as ColorGroup[];
+export const holidayGroups: HolidayGroup[] = data.h.map((h) => ({
+  id: h.i,
+  name: h.n,
+  emoji: h.e,
+  rule: h.r,
+}));
 
 export const styleById = (id: string) => effectStyles.find((s) => s.id === id);
 
 /** The style a layer's effect list most likely came from. */
 export function styleForEffects(effects: string[]): EffectStyle | undefined {
   if (effects.length === 0) return undefined;
-  return effectStyles.find((s) => s.wled[0] === effects[0]) ?? effectStyles.find((s) => s.wled.includes(effects[0]));
+  return (
+    effectStyles.find((s) => s.wled[0] === effects[0]) ??
+    effectStyles.find((s) => s.wled.includes(effects[0]))
+  );
 }
 
 export const paletteByWledName = (name: string) =>
   palettePresets.find((p) => p.wled.toLowerCase() === name.toLowerCase());
 
 const rainbowEffects = new Set([
-  'rainbow', 'colorloop', 'rainbow runner', 'theater rainbow', 'strobe rainbow', 'blink rainbow',
-  'chase rainbow', 'pride 2015', 'ripple rainbow', 'sinelon rainbow', 'random colors',
+  'rainbow',
+  'colorloop',
+  'rainbow runner',
+  'theater rainbow',
+  'strobe rainbow',
+  'blink rainbow',
+  'chase rainbow',
+  'pride 2015',
+  'ripple rainbow',
+  'sinelon rainbow',
+  'random colors',
 ]);
 
 /** Approximate colors for previews (themes and rainbow effects included). */
@@ -81,7 +128,7 @@ export function previewColorsFor(colors: Rgb[], effectName?: string, paletteName
 }
 
 export const lookPreviewColors = (look: Look): Rgb[] =>
-  look.layers.flatMap((l) => previewColorsFor(l.colors, l.effect[0], l.palette[0]));
+  look.l.flatMap((l) => previewColorsFor(l.c, l.e[0], l.p[0]));
 
 export function newCustomLook(): Look {
   return {
@@ -89,6 +136,6 @@ export function newCustomLook(): Look {
     name: 'My Look',
     emoji: '✨',
     category: 'My Looks',
-    layers: [{ target: { kind: 'all' }, effect: ['Solid'], palette: [], colors: [[0, 0, 255]], speed: 128, intensity: 128 }],
+    l: [{ t: { kind: 'all' }, e: ['Solid'], p: [], c: [[0, 0, 255]], s: 128, i: 128 }],
   };
 }

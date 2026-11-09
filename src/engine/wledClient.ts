@@ -3,7 +3,10 @@
 import { WledSnapshot, WledState, parseSnapshot, parseState } from './model';
 
 export class WledError extends Error {
-  constructor(message: string, readonly status?: number) {
+  constructor(
+    message: string,
+    readonly status?: number
+  ) {
     super(message);
   }
 }
@@ -13,24 +16,31 @@ export class WledClient {
   constructor(
     readonly base = '',
     private fetchImpl: typeof fetch = (...a) => fetch(...a),
-    private timeoutMs = 6000,
+    private timeoutMs = 6000
   ) {}
 
   private async request(path: string, init?: RequestInit): Promise<Response> {
     let res: Response;
     try {
-      res = await this.fetchImpl(this.base + path, { ...init, signal: AbortSignal.timeout?.(this.timeoutMs) });
+      res = await this.fetchImpl(this.base + path, {
+        ...init,
+        signal: AbortSignal.timeout?.(this.timeoutMs),
+      });
     } catch {
       throw new WledError("Couldn't reach your lights. Are you on the same Wi-Fi?");
     }
     if (res.status === 401) {
-      throw new WledError("Your controller's settings are locked with a PIN. Unlock them in WLED (Config → Security) and try again.", 401);
+      throw new WledError(
+        "Your controller's settings are locked with a PIN. Unlock them in WLED (Config → Security) and try again.",
+        401
+      );
     }
-    if (!res.ok && res.status !== 404) throw new WledError(`Your lights answered with an error (${res.status}).`, res.status);
+    if (!res.ok && res.status !== 404)
+      throw new WledError(`Your lights answered with an error (${res.status}).`, res.status);
     return res;
   }
 
-  private async json(path: string, init?: RequestInit): Promise<any> {
+  private async json(path: string, init?: RequestInit): Promise<unknown> {
     const res = await this.request(path, init);
     if (res.status === 404) throw new WledError('Not found', 404);
     return res.json();
@@ -46,18 +56,22 @@ export class WledClient {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...state, v: true }),
-      }),
+      })
     );
 
   fetchConfig = () => this.json('/json/cfg');
 
   setConfig = (cfg: object) =>
-    this.json('/json/cfg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
+    this.json('/json/cfg', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cfg),
+    });
 
   /** Presets keyed by id; {} if none exist yet. */
-  async fetchPresets(): Promise<Record<string, any>> {
+  async fetchPresets(): Promise<Record<string, unknown>> {
     try {
-      return await this.json('/presets.json');
+      return (await this.json('/presets.json')) as Record<string, unknown>;
     } catch (e) {
       if (e instanceof WledError && e.status === 404) return {};
       throw e;
@@ -65,7 +79,7 @@ export class WledClient {
   }
 
   /** Reads a JSON file from the controller's filesystem, or null. */
-  async readFile(path: string): Promise<any | null> {
+  async readFile(path: string): Promise<unknown | null> {
     const res = await this.request(path, { cache: 'no-store' });
     if (res.status === 404) return null;
     try {
@@ -88,8 +102,9 @@ export class WledClient {
   /** Other WLED controllers this one knows about (`/json/nodes`). */
   async fetchNodes(): Promise<{ name: string; ip: string }[]> {
     try {
-      const j = await this.json('/json/nodes');
-      return (j.nodes ?? []).map((n: any) => ({ name: n.name ?? n.ip, ip: n.ip }));
+      const j = (await this.json('/json/nodes')) as Record<string, unknown>;
+      const nodes = (j.nodes ?? []) as { name?: string; ip?: string }[];
+      return nodes.map((n) => ({ name: n.name ?? n.ip ?? '', ip: n.ip ?? '' }));
     } catch {
       return [];
     }

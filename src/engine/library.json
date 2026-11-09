@@ -1,1 +1,4611 @@
-{"lookCategories":["Everyday","Holidays","Bulbs","Party","Sports","Nature"],"looks":[{"id":"builtin.warm_white","name":"Warm White","emoji":"🏡","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[255,170,90]],"speed":128,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.soft_white","name":"Soft White","emoji":"🤍","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[255,200,140]],"speed":128,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.cool_white","name":"Cool White","emoji":"🧊","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[220,235,255]],"speed":128,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.candlelight","name":"Candlelight","emoji":"🕯️","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[255,120,30]],"speed":128,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.gold_glow","name":"Gold Glow","emoji":"✨","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[255,170,0]],"speed":128,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.cozy_candle","name":"Cozy Candle","emoji":"🔥","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":[],"colors":[[255,90,0]],"speed":90,"intensity":180,"reverse":false}],"category":"Everyday"},{"id":"builtin.gentle_breathe","name":"Gentle Glow","emoji":"🌙","layers":[{"target":{"kind":"all"},"effect":["Breathe"],"palette":[],"colors":[[255,170,90]],"speed":40,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.security","name":"Bright Security","emoji":"🔦","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[200,220,255]],"speed":128,"intensity":128,"reverse":false}],"category":"Everyday"},{"id":"builtin.bulbs_classic","name":"Classic Bulbs","emoji":"💡","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,0,0],[0,255,0],[0,0,255]],"speed":128,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_red_green","name":"Red & Green Bulbs","emoji":"🎄","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern"],"palette":[],"colors":[[0,255,0],[255,0,0]],"speed":0,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_red_white","name":"Red & White Bulbs","emoji":"🍬","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern"],"palette":[],"colors":[[255,0,0],[255,255,255]],"speed":0,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_blue_white","name":"Blue & White Bulbs","emoji":"❄️","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern"],"palette":[],"colors":[[0,0,255],[220,235,255]],"speed":0,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_orange_purple","name":"Orange & Purple Bulbs","emoji":"🎃","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern"],"palette":[],"colors":[[255,90,0],[140,0,255]],"speed":0,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_rwb","name":"Red, White & Blue Bulbs","emoji":"🇺🇸","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,0,0],[255,255,255],[0,0,255]],"speed":128,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_rgb","name":"Red, Green & Gold Bulbs","emoji":"🎁","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,0,0],[0,255,0],[255,170,0]],"speed":128,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_pastel","name":"Pastel Bulbs","emoji":"🐣","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,150,190],[140,190,255],[255,240,140]],"speed":128,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_retro","name":"Retro Bulbs","emoji":"🌈","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,60,0],[0,70,255],[0,200,60]],"speed":128,"intensity":0,"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_warm","name":"Warm White Bulbs","emoji":"🤍","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[255,170,90]],"speed":128,"intensity":128,"spacing":{"lit":1,"skip":3},"reverse":false}],"category":"Bulbs"},{"id":"builtin.bulbs_twinkle","name":"Twinkling Bulbs","emoji":"⭐","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["C9"],"colors":[[255,170,90]],"speed":60,"intensity":200,"reverse":false}],"category":"Bulbs"},{"id":"builtin.candy_cane","name":"Candy Cane","emoji":"🍭","layers":[{"target":{"kind":"all"},"effect":["Railway","Theater"],"palette":[],"colors":[[255,0,0],[255,255,255]],"speed":90,"intensity":160,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.christmas_classic","name":"Christmas Classic","emoji":"🎄","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[255,0,0]],"speed":128,"intensity":128,"reverse":false},{"target":{"kind":"alternateZones","phase":1},"effect":["Solid"],"palette":[],"colors":[[0,255,0]],"speed":128,"intensity":128,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.twinkle_stars","name":"Twinkle Stars","emoji":"⭐","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":[],"colors":[[255,170,90],[0,0,0]],"speed":80,"intensity":140,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.icicles","name":"Icicles","emoji":"🧊","layers":[{"target":{"kind":"all"},"effect":["Drip"],"palette":[],"colors":[[120,200,255],[0,0,120]],"speed":90,"intensity":120,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.snowfall","name":"Snowfall","emoji":"❄️","layers":[{"target":{"kind":"all"},"effect":["Sparkle Dark"],"palette":[],"colors":[[220,235,255],[255,255,255]],"speed":100,"intensity":120,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.north_pole","name":"North Pole","emoji":"🎅","layers":[{"target":{"kind":"all"},"effect":["Chase 2"],"palette":[],"colors":[[255,0,0],[255,255,255]],"speed":80,"intensity":128,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.gingerbread","name":"Gingerbread","emoji":"🍪","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["Autumn"],"colors":[[170,60,10],[255,255,255]],"speed":70,"intensity":128,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.silent_night","name":"Silent Night","emoji":"🌌","layers":[{"target":{"kind":"all"},"effect":["Fairytwinkle","Fairy"],"palette":[],"colors":[[255,170,90],[0,0,120]],"speed":50,"intensity":100,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.christmas_tree","name":"Tree Lights","emoji":"🎁","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["C9 New"],"colors":[[255,0,0]],"speed":90,"intensity":180,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.santas_sleigh","name":"Santa's Sleigh","emoji":"🛷","layers":[{"target":{"kind":"all"},"effect":["Meteor Smooth","Meteor"],"palette":[],"colors":[[255,170,0],[255,0,0]],"speed":160,"intensity":128,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.evergreen","name":"Evergreen Glitter","emoji":"🌲","layers":[{"target":{"kind":"all"},"effect":["Solid Glitter","Glitter"],"palette":[],"colors":[[0,120,10],[255,170,0]],"speed":128,"intensity":90,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.halloween","name":"Halloween","emoji":"🎃","layers":[{"target":{"kind":"all"},"effect":["Running"],"palette":[],"colors":[[255,90,0],[140,0,255]],"speed":70,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.pumpkin_patch","name":"Pumpkin Patch","emoji":"🎃","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":[],"colors":[[255,60,0]],"speed":80,"intensity":200,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.spooky_eyes","name":"Spooky Eyes","emoji":"👀","layers":[{"target":{"kind":"all"},"effect":["Halloween Eyes"],"palette":[],"colors":[[255,0,0],[0,0,0]],"speed":128,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.witches_brew","name":"Witch's Brew","emoji":"🧪","layers":[{"target":{"kind":"all"},"effect":["Noise 1","Fill Noise"],"palette":["Toxy Reaf"],"colors":[[140,255,0],[140,0,255]],"speed":90,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.graveyard","name":"Graveyard Fog","emoji":"🪦","layers":[{"target":{"kind":"all"},"effect":["Breathe"],"palette":[],"colors":[[140,0,255]],"speed":30,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.monster_mash","name":"Monster Mash","emoji":"🧟","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[140,255,0],[140,0,255]],"speed":140,"intensity":128,"reverse":false},{"target":{"kind":"alternateZones","phase":1},"effect":["Theater"],"palette":[],"colors":[[255,90,0],[140,0,255]],"speed":140,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.haunted","name":"Haunted House","emoji":"👻","layers":[{"target":{"kind":"all"},"effect":["Lightning"],"palette":[],"colors":[[220,235,255],[0,0,0]],"speed":128,"intensity":140,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.new_year","name":"New Year's Eve","emoji":"🥂","layers":[{"target":{"kind":"all"},"effect":["Fireworks Starburst","PS Starburst"],"palette":[],"colors":[[255,170,0],[255,255,255]],"speed":150,"intensity":160,"reverse":false}],"category":"Holidays","group":"new_year"},{"id":"builtin.valentines","name":"Valentine's Day","emoji":"❤️","layers":[{"target":{"kind":"all"},"effect":["Heartbeat"],"palette":[],"colors":[[255,30,90],[255,40,140]],"speed":100,"intensity":128,"reverse":false}],"category":"Holidays","group":"valentines"},{"id":"builtin.st_patricks","name":"St. Patrick's Day","emoji":"🍀","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":[],"colors":[[0,180,30],[255,170,0]],"speed":80,"intensity":128,"reverse":false}],"category":"Holidays","group":"st_patricks"},{"id":"builtin.easter","name":"Easter","emoji":"🐣","layers":[{"target":{"kind":"all"},"effect":["Colortwinkles"],"palette":["Pastel"],"colors":[[255,150,190]],"speed":60,"intensity":128,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.mardi_gras","name":"Mardi Gras","emoji":"🎭","layers":[{"target":{"kind":"all"},"effect":["Chase 3"],"palette":[],"colors":[[140,0,255],[255,170,0],[0,255,0]],"speed":110,"intensity":128,"reverse":false}],"category":"Holidays","group":"mardi_gras"},{"id":"builtin.cinco_de_mayo","name":"Cinco de Mayo","emoji":"🇲🇽","layers":[{"target":{"kind":"all"},"effect":["Tri Wipe"],"palette":[],"colors":[[0,255,0],[255,255,255],[255,0,0]],"speed":90,"intensity":128,"reverse":false}],"category":"Holidays","group":"cinco_de_mayo"},{"id":"builtin.july_4th","name":"July 4th","emoji":"🇺🇸","layers":[{"target":{"kind":"all"},"effect":["Tri Wipe"],"palette":[],"colors":[[255,0,0],[255,255,255],[0,0,255]],"speed":110,"intensity":128,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.july_4th_fireworks","name":"Fourth Fireworks","emoji":"🎆","layers":[{"target":{"kind":"all"},"effect":["Fireworks"],"palette":[],"colors":[[255,0,0],[0,0,255],[255,255,255]],"speed":140,"intensity":170,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.memorial_day","name":"Memorial Day","emoji":"🎖️","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,0,0],[255,255,255],[0,0,255]],"speed":128,"intensity":0,"reverse":false}],"category":"Holidays","group":"memorial_day"},{"id":"builtin.thanksgiving","name":"Thanksgiving","emoji":"🦃","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["Autumn"],"colors":[[255,140,0]],"speed":60,"intensity":128,"reverse":false}],"category":"Holidays","group":"thanksgiving"},{"id":"builtin.hanukkah","name":"Hanukkah","emoji":"🕎","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":[],"colors":[[20,40,255],[255,255,255]],"speed":70,"intensity":128,"reverse":false}],"category":"Holidays","group":"hanukkah"},{"id":"builtin.diwali","name":"Diwali","emoji":"🪔","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":["Orangery"],"colors":[[255,170,0]],"speed":90,"intensity":200,"reverse":false}],"category":"Holidays","group":"diwali"},{"id":"builtin.pride","name":"Pride","emoji":"🏳️‍🌈","layers":[{"target":{"kind":"all"},"effect":["Pride 2015"],"palette":[],"colors":[[255,0,0]],"speed":90,"intensity":128,"reverse":false}],"category":"Holidays","group":"pride"},{"id":"builtin.birthday","name":"Birthday","emoji":"🎂","layers":[{"target":{"kind":"all"},"effect":["Dynamic"],"palette":["Party"],"colors":[[255,40,140]],"speed":120,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.team_colors","name":"Blue & Orange","emoji":"🏈","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[0,0,255],[255,90,0]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.team_red_gold","name":"Red & Gold","emoji":"🏆","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[255,0,0],[255,170,0]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.team_green_gold","name":"Green & Gold","emoji":"🧀","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[0,120,10],[255,170,0]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.team_purple_gold","name":"Purple & Gold","emoji":"🏀","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[140,0,255],[255,170,0]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.team_blue_white","name":"Blue & White","emoji":"⚾","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[20,40,255],[255,255,255]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.team_red_white","name":"Red & White","emoji":"🏒","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[255,0,0],[255,255,255]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.team_black_gold","name":"Black & Gold","emoji":"⚡","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern"],"palette":[],"colors":[[255,170,0],[0,0,0]],"speed":0,"intensity":0,"reverse":false}],"category":"Sports"},{"id":"builtin.team_green_white","name":"Green & White","emoji":"⚽","layers":[{"target":{"kind":"all"},"effect":["Theater"],"palette":[],"colors":[[0,200,60],[255,255,255]],"speed":120,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.game_day","name":"Game Day Strobe","emoji":"📣","layers":[{"target":{"kind":"all"},"effect":["Chase Flash"],"palette":[],"colors":[[0,0,255],[255,90,0]],"speed":200,"intensity":128,"reverse":false}],"category":"Sports"},{"id":"builtin.rainbow","name":"Rainbow","emoji":"🌈","layers":[{"target":{"kind":"all"},"effect":["Rainbow"],"palette":[],"colors":[[255,0,0]],"speed":100,"intensity":60,"reverse":false}],"category":"Party"},{"id":"builtin.rainbow_chase","name":"Rainbow Chase","emoji":"🎠","layers":[{"target":{"kind":"all"},"effect":["Theater Rainbow"],"palette":[],"colors":[[255,0,0]],"speed":140,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.fireworks","name":"Fireworks","emoji":"🎆","layers":[{"target":{"kind":"all"},"effect":["Fireworks"],"palette":["Party"],"colors":[[255,170,0],[0,0,0]],"speed":140,"intensity":160,"reverse":false}],"category":"Party"},{"id":"builtin.confetti","name":"Confetti","emoji":"🎊","layers":[{"target":{"kind":"all"},"effect":["Dynamic"],"palette":["Party"],"colors":[[255,0,0]],"speed":128,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.disco","name":"Disco","emoji":"🪩","layers":[{"target":{"kind":"all"},"effect":["Dancing Shadows","PS Dancing Shadows"],"palette":["Party"],"colors":[[255,0,0]],"speed":128,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.dance_party","name":"Dance Party","emoji":"🕺","layers":[{"target":{"kind":"all"},"effect":["Bpm"],"palette":["Party"],"colors":[[255,0,0]],"speed":120,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.strobe_party","name":"Strobe Party","emoji":"⚡","layers":[{"target":{"kind":"all"},"effect":["Strobe Rainbow"],"palette":[],"colors":[[255,255,255]],"speed":180,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.comets","name":"Comets","emoji":"☄️","layers":[{"target":{"kind":"all"},"effect":["Multi Comet"],"palette":[],"colors":[[0,255,255],[255,0,255]],"speed":150,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.bouncing","name":"Bouncy Balls","emoji":"🏀","layers":[{"target":{"kind":"all"},"effect":["Bouncing Balls"],"palette":[],"colors":[[255,0,0],[0,255,0],[0,0,255]],"speed":128,"intensity":100,"reverse":false}],"category":"Party"},{"id":"builtin.popcorn","name":"Popcorn","emoji":"🍿","layers":[{"target":{"kind":"all"},"effect":["Popcorn"],"palette":[],"colors":[[255,220,80],[255,0,0]],"speed":128,"intensity":128,"reverse":false}],"category":"Party"},{"id":"builtin.ocean","name":"Ocean","emoji":"🌊","layers":[{"target":{"kind":"all"},"effect":["Pacifica"],"palette":[],"colors":[[0,0,255]],"speed":100,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.aurora","name":"Aurora","emoji":"🌌","layers":[{"target":{"kind":"all"},"effect":["Aurora"],"palette":["Aurora"],"colors":[[0,255,0]],"speed":60,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.sunset","name":"Sunset","emoji":"🌅","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["Sunset"],"colors":[[255,90,0]],"speed":50,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.lava","name":"Lava","emoji":"🌋","layers":[{"target":{"kind":"all"},"effect":["Noise 1","Fill Noise"],"palette":["Lava"],"colors":[[255,0,0]],"speed":70,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.forest","name":"Forest","emoji":"🌲","layers":[{"target":{"kind":"all"},"effect":["Noise 1","Fill Noise"],"palette":["Forest"],"colors":[[0,255,0]],"speed":60,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.campfire","name":"Campfire","emoji":"🔥","layers":[{"target":{"kind":"all"},"effect":["Fire 2012","PS Fire 1D","Fire Flicker"],"palette":[],"colors":[[255,90,0]],"speed":140,"intensity":160,"reverse":false}],"category":"Nature"},{"id":"builtin.thunderstorm","name":"Thunderstorm","emoji":"⛈️","layers":[{"target":{"kind":"all"},"effect":["Lightning"],"palette":[],"colors":[[220,235,255],[0,0,120]],"speed":160,"intensity":160,"reverse":false}],"category":"Nature"},{"id":"builtin.rain","name":"Rain","emoji":"🌧️","layers":[{"target":{"kind":"all"},"effect":["Rain"],"palette":[],"colors":[[40,150,255],[0,0,120]],"speed":120,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.fireflies","name":"Fireflies","emoji":"🪲","layers":[{"target":{"kind":"all"},"effect":["Fairytwinkle","Fairy"],"palette":[],"colors":[[140,255,0],[0,0,0]],"speed":60,"intensity":60,"reverse":false}],"category":"Nature"},{"id":"builtin.sunrise","name":"Sunrise","emoji":"☀️","layers":[{"target":{"kind":"all"},"effect":["Sunrise"],"palette":[],"colors":[[255,90,0]],"speed":60,"intensity":128,"reverse":false}],"category":"Nature"},{"id":"builtin.hw_candy_corn","name":"Candy Corn","emoji":"🍬","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Candy Corn","Orangery"],"colors":[[255,90,0]],"speed":70,"intensity":170,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_witch_potion","name":"Witch's Potion","emoji":"🧪","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Witch's Brew","Toxy Reaf"],"colors":[[140,0,255]],"speed":60,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_jack_glow","name":"Jack-o'-Lantern","emoji":"🎃","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":["★ Jack-o'-Lantern","Fire"],"colors":[[255,60,0]],"speed":90,"intensity":220,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_spooky_flow","name":"Spooky Night","emoji":"🦇","layers":[{"target":{"kind":"all"},"effect":["Palette"],"palette":["★ Spooky Night","Retro Clown"],"colors":[[140,0,255]],"speed":40,"intensity":60,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_blood_moon","name":"Blood Moon","emoji":"🩸","layers":[{"target":{"kind":"all"},"effect":["Noise Pal"],"palette":["★ Blood Moon","Lava"],"colors":[[255,0,0]],"speed":50,"intensity":100,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_ghost_lights","name":"Ghost Lights","emoji":"👻","layers":[{"target":{"kind":"all"},"effect":["Fairytwinkle","Fairy"],"palette":["★ Ghostly","Breeze"],"colors":[[220,235,255]],"speed":50,"intensity":90,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_haunted_storm","name":"Haunted Storm","emoji":"⛈️","layers":[{"target":{"kind":"all"},"effect":["Breathe"],"palette":[],"colors":[[140,0,255]],"speed":40,"intensity":128,"reverse":false},{"target":{"kind":"alternateZones","phase":1},"effect":["Lightning"],"palette":[],"colors":[[220,235,255],[0,0,0]],"speed":170,"intensity":150,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_monster_bulbs","name":"Monster Bulbs","emoji":"🧟","layers":[{"target":{"kind":"all"},"effect":["Solid Pattern Tri"],"palette":[],"colors":[[255,90,0],[140,0,255],[140,255,0]],"speed":128,"intensity":0,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_creepy_crawl","name":"Creepy Crawl","emoji":"🕷️","layers":[{"target":{"kind":"all"},"effect":["Meteor Smooth","Meteor"],"palette":[],"colors":[[140,255,0],[140,0,255]],"speed":110,"intensity":170,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_trick_or_treat","name":"Trick or Treat","emoji":"🍭","layers":[{"target":{"kind":"all"},"effect":["Popcorn"],"palette":["★ Candy Corn","Orangery"],"colors":[[255,90,0]],"speed":120,"intensity":128,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.hw_cauldron","name":"Bubbling Cauldron","emoji":"🫕","layers":[{"target":{"kind":"all"},"effect":["Drip"],"palette":[],"colors":[[140,255,0],[120,0,140]],"speed":100,"intensity":140,"reverse":false}],"category":"Holidays","group":"halloween"},{"id":"builtin.xm_peppermint","name":"Peppermint Swirl","emoji":"🍭","layers":[{"target":{"kind":"all"},"effect":["Palette"],"palette":["★ Peppermint","Rewhi"],"colors":[[255,0,0]],"speed":70,"intensity":40,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_candy_twinkle","name":"Candy Cane Twinkle","emoji":"🎀","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Peppermint","Rewhi"],"colors":[[255,0,0]],"speed":70,"intensity":190,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_grinch","name":"Grinch","emoji":"💚","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Grinch","Jul"],"colors":[[0,255,0]],"speed":90,"intensity":180,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_wonderland","name":"Winter Wonderland","emoji":"❄️","layers":[{"target":{"kind":"all"},"effect":["Fairytwinkle","Fairy"],"palette":["★ Winter Wonderland","Breeze"],"colors":[[255,255,255]],"speed":40,"intensity":110,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_snowflakes","name":"Snowflakes","emoji":"🌨️","layers":[{"target":{"kind":"all"},"effect":["Sparkle"],"palette":[],"colors":[[255,255,255],[0,0,120]],"speed":110,"intensity":80,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_nutcracker","name":"Nutcracker March","emoji":"🪖","layers":[{"target":{"kind":"all"},"effect":["Running"],"palette":["★ Nutcracker","C9 New"],"colors":[[255,0,0]],"speed":90,"intensity":140,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_ugly_sweater","name":"Ugly Sweater","emoji":"🧶","layers":[{"target":{"kind":"all"},"effect":["Colortwinkles"],"palette":["★ Ugly Sweater","C9"],"colors":[[255,0,0]],"speed":120,"intensity":200,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_evergreen","name":"Evergreen & Gold","emoji":"🌲","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Evergreen & Gold","Jul"],"colors":[[0,120,10]],"speed":50,"intensity":128,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_reindeer","name":"Reindeer Run","emoji":"🦌","layers":[{"target":{"kind":"all"},"effect":["Multi Comet"],"palette":[],"colors":[[255,0,0],[255,170,0]],"speed":150,"intensity":140,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_north_pole","name":"North Pole Lights","emoji":"🎅","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ North Pole","Rewhi"],"colors":[[255,255,255]],"speed":60,"intensity":160,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_tree_farm","name":"Tree Farm","emoji":"🎄","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Evergreen & Gold","Jul"],"colors":[[0,120,10]],"speed":60,"intensity":200,"reverse":false},{"target":{"kind":"alternateZones","phase":1},"effect":["Solid"],"palette":[],"colors":[[255,170,90]],"speed":128,"intensity":128,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.xm_silver_bells","name":"Silver Bells","emoji":"🔔","layers":[{"target":{"kind":"all"},"effect":["Solid Glitter","Glitter"],"palette":[],"colors":[[220,235,255],[255,255,255]],"speed":128,"intensity":120,"reverse":false}],"category":"Holidays","group":"christmas"},{"id":"builtin.ea_pastel_eggs","name":"Pastel Eggs","emoji":"🥚","layers":[{"target":{"kind":"all"},"effect":["Palette"],"palette":["★ Pastel Eggs","Pastel"],"colors":[[255,150,190]],"speed":40,"intensity":80,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.ea_egg_hunt","name":"Egg Hunt","emoji":"🧺","layers":[{"target":{"kind":"all"},"effect":["Popcorn"],"palette":["★ Jelly Beans","Party"],"colors":[[140,190,255]],"speed":110,"intensity":128,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.ea_spring_garden","name":"Spring Garden","emoji":"🌷","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Spring Garden","Sherbet"],"colors":[[140,255,0]],"speed":50,"intensity":128,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.ea_bunny_hop","name":"Bunny Hop","emoji":"🐰","layers":[{"target":{"kind":"all"},"effect":["Bouncing Balls"],"palette":[],"colors":[[255,150,190],[140,190,255],[255,240,140]],"speed":128,"intensity":110,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.ea_jelly_beans","name":"Jelly Beans","emoji":"🫘","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Jelly Beans","Party"],"colors":[[255,40,140]],"speed":80,"intensity":200,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.ea_cotton_tail","name":"Cotton Tail","emoji":"🐇","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Bunny Pink","Light Pink"],"colors":[[255,150,190]],"speed":40,"intensity":128,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.ea_sunrise","name":"Easter Sunrise","emoji":"🌅","layers":[{"target":{"kind":"all"},"effect":["Sunrise"],"palette":[],"colors":[[255,130,60]],"speed":40,"intensity":128,"reverse":false}],"category":"Holidays","group":"easter"},{"id":"builtin.j4_old_glory","name":"Old Glory","emoji":"🇺🇸","layers":[{"target":{"kind":"all"},"effect":["Palette"],"palette":["★ Old Glory","Red & Blue"],"colors":[[255,0,0]],"speed":30,"intensity":0,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_stars_stripes","name":"Stars & Stripes","emoji":"⭐","layers":[{"target":{"kind":"all"},"effect":["Railway","Theater"],"palette":[],"colors":[[255,0,0],[255,255,255]],"speed":80,"intensity":150,"reverse":false},{"target":{"kind":"alternateZones","phase":1},"effect":["Sparkle"],"palette":[],"colors":[[255,255,255],[0,0,120]],"speed":120,"intensity":128,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_firecrackers","name":"Firecrackers","emoji":"🧨","layers":[{"target":{"kind":"all"},"effect":["Popcorn"],"palette":["★ Firecracker","Red & Blue"],"colors":[[255,0,0]],"speed":150,"intensity":180,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_grand_finale","name":"Grand Finale","emoji":"🎆","layers":[{"target":{"kind":"all"},"effect":["Fireworks Starburst","PS Starburst"],"palette":["★ Firecracker","Red & Blue"],"colors":[[255,255,255]],"speed":170,"intensity":200,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_sparklers","name":"Sparklers","emoji":"🎇","layers":[{"target":{"kind":"all"},"effect":["PS Sparkler","Sparkle+"],"palette":["★ Sparkler","Yellowout"],"colors":[[255,170,0],[255,255,255]],"speed":200,"intensity":160,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_patriot_wave","name":"Patriotic Wave","emoji":"🌊","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Old Glory","Red & Blue"],"colors":[[0,0,255]],"speed":60,"intensity":128,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_liberty_chase","name":"Liberty Chase","emoji":"🗽","layers":[{"target":{"kind":"all"},"effect":["Chase 3"],"palette":[],"colors":[[255,0,0],[255,255,255],[0,0,255]],"speed":110,"intensity":128,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.j4_rockets","name":"Rockets' Red Glare","emoji":"🚀","layers":[{"target":{"kind":"all"},"effect":["Fireworks 1D","PS Fireworks 1D"],"palette":["★ Firecracker","Red & Blue"],"colors":[[255,0,0]],"speed":140,"intensity":150,"reverse":false}],"category":"Holidays","group":"july_4th"},{"id":"builtin.tg_harvest","name":"Harvest Glow","emoji":"🌾","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Harvest","Autumn"],"colors":[[255,140,0]],"speed":40,"intensity":128,"reverse":false}],"category":"Holidays","group":"thanksgiving"},{"id":"builtin.tg_leaves","name":"Falling Leaves","emoji":"🍁","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Harvest","Autumn"],"colors":[[200,40,0]],"speed":60,"intensity":170,"reverse":false}],"category":"Holidays","group":"thanksgiving"},{"id":"builtin.tg_hearth","name":"Warm Hearth","emoji":"🔥","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":["★ Harvest","Autumn"],"colors":[[255,140,0]],"speed":80,"intensity":200,"reverse":false}],"category":"Holidays","group":"thanksgiving"},{"id":"builtin.vd_sweetheart","name":"Sweetheart","emoji":"💘","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":["★ Sweetheart","Magred"],"colors":[[255,30,90]],"speed":70,"intensity":180,"reverse":false}],"category":"Holidays","group":"valentines"},{"id":"builtin.vd_love_bugs","name":"Love Bugs","emoji":"🐞","layers":[{"target":{"kind":"all"},"effect":["Bouncing Balls"],"palette":[],"colors":[[255,0,0],[255,40,140],[255,255,255]],"speed":128,"intensity":90,"reverse":false}],"category":"Holidays","group":"valentines"},{"id":"builtin.sp_lucky_clover","name":"Lucky Clover","emoji":"☘️","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Shamrock","Rivendell"],"colors":[[0,180,30]],"speed":50,"intensity":128,"reverse":false}],"category":"Holidays","group":"st_patricks"},{"id":"builtin.sp_pot_of_gold","name":"Pot of Gold","emoji":"🪙","layers":[{"target":{"kind":"all"},"effect":["Solid Glitter","Glitter"],"palette":[],"colors":[[0,200,60],[255,170,0]],"speed":128,"intensity":100,"reverse":false}],"category":"Holidays","group":"st_patricks"},{"id":"builtin.ny_champagne","name":"Champagne Toast","emoji":"🥂","layers":[{"target":{"kind":"all"},"effect":["Colortwinkles"],"palette":["★ Champagne","Yellowout"],"colors":[[255,170,0]],"speed":110,"intensity":200,"reverse":false}],"category":"Holidays","group":"new_year"},{"id":"builtin.ny_countdown","name":"Midnight Fireworks","emoji":"🎉","layers":[{"target":{"kind":"all"},"effect":["Fireworks"],"palette":["★ Champagne","Yellowout"],"colors":[[255,170,0],[0,0,0]],"speed":150,"intensity":180,"reverse":false}],"category":"Holidays","group":"new_year"},{"id":"builtin.hk_festival","name":"Festival of Lights","emoji":"🕎","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":["★ Festival of Lights","Semi Blue"],"colors":[[20,40,255]],"speed":80,"intensity":200,"reverse":false}],"category":"Holidays","group":"hanukkah"},{"id":"builtin.hk_blue_silver","name":"Blue & Silver","emoji":"✡️","layers":[{"target":{"kind":"all"},"effect":["Twinklefox","Twinkle"],"palette":[],"colors":[[20,40,255],[220,235,255]],"speed":70,"intensity":180,"reverse":false}],"category":"Holidays","group":"hanukkah"},{"id":"builtin.mg_carnival","name":"Carnival","emoji":"🎭","layers":[{"target":{"kind":"all"},"effect":["Colorwaves"],"palette":["★ Mardi Gras","Tiamat"],"colors":[[140,0,255]],"speed":70,"intensity":128,"reverse":false}],"category":"Holidays","group":"mardi_gras"},{"id":"builtin.dw_diyas","name":"Diyas","emoji":"🪔","layers":[{"target":{"kind":"all"},"effect":["Candle Multi","Candle"],"palette":["★ Diwali Diyas","Orangery"],"colors":[[255,170,0]],"speed":80,"intensity":220,"reverse":false}],"category":"Holidays","group":"diwali"},{"id":"builtin.magic_icicles","name":"Magic Icicles","emoji":"🔮","layers":[{"target":{"kind":"all"},"effect":["Solid"],"palette":[],"colors":[[66,70,77]],"speed":128,"intensity":128,"reverse":false},{"target":{"kind":"all"},"effect":["Fairytwinkle","Twinklecat","Twinkle"],"palette":["* Color 1"],"colors":[[220,235,255],[66,70,77]],"speed":70,"intensity":170,"reverse":false,"overlayEvery":4}],"category":"Holidays","group":"christmas"}],"styleCategories":[{"id":"steady","label":"Steady","emoji":"🟦"},{"id":"gentle","label":"Gentle","emoji":"🌊"},{"id":"twinkle","label":"Twinkle","emoji":"✨"},{"id":"motion","label":"Motion","emoji":"🏃"},{"id":"party","label":"Party","emoji":"🎉"},{"id":"nature","label":"Nature","emoji":"🔥"}],"styles":[{"id":"solid","label":"Solid","emoji":"🟥","category":"steady","wled":["Solid"],"noSpeed":true,"noAmount":true},{"id":"pattern","label":"Pattern","emoji":"🟰","category":"steady","wled":["Solid Pattern"],"noSpeed":true},{"id":"tri_pattern","label":"Tri Pattern","emoji":"🚦","category":"steady","wled":["Solid Pattern Tri"],"noSpeed":true},{"id":"gradient","label":"Gradient","emoji":"🌈","category":"steady","wled":["Gradient"]},{"id":"palette","label":"Color Flow","emoji":"🎨","category":"steady","wled":["Palette"]},{"id":"breathe","label":"Breathe","emoji":"🌬️","category":"gentle","wled":["Breathe"],"noAmount":true},{"id":"fade","label":"Fade","emoji":"🌗","category":"gentle","wled":["Fade"],"noAmount":true},{"id":"candle","label":"Candle","emoji":"🕯️","category":"gentle","wled":["Candle Multi","Candle"]},{"id":"colorwaves","label":"Color Waves","emoji":"〰️","category":"gentle","wled":["Colorwaves"]},{"id":"pacifica","label":"Pacifica","emoji":"🌊","category":"gentle","wled":["Pacifica"]},{"id":"lake","label":"Lake","emoji":"🏞️","category":"gentle","wled":["Lake"]},{"id":"flow","label":"Flow","emoji":"💧","category":"gentle","wled":["Flow"]},{"id":"aurora","label":"Aurora","emoji":"🌌","category":"gentle","wled":["Aurora"]},{"id":"sunrise","label":"Sunrise","emoji":"🌅","category":"gentle","wled":["Sunrise"]},{"id":"heartbeat","label":"Heartbeat","emoji":"💓","category":"gentle","wled":["Heartbeat"]},{"id":"dynamic_smooth","label":"Color Drift","emoji":"🫧","category":"gentle","wled":["Dynamic Smooth"]},{"id":"tv","label":"TV Glow","emoji":"📺","category":"gentle","wled":["TV Simulator"]},{"id":"color_clouds","label":"Color Clouds","emoji":"☁️","category":"gentle","wled":["Color Clouds"]},{"id":"slow_change","label":"Slow Change","emoji":"🐌","category":"gentle","wled":["Slow Transition"]},{"id":"twinkle","label":"Twinkle","emoji":"✨","category":"twinkle","wled":["Twinklefox","Twinkle"]},{"id":"twinkle_cat","label":"Twinkle Pop","emoji":"⭐","category":"twinkle","wled":["Twinklecat"]},{"id":"classic_twinkle","label":"Classic Twinkle","emoji":"🌟","category":"twinkle","wled":["Twinkle"]},{"id":"fairy","label":"Fairy Lights","emoji":"🧚","category":"twinkle","wled":["Fairytwinkle","Fairy"]},{"id":"sparkle","label":"Sparkle","emoji":"💎","category":"twinkle","wled":["Sparkle"]},{"id":"sparkle_dark","label":"Dark Sparkle","emoji":"🖤","category":"twinkle","wled":["Sparkle Dark"]},{"id":"sparkle_plus","label":"Sparkle Plus","emoji":"💥","category":"twinkle","wled":["Sparkle+"]},{"id":"glitter","label":"Glitter","emoji":"🪩","category":"twinkle","wled":["Solid Glitter","Glitter"]},{"id":"colortwinkles","label":"Color Twinkles","emoji":"🎇","category":"twinkle","wled":["Colortwinkles"]},{"id":"twinkle_up","label":"Twinkle Up","emoji":"🔆","category":"twinkle","wled":["Twinkleup"]},{"id":"dissolve","label":"Dissolve","emoji":"🫥","category":"twinkle","wled":["Dissolve"]},{"id":"spots","label":"Spots","emoji":"🔵","category":"twinkle","wled":["Spots Fade"]},{"id":"shimmer","label":"Shimmer","emoji":"🌟","category":"twinkle","wled":["Shimmer","Sparkle+"]},{"id":"sparkler","label":"Sparkler","emoji":"🎇","category":"twinkle","wled":["PS Sparkler","Sparkle+"]},{"id":"chase","label":"Chase","emoji":"🏃","category":"motion","wled":["Theater"]},{"id":"running","label":"Running","emoji":"🏁","category":"motion","wled":["Running"]},{"id":"stripes","label":"Stripes","emoji":"🍭","category":"motion","wled":["Railway","Theater"]},{"id":"color_chase","label":"Color Chase","emoji":"🚂","category":"motion","wled":["Chase 2"]},{"id":"tri_chase","label":"Tri Chase","emoji":"🚃","category":"motion","wled":["Chase 3"]},{"id":"wipe","label":"Wipe","emoji":"🧹","category":"motion","wled":["Wipe"]},{"id":"sweep","label":"Sweep","emoji":"↔️","category":"motion","wled":["Sweep"]},{"id":"tri_wipe","label":"Tri Wipe","emoji":"🇺🇸","category":"motion","wled":["Tri Wipe"]},{"id":"tri_fade","label":"Tri Fade","emoji":"🔺","category":"motion","wled":["Tri Fade"]},{"id":"scanner","label":"Scanner","emoji":"👀","category":"motion","wled":["Scanner"]},{"id":"dual_scanner","label":"Dual Scanner","emoji":"🔁","category":"motion","wled":["Scanner Dual"]},{"id":"comet","label":"Comets","emoji":"☄️","category":"motion","wled":["Multi Comet"]},{"id":"meteor","label":"Meteor","emoji":"🌠","category":"motion","wled":["Meteor Smooth","Meteor"]},{"id":"lighthouse","label":"Lighthouse","emoji":"🗼","category":"motion","wled":["Lighthouse"]},{"id":"rolling_balls","label":"Rolling Balls","emoji":"🎱","category":"motion","wled":["Rolling Balls","PS Pinball"]},{"id":"bouncing_balls","label":"Bouncing Balls","emoji":"🏀","category":"motion","wled":["Bouncing Balls"]},{"id":"popcorn","label":"Popcorn","emoji":"🍿","category":"motion","wled":["Popcorn"]},{"id":"drip","label":"Drip","emoji":"💦","category":"motion","wled":["Drip"]},{"id":"drip_drop","label":"Drip Drop","emoji":"🌧","category":"motion","wled":["PS DripDrop","Drip"]},{"id":"pinball","label":"Pinball","emoji":"🪀","category":"motion","wled":["PS Pinball","Bouncing Balls"]},{"id":"hourglass","label":"Hourglass","emoji":"⌛","category":"motion","wled":["PS Hourglass"]},{"id":"balance","label":"Balance","emoji":"⚖️","category":"motion","wled":["PS 1D Balance"]},{"id":"particle_chase","label":"Particle Chase","emoji":"🫧","category":"motion","wled":["PS Chase"]},{"id":"sinelon","label":"Sinelon","emoji":"〽️","category":"motion","wled":["Sinelon"]},{"id":"oscillate","label":"Oscillate","emoji":"🎚️","category":"motion","wled":["Oscillate"]},{"id":"juggle","label":"Juggle","emoji":"🤹","category":"motion","wled":["Juggle"]},{"id":"two_dots","label":"Two Dots","emoji":"⚫","category":"motion","wled":["Two Dots"]},{"id":"stream","label":"Stream","emoji":"🏞","category":"motion","wled":["Stream"]},{"id":"loading","label":"Loading","emoji":"⏳","category":"motion","wled":["Loading"]},{"id":"rainbow","label":"Rainbow","emoji":"🌈","category":"party","wled":["Rainbow"]},{"id":"colorloop","label":"Color Loop","emoji":"🔄","category":"party","wled":["Colorloop"]},{"id":"rainbow_runner","label":"Rainbow Runner","emoji":"🏃‍♀️","category":"party","wled":["Rainbow Runner"]},{"id":"theater_rainbow","label":"Rainbow Chase","emoji":"🎠","category":"party","wled":["Theater Rainbow"]},{"id":"pride","label":"Pride","emoji":"🏳️‍🌈","category":"party","wled":["Pride 2015"]},{"id":"random_colors","label":"Random Colors","emoji":"🎲","category":"party","wled":["Random Colors"]},{"id":"dynamic","label":"Confetti","emoji":"🎊","category":"party","wled":["Dynamic"]},{"id":"blink","label":"Blink","emoji":"😉","category":"party","wled":["Blink"]},{"id":"strobe","label":"Strobe","emoji":"⚡","category":"party","wled":["Strobe"]},{"id":"strobe_rainbow","label":"Rainbow Strobe","emoji":"🌈","category":"party","wled":["Strobe Rainbow"]},{"id":"strobe_mega","label":"Mega Strobe","emoji":"📸","category":"party","wled":["Strobe Mega"]},{"id":"fireworks","label":"Fireworks","emoji":"🎆","category":"party","wled":["Fireworks"]},{"id":"starburst","label":"Starburst","emoji":"💫","category":"party","wled":["Fireworks Starburst","PS Starburst"]},{"id":"rockets","label":"Rockets","emoji":"🚀","category":"party","wled":["Fireworks 1D","PS Fireworks 1D"]},{"id":"ripple","label":"Ripple","emoji":"💧","category":"party","wled":["Ripple"]},{"id":"ripple_rainbow","label":"Rainbow Ripple","emoji":"🫧","category":"party","wled":["Ripple Rainbow"]},{"id":"bpm","label":"Beat","emoji":"🥁","category":"party","wled":["Bpm"]},{"id":"plasma","label":"Plasma","emoji":"🔮","category":"party","wled":["Plasma"]},{"id":"dancing_shadows","label":"Dancing Shadows","emoji":"🕺","category":"party","wled":["Dancing Shadows","PS Dancing Shadows"]},{"id":"blends","label":"Blends","emoji":"🍹","category":"party","wled":["Blends"]},{"id":"halloween_eyes","label":"Spooky Eyes","emoji":"👀","category":"party","wled":["Halloween Eyes"]},{"id":"police","label":"Police","emoji":"🚨","category":"party","wled":["Chase Flash"]},{"id":"pacman","label":"Pac-Man","emoji":"👾","category":"party","wled":["PacMan"]},{"id":"spray","label":"Spray","emoji":"🚿","category":"party","wled":["PS Spray 1D"]},{"id":"fire","label":"Fire","emoji":"🔥","category":"nature","wled":["Fire 2012","PS Fire 1D","Fire Flicker"]},{"id":"fire_flicker","label":"Flicker","emoji":"🪔","category":"nature","wled":["Fire Flicker"]},{"id":"lightning","label":"Lightning","emoji":"🌩️","category":"nature","wled":["Lightning"]},{"id":"rain","label":"Rain","emoji":"🌧️","category":"nature","wled":["Rain"]},{"id":"noise","label":"Noise","emoji":"🌫️","category":"nature","wled":["Noise 1","Fill Noise"]},{"id":"noise_pal","label":"Color Noise","emoji":"🪸","category":"nature","wled":["Noise Pal"]},{"id":"phased","label":"Phased","emoji":"🌀","category":"nature","wled":["Phased"]},{"id":"chunchun","label":"Birds","emoji":"🐦","category":"nature","wled":["Chunchun"]}],"palettes":[{"label":"Rainbow","emoji":"🌈","wled":"Rainbow","stops":[[255,0,0],[255,128,0],[255,255,0],[0,255,0],[0,0,255],[140,0,255]]},{"label":"Rainbow Bands","emoji":"🏳️‍🌈","wled":"Rainbow Bands","stops":[[255,0,0],[0,0,0],[255,255,0],[0,0,0],[0,255,0],[0,0,0],[0,0,255]]},{"label":"Party","emoji":"🎉","wled":"Party","stops":[[85,0,171],[229,0,27],[171,119,0],[242,0,14],[47,0,208]]},{"label":"Sunset","emoji":"🌅","wled":"Sunset","stops":[[120,0,0],[255,104,0],[167,22,18],[100,0,103],[16,0,130]]},{"label":"Golden Hour","emoji":"🌇","wled":"Sunset 2","stops":[[181,0,0],[255,80,0],[255,198,10],[255,240,160]]},{"label":"Ocean","emoji":"🌊","wled":"Ocean","stops":[[25,25,112],[0,0,139],[0,128,128],[0,255,255],[70,130,180]]},{"label":"Beach","emoji":"🏖️","wled":"Beach","stops":[[255,240,180],[255,190,110],[0,200,200],[0,110,180]]},{"label":"Atlantica","emoji":"🐠","wled":"Atlantica","stops":[[0,28,112],[32,96,255],[0,243,45],[12,95,82],[25,190,95]]},{"label":"Breeze","emoji":"💨","wled":"Breeze","stops":[[1,6,7],[1,99,111],[144,209,255],[0,73,82]]},{"label":"Clouds","emoji":"☁️","wled":"Cloud","stops":[[0,0,255],[135,206,235],[255,255,255],[0,0,139]]},{"label":"Aurora","emoji":"🌌","wled":"Aurora","stops":[[1,5,45],[0,200,23],[0,255,0],[0,243,45],[0,135,7]]},{"label":"Northern Lights","emoji":"🌠","wled":"Aurora 2","stops":[[17,177,13],[121,242,5],[25,173,121],[250,77,127],[171,101,221]]},{"label":"Forest","emoji":"🌲","wled":"Forest","stops":[[0,100,0],[85,107,47],[0,128,0],[154,205,50],[144,238,144]]},{"label":"Rivendell","emoji":"🍃","wled":"Rivendell","stops":[[1,14,5],[16,36,14],[56,68,30],[150,156,99]]},{"label":"Landscape","emoji":"🏞️","wled":"Landscape","stops":[[2,25,1],[15,115,5],[126,211,47],[144,182,205],[1,37,192]]},{"label":"Lava","emoji":"🌋","wled":"Lava","stops":[[0,0,0],[128,0,0],[255,0,0],[255,165,0],[255,255,255]]},{"label":"Fire","emoji":"🔥","wled":"Fire","stops":[[0,0,0],[180,0,0],[255,80,0],[255,200,0],[255,255,200]]},{"label":"Ice & Fire","emoji":"🧊","wled":"Icefire","stops":[[0,0,0],[0,51,255],[0,200,255],[255,255,255]]},{"label":"Temperature","emoji":"🌡️","wled":"Temperature","stops":[[1,27,105],[1,99,172],[1,186,133],[255,213,0],[255,28,0]]},{"label":"Autumn","emoji":"🍂","wled":"Autumn","stops":[[67,4,1],[118,14,1],[137,152,52],[113,65,1]]},{"label":"Orangery","emoji":"🍊","wled":"Orangery","stops":[[255,95,23],[255,82,0],[223,13,8],[144,44,2],[255,110,17]]},{"label":"Vintage","emoji":"📻","wled":"Vintage","stops":[[16,0,1],[97,104,3],[255,131,19],[67,9,4]]},{"label":"Classic Bulbs","emoji":"💡","wled":"C9","stops":[[184,4,0],[144,44,2],[4,96,2],[7,7,88]]},{"label":"Retro Bulbs","emoji":"🎄","wled":"C9 New","stops":[[255,5,0],[255,135,0],[0,225,5],[0,5,255],[255,200,0]]},{"label":"Candy","emoji":"🍬","wled":"Candy","stops":[[229,227,1],[227,101,3],[40,1,80],[1,0,32]]},{"label":"Pink Candy","emoji":"🍭","wled":"Pink Candy","stops":[[255,255,255],[7,12,255],[227,1,127],[255,255,255],[171,1,190]]},{"label":"Retro Clown","emoji":"🤡","wled":"Retro Clown","stops":[[227,101,3],[194,18,19],[92,8,192]]},{"label":"Sakura","emoji":"🌸","wled":"Sakura","stops":[[196,19,10],[255,69,45],[223,45,72],[255,82,103],[223,13,17]]},{"label":"Sherbet","emoji":"🍧","wled":"Sherbet","stops":[[255,33,4],[255,68,25],[255,82,103],[255,255,242],[42,255,22]]},{"label":"Pastel","emoji":"🎨","wled":"Pastel","stops":[[10,62,123],[56,130,103],[153,225,85],[255,207,54],[239,107,61]]},{"label":"Fairy Reef","emoji":"🧚","wled":"Fairy Reaf","stops":[[220,19,187],[12,225,219],[203,242,223],[255,255,255]]},{"label":"Toxic Reef","emoji":"☢️","wled":"Toxy Reaf","stops":[[1,221,53],[73,3,178]]},{"label":"Tiamat","emoji":"🐉","wled":"Tiamat","stops":[[2,5,35],[13,135,92],[43,255,193],[247,7,249],[4,213,236]]},{"label":"April Night","emoji":"🌃","wled":"April Night","stops":[[1,5,45],[5,169,175],[45,175,31],[249,150,5],[223,45,72]]},{"label":"Orange & Teal","emoji":"🧡","wled":"Orange & Teal","stops":[[0,150,92],[255,72,0]]},{"label":"Red & Blue","emoji":"❤️","wled":"Red & Blue","stops":[[255,0,0],[0,0,255]]},{"label":"Magenta","emoji":"💜","wled":"Magenta","stops":[[0,0,0],[0,0,255],[255,0,255],[255,255,255]]},{"label":"Pink & Red","emoji":"💗","wled":"Magred","stops":[[255,0,255],[255,0,128],[255,0,0]]},{"label":"Yellow & Pink","emoji":"🌺","wled":"Yelmag","stops":[[255,255,0],[255,0,128],[255,0,255]]},{"label":"Yellow & Blue","emoji":"💛","wled":"Yelblu","stops":[[255,255,0],[128,128,128],[0,0,255]]},{"label":"Deep Sea","emoji":"🐋","wled":"Semi Blue","stops":[[0,0,0],[12,1,60],[53,1,140],[24,107,255]]},{"label":"Traffic Light","emoji":"🚦","wled":"Traffic Light","stops":[[255,0,0],[255,200,0],[0,255,0]]},{"label":"Red Tide","emoji":"🦞","wled":"Red Tide","stops":[[251,46,0],[255,139,25],[246,158,63],[103,21,6]]},{"label":"Candy Corn","emoji":"🍬","wled":"★ Candy Corn","stops":[[255,255,255],[255,196,0],[255,106,0],[255,106,0]],"positions":[0,85,170,255],"fallback":"Orangery"},{"label":"Witch's Brew","emoji":"🧪","wled":"★ Witch's Brew","stops":[[42,0,80],[122,0,255],[57,255,20],[11,61,0]],"fallback":"Toxy Reaf"},{"label":"Jack-o'-Lantern","emoji":"🎃","wled":"★ Jack-o'-Lantern","stops":[[32,3,0],[255,77,0],[255,160,0],[255,77,0],[32,3,0]],"fallback":"Fire"},{"label":"Spooky Night","emoji":"👻","wled":"★ Spooky Night","stops":[[58,0,112],[255,90,0],[140,255,0],[58,0,112]],"fallback":"Retro Clown"},{"label":"Blood Moon","emoji":"🩸","wled":"★ Blood Moon","stops":[[16,0,0],[139,0,0],[255,26,26],[48,0,0]],"fallback":"Lava"},{"label":"Ghostly","emoji":"🌫️","wled":"★ Ghostly","stops":[[184,200,255],[94,58,174],[0,179,164],[232,240,255]],"fallback":"Breeze"},{"label":"Peppermint","emoji":"🍭","wled":"★ Peppermint","stops":[[255,0,0],[255,0,0],[255,255,255],[255,255,255],[255,0,0]],"positions":[0,60,100,190,255],"fallback":"Rewhi"},{"label":"Grinch","emoji":"💚","wled":"★ Grinch","stops":[[0,192,0],[102,255,0],[255,0,0],[0,192,0]],"fallback":"Jul"},{"label":"Winter Wonderland","emoji":"❄️","wled":"★ Winter Wonderland","stops":[[255,255,255],[159,216,255],[58,123,255],[221,238,255]],"fallback":"Breeze"},{"label":"Nutcracker","emoji":"🪖","wled":"★ Nutcracker","stops":[[192,0,0],[255,176,0],[0,100,0],[0,0,128],[192,0,0]],"fallback":"C9 New"},{"label":"Ugly Sweater","emoji":"🧶","wled":"★ Ugly Sweater","stops":[[224,0,0],[255,255,255],[0,160,0],[255,192,0],[224,0,0]],"fallback":"C9"},{"label":"Evergreen & Gold","emoji":"🌲","wled":"★ Evergreen & Gold","stops":[[0,77,26],[0,160,64],[255,180,0],[0,77,26]],"fallback":"Jul"},{"label":"North Pole","emoji":"🎅","wled":"★ North Pole","stops":[[255,255,255],[255,0,0],[255,255,255],[128,200,255]],"fallback":"Rewhi"},{"label":"Pastel Eggs","emoji":"🥚","wled":"★ Pastel Eggs","stops":[[255,158,196],[158,232,255],[198,163,255],[255,242,158],[168,255,176]],"fallback":"Pastel"},{"label":"Spring Garden","emoji":"🌷","wled":"★ Spring Garden","stops":[[124,255,77],[255,102,179],[255,225,77],[178,102,255]],"fallback":"Sherbet"},{"label":"Jelly Beans","emoji":"🫘","wled":"★ Jelly Beans","stops":[[255,46,99],[255,210,63],[59,206,172],[123,47,247],[255,140,66]],"fallback":"Party"},{"label":"Bunny Pink","emoji":"🐰","wled":"★ Bunny Pink","stops":[[255,255,255],[255,179,209],[255,102,163],[255,255,255]],"fallback":"Light Pink"},{"label":"Old Glory","emoji":"🇺🇸","wled":"★ Old Glory","stops":[[255,0,0],[255,0,0],[255,255,255],[255,255,255],[0,48,255],[0,48,255]],"positions":[0,84,85,169,170,255],"fallback":"Red & Blue"},{"label":"Firecracker","emoji":"🧨","wled":"★ Firecracker","stops":[[255,0,0],[255,122,0],[255,255,255],[0,64,255]],"fallback":"Red & Blue"},{"label":"Sparkler","emoji":"🎇","wled":"★ Sparkler","stops":[[255,255,255],[255,210,122],[255,154,0],[255,255,255]],"fallback":"Yellowout"},{"label":"Harvest","emoji":"🦃","wled":"★ Harvest","stops":[[122,46,0],[210,105,30],[255,176,0],[139,26,26]],"fallback":"Autumn"},{"label":"Sweetheart","emoji":"💘","wled":"★ Sweetheart","stops":[[255,0,64],[255,102,163],[255,255,255],[192,0,48]],"fallback":"Magred"},{"label":"Shamrock","emoji":"🍀","wled":"★ Shamrock","stops":[[0,107,31],[0,200,83],[178,255,89],[255,215,0]],"fallback":"Rivendell"},{"label":"Champagne","emoji":"🥂","wled":"★ Champagne","stops":[[255,231,163],[255,255,255],[212,175,55],[255,246,214]],"fallback":"Yellowout"},{"label":"Festival of Lights","emoji":"🕎","wled":"★ Festival of Lights","stops":[[0,56,184],[255,255,255],[143,184,255],[0,56,184]],"fallback":"Semi Blue"},{"label":"Mardi Gras","emoji":"🎭","wled":"★ Mardi Gras","stops":[[106,0,200],[255,196,0],[0,160,64],[106,0,200]],"fallback":"Tiamat"},{"label":"Diwali Diyas","emoji":"🪔","wled":"★ Diwali Diyas","stops":[[255,106,0],[255,196,0],[255,46,99],[255,230,160]],"fallback":"Orangery"}],"holidays":[{"id":"new_year","name":"New Year's","emoji":"🥂","rule":"fixed:1-1"},{"id":"valentines","name":"Valentine's Day","emoji":"❤️","rule":"fixed:2-14"},{"id":"mardi_gras","name":"Mardi Gras","emoji":"🎭","rule":"easter:-47"},{"id":"st_patricks","name":"St. Patrick's Day","emoji":"🍀","rule":"fixed:3-17"},{"id":"easter","name":"Easter","emoji":"🐣","rule":"easter:0"},{"id":"cinco_de_mayo","name":"Cinco de Mayo","emoji":"🇲🇽","rule":"fixed:5-5"},{"id":"memorial_day","name":"Memorial Day","emoji":"🎖️","rule":"last:5:1"},{"id":"pride","name":"Pride Month","emoji":"🏳️‍🌈","rule":"fixed:6-1"},{"id":"july_4th","name":"4th of July","emoji":"🇺🇸","rule":"fixed:7-4"},{"id":"halloween","name":"Halloween","emoji":"🎃","rule":"fixed:10-31"},{"id":"diwali","name":"Diwali","emoji":"🪔","rule":"dates:2026-11-08,2027-10-29,2028-10-17,2029-11-05,2030-10-26"},{"id":"thanksgiving","name":"Thanksgiving","emoji":"🦃","rule":"nth:11:4:4"},{"id":"hanukkah","name":"Hanukkah","emoji":"🕎","rule":"dates:2026-12-04,2027-12-24,2028-12-12,2029-12-01,2030-12-20"},{"id":"christmas","name":"Christmas","emoji":"🎄","rule":"fixed:12-25"}],"colorGroups":[{"name":"Reds","colors":[{"name":"Red","rgb":[255,0,0]},{"name":"Crimson","rgb":[220,0,30]},{"name":"Cherry","rgb":[200,0,10]},{"name":"Ruby","rgb":[255,0,60]},{"name":"Coral","rgb":[255,60,40]},{"name":"Salmon","rgb":[255,90,70]}]},{"name":"Oranges","colors":[{"name":"Orange","rgb":[255,90,0]},{"name":"Pumpkin","rgb":[255,60,0]},{"name":"Tangerine","rgb":[255,120,0]},{"name":"Amber","rgb":[255,140,0]},{"name":"Peach","rgb":[255,130,60]},{"name":"Rust","rgb":[200,40,0]}]},{"name":"Yellows","colors":[{"name":"Yellow","rgb":[255,200,0]},{"name":"Gold","rgb":[255,170,0]},{"name":"Lemon","rgb":[255,230,0]},{"name":"Sunflower","rgb":[255,185,20]},{"name":"Honey","rgb":[255,150,20]},{"name":"Butter","rgb":[255,220,80]}]},{"name":"Greens","colors":[{"name":"Green","rgb":[0,255,0]},{"name":"Emerald","rgb":[0,200,60]},{"name":"Forest","rgb":[0,120,10]},{"name":"Lime","rgb":[140,255,0]},{"name":"Mint","rgb":[60,255,120]},{"name":"Shamrock","rgb":[0,180,30]},{"name":"Olive","rgb":[110,140,0]}]},{"name":"Teals & Cyans","colors":[{"name":"Teal","rgb":[0,200,160]},{"name":"Turquoise","rgb":[0,255,200]},{"name":"Aqua","rgb":[0,255,255]},{"name":"Seafoam","rgb":[60,255,180]},{"name":"Lagoon","rgb":[0,160,200]}]},{"name":"Blues","colors":[{"name":"Blue","rgb":[0,0,255]},{"name":"Royal","rgb":[20,40,255]},{"name":"Sky","rgb":[40,150,255]},{"name":"Ice","rgb":[120,200,255]},{"name":"Navy","rgb":[0,0,120]},{"name":"Cobalt","rgb":[0,70,255]},{"name":"Azure","rgb":[0,120,255]}]},{"name":"Purples","colors":[{"name":"Purple","rgb":[140,0,255]},{"name":"Violet","rgb":[100,0,255]},{"name":"Lavender","rgb":[170,100,255]},{"name":"Plum","rgb":[120,0,140]},{"name":"Indigo","rgb":[60,0,200]},{"name":"Amethyst","rgb":[170,40,255]}]},{"name":"Pinks","colors":[{"name":"Pink","rgb":[255,40,140]},{"name":"Hot Pink","rgb":[255,0,120]},{"name":"Magenta","rgb":[255,0,255]},{"name":"Rose","rgb":[255,30,90]},{"name":"Blush","rgb":[255,110,150]},{"name":"Fuchsia","rgb":[230,0,200]}]},{"name":"Whites","colors":[{"name":"Candlelight","rgb":[255,120,30]},{"name":"Warm White","rgb":[255,170,90]},{"name":"Soft White","rgb":[255,200,140]},{"name":"Neutral White","rgb":[255,225,190]},{"name":"Cool White","rgb":[220,235,255]},{"name":"Daylight","rgb":[200,220,255]},{"name":"Pure White","rgb":[255,255,255]}]},{"name":"Pastels","colors":[{"name":"Pastel Pink","rgb":[255,150,190]},{"name":"Pastel Blue","rgb":[140,190,255]},{"name":"Pastel Green","rgb":[150,255,160]},{"name":"Pastel Yellow","rgb":[255,240,140]},{"name":"Pastel Purple","rgb":[200,150,255]},{"name":"Pastel Orange","rgb":[255,180,120]}]},{"name":"Earth","colors":[{"name":"Brown","rgb":[140,50,5]},{"name":"Copper","rgb":[200,80,20]},{"name":"Bronze","rgb":[180,100,20]},{"name":"Cinnamon","rgb":[170,60,10]}]}]}
+{
+  "lc": ["Everyday", "Holidays", "Bulbs", "Party", "Sports", "Nature"],
+  "l": [
+    {
+      "i": "builtin.warm_white",
+      "n": "Warm White",
+      "e": "\ud83c\udfe1",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 170, 90]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.soft_white",
+      "n": "Soft White",
+      "e": "\ud83e\udd0d",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 200, 140]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.cool_white",
+      "n": "Cool White",
+      "e": "\ud83e\uddca",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[220, 235, 255]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.candlelight",
+      "n": "Candlelight",
+      "e": "\ud83d\udd6f\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 120, 30]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.gold_glow",
+      "n": "Gold Glow",
+      "e": "\u2728",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 170, 0]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.cozy_candle",
+      "n": "Cozy Candle",
+      "e": "\ud83d\udd25",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": [],
+          "c": [[255, 90, 0]],
+          "s": 90,
+          "i": 180
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.gentle_breathe",
+      "n": "Gentle Glow",
+      "e": "\ud83c\udf19",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [[255, 170, 90]],
+          "s": 40,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.security",
+      "n": "Bright Security",
+      "e": "\ud83d\udd26",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[200, 220, 255]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.bulbs_classic",
+      "n": "Classic Bulbs",
+      "e": "\ud83d\udca1",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 255, 0],
+            [0, 0, 255]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_red_green",
+      "n": "Red & Green Bulbs",
+      "e": "\ud83c\udf84",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern"],
+          "p": [],
+          "c": [
+            [0, 255, 0],
+            [255, 0, 0]
+          ],
+          "s": 0,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_red_white",
+      "n": "Red & White Bulbs",
+      "e": "\ud83c\udf6c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255]
+          ],
+          "s": 0,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_blue_white",
+      "n": "Blue & White Bulbs",
+      "e": "\u2744\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern"],
+          "p": [],
+          "c": [
+            [0, 0, 255],
+            [220, 235, 255]
+          ],
+          "s": 0,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_orange_purple",
+      "n": "Orange & Purple Bulbs",
+      "e": "\ud83c\udf83",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern"],
+          "p": [],
+          "c": [
+            [255, 90, 0],
+            [140, 0, 255]
+          ],
+          "s": 0,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_rwb",
+      "n": "Red, White & Blue Bulbs",
+      "e": "\ud83c\uddfa\ud83c\uddf8",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255],
+            [0, 0, 255]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_rgb",
+      "n": "Red, Green & Gold Bulbs",
+      "e": "\ud83c\udf81",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 255, 0],
+            [255, 170, 0]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_pastel",
+      "n": "Pastel Bulbs",
+      "e": "\ud83d\udc23",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 150, 190],
+            [140, 190, 255],
+            [255, 240, 140]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_retro",
+      "n": "Retro Bulbs",
+      "e": "\ud83c\udf08",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 60, 0],
+            [0, 70, 255],
+            [0, 200, 60]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_warm",
+      "n": "Warm White Bulbs",
+      "e": "\ud83e\udd0d",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 170, 90]],
+          "s": 128,
+          "i": 128,
+          "sp": { "lit": 1, "skip": 3 }
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.bulbs_twinkle",
+      "n": "Twinkling Bulbs",
+      "e": "\u2b50",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["C9"],
+          "c": [[255, 170, 90]],
+          "s": 60,
+          "i": 200
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.candy_cane",
+      "n": "Candy Cane",
+      "e": "\ud83c\udf6d",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Railway", "Theater"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255]
+          ],
+          "s": 90,
+          "i": 160
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.christmas_classic",
+      "n": "Christmas Classic",
+      "e": "\ud83c\udf84",
+      "l": [
+        { "t": { "kind": "all" }, "e": ["Solid"], "p": [], "c": [[255, 0, 0]], "s": 128, "i": 128 },
+        {
+          "t": { "kind": "alternateZones", "phase": 1 },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[0, 255, 0]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.twinkle_stars",
+      "n": "Twinkle Stars",
+      "e": "\u2b50",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": [],
+          "c": [
+            [255, 170, 90],
+            [0, 0, 0]
+          ],
+          "s": 80,
+          "i": 140
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.icicles",
+      "n": "Icicles",
+      "e": "\ud83e\uddca",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip"],
+          "p": [],
+          "c": [
+            [120, 200, 255],
+            [0, 0, 120]
+          ],
+          "s": 90,
+          "i": 120
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.snowfall",
+      "n": "Snowfall",
+      "e": "\u2744\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Sparkle Dark"],
+          "p": [],
+          "c": [
+            [220, 235, 255],
+            [255, 255, 255]
+          ],
+          "s": 100,
+          "i": 120
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.north_pole",
+      "n": "North Pole",
+      "e": "\ud83c\udf85",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 2"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255]
+          ],
+          "s": 80,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.gingerbread",
+      "n": "Gingerbread",
+      "e": "\ud83c\udf6a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["Autumn"],
+          "c": [
+            [170, 60, 10],
+            [255, 255, 255]
+          ],
+          "s": 70,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.silent_night",
+      "n": "Silent Night",
+      "e": "\ud83c\udf0c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fairytwinkle", "Fairy"],
+          "p": [],
+          "c": [
+            [255, 170, 90],
+            [0, 0, 120]
+          ],
+          "s": 50,
+          "i": 100
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.christmas_tree",
+      "n": "Tree Lights",
+      "e": "\ud83c\udf81",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["C9 New"],
+          "c": [[255, 0, 0]],
+          "s": 90,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.santas_sleigh",
+      "n": "Santa's Sleigh",
+      "e": "\ud83d\udef7",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Meteor Smooth", "Meteor"],
+          "p": [],
+          "c": [
+            [255, 170, 0],
+            [255, 0, 0]
+          ],
+          "s": 160,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.evergreen",
+      "n": "Evergreen Glitter",
+      "e": "\ud83c\udf32",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Glitter", "Glitter"],
+          "p": [],
+          "c": [
+            [0, 120, 10],
+            [255, 170, 0]
+          ],
+          "s": 128,
+          "i": 90
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.halloween",
+      "n": "Halloween",
+      "e": "\ud83c\udf83",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Running"],
+          "p": [],
+          "c": [
+            [255, 90, 0],
+            [140, 0, 255]
+          ],
+          "s": 70,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.pumpkin_patch",
+      "n": "Pumpkin Patch",
+      "e": "\ud83c\udf83",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": [],
+          "c": [[255, 60, 0]],
+          "s": 80,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.spooky_eyes",
+      "n": "Spooky Eyes",
+      "e": "\ud83d\udc40",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Halloween Eyes"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 0, 0]
+          ],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.witches_brew",
+      "n": "Witch's Brew",
+      "e": "\ud83e\uddea",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Noise 1", "Fill Noise"],
+          "p": ["Toxy Reaf"],
+          "c": [
+            [140, 255, 0],
+            [140, 0, 255]
+          ],
+          "s": 90,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.graveyard",
+      "n": "Graveyard Fog",
+      "e": "\ud83e\udea6",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [[140, 0, 255]],
+          "s": 30,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.monster_mash",
+      "n": "Monster Mash",
+      "e": "\ud83e\udddf",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [140, 255, 0],
+            [140, 0, 255]
+          ],
+          "s": 140,
+          "i": 128
+        },
+        {
+          "t": { "kind": "alternateZones", "phase": 1 },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [255, 90, 0],
+            [140, 0, 255]
+          ],
+          "s": 140,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.haunted",
+      "n": "Haunted House",
+      "e": "\ud83d\udc7b",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Lightning"],
+          "p": [],
+          "c": [
+            [220, 235, 255],
+            [0, 0, 0]
+          ],
+          "s": 128,
+          "i": 140
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.new_year",
+      "n": "New Year's Eve",
+      "e": "\ud83e\udd42",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fireworks Starburst", "PS Starburst"],
+          "p": [],
+          "c": [
+            [255, 170, 0],
+            [255, 255, 255]
+          ],
+          "s": 150,
+          "i": 160
+        }
+      ],
+      "c": "Holidays",
+      "h": "new_year"
+    },
+    {
+      "i": "builtin.valentines",
+      "n": "Valentine's Day",
+      "e": "\u2764\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Heartbeat"],
+          "p": [],
+          "c": [
+            [255, 30, 90],
+            [255, 40, 140]
+          ],
+          "s": 100,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "valentines"
+    },
+    {
+      "i": "builtin.st_patricks",
+      "n": "St. Patrick's Day",
+      "e": "\ud83c\udf40",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": [],
+          "c": [
+            [0, 180, 30],
+            [255, 170, 0]
+          ],
+          "s": 80,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "st_patricks"
+    },
+    {
+      "i": "builtin.easter",
+      "n": "Easter",
+      "e": "\ud83d\udc23",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colortwinkles"],
+          "p": ["Pastel"],
+          "c": [[255, 150, 190]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.mardi_gras",
+      "n": "Mardi Gras",
+      "e": "\ud83c\udfad",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 3"],
+          "p": [],
+          "c": [
+            [140, 0, 255],
+            [255, 170, 0],
+            [0, 255, 0]
+          ],
+          "s": 110,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "mardi_gras"
+    },
+    {
+      "i": "builtin.cinco_de_mayo",
+      "n": "Cinco de Mayo",
+      "e": "\ud83c\uddf2\ud83c\uddfd",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Tri Wipe"],
+          "p": [],
+          "c": [
+            [0, 255, 0],
+            [255, 255, 255],
+            [255, 0, 0]
+          ],
+          "s": 90,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "cinco_de_mayo"
+    },
+    {
+      "i": "builtin.july_4th",
+      "n": "July 4th",
+      "e": "\ud83c\uddfa\ud83c\uddf8",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Tri Wipe"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255],
+            [0, 0, 255]
+          ],
+          "s": 110,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.july_4th_fireworks",
+      "n": "Fourth Fireworks",
+      "e": "\ud83c\udf86",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fireworks"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 0, 255],
+            [255, 255, 255]
+          ],
+          "s": 140,
+          "i": 170
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.memorial_day",
+      "n": "Memorial Day",
+      "e": "\ud83c\udf96\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255],
+            [0, 0, 255]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Holidays",
+      "h": "memorial_day"
+    },
+    {
+      "i": "builtin.thanksgiving",
+      "n": "Thanksgiving",
+      "e": "\ud83e\udd83",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["Autumn"],
+          "c": [[255, 140, 0]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.hanukkah",
+      "n": "Hanukkah",
+      "e": "\ud83d\udd4e",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": [],
+          "c": [
+            [20, 40, 255],
+            [255, 255, 255]
+          ],
+          "s": 70,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "hanukkah"
+    },
+    {
+      "i": "builtin.diwali",
+      "n": "Diwali",
+      "e": "\ud83e\ude94",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": ["Orangery"],
+          "c": [[255, 170, 0]],
+          "s": 90,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "diwali"
+    },
+    {
+      "i": "builtin.pride",
+      "n": "Pride",
+      "e": "\ud83c\udff3\ufe0f\u200d\ud83c\udf08",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Pride 2015"],
+          "p": [],
+          "c": [[255, 0, 0]],
+          "s": 90,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "pride"
+    },
+    {
+      "i": "builtin.birthday",
+      "n": "Birthday",
+      "e": "\ud83c\udf82",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Dynamic"],
+          "p": ["Party"],
+          "c": [[255, 40, 140]],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.team_colors",
+      "n": "Blue & Orange",
+      "e": "\ud83c\udfc8",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [0, 0, 255],
+            [255, 90, 0]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_red_gold",
+      "n": "Red & Gold",
+      "e": "\ud83c\udfc6",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 170, 0]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_green_gold",
+      "n": "Green & Gold",
+      "e": "\ud83e\uddc0",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [0, 120, 10],
+            [255, 170, 0]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_purple_gold",
+      "n": "Purple & Gold",
+      "e": "\ud83c\udfc0",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [140, 0, 255],
+            [255, 170, 0]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_blue_white",
+      "n": "Blue & White",
+      "e": "\u26be",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [20, 40, 255],
+            [255, 255, 255]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_red_white",
+      "n": "Red & White",
+      "e": "\ud83c\udfd2",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_black_gold",
+      "n": "Black & Gold",
+      "e": "\u26a1",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern"],
+          "p": [],
+          "c": [
+            [255, 170, 0],
+            [0, 0, 0]
+          ],
+          "s": 0,
+          "i": 0
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.team_green_white",
+      "n": "Green & White",
+      "e": "\u26bd",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater"],
+          "p": [],
+          "c": [
+            [0, 200, 60],
+            [255, 255, 255]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.game_day",
+      "n": "Game Day Strobe",
+      "e": "\ud83d\udce3",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase Flash"],
+          "p": [],
+          "c": [
+            [0, 0, 255],
+            [255, 90, 0]
+          ],
+          "s": 200,
+          "i": 128
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.rainbow",
+      "n": "Rainbow",
+      "e": "\ud83c\udf08",
+      "l": [
+        { "t": { "kind": "all" }, "e": ["Rainbow"], "p": [], "c": [[255, 0, 0]], "s": 100, "i": 60 }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.rainbow_chase",
+      "n": "Rainbow Chase",
+      "e": "\ud83c\udfa0",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Theater Rainbow"],
+          "p": [],
+          "c": [[255, 0, 0]],
+          "s": 140,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.fireworks",
+      "n": "Fireworks",
+      "e": "\ud83c\udf86",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fireworks"],
+          "p": ["Party"],
+          "c": [
+            [255, 170, 0],
+            [0, 0, 0]
+          ],
+          "s": 140,
+          "i": 160
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.confetti",
+      "n": "Confetti",
+      "e": "\ud83c\udf8a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Dynamic"],
+          "p": ["Party"],
+          "c": [[255, 0, 0]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.disco",
+      "n": "Disco",
+      "e": "\ud83e\udea9",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Dancing Shadows", "PS Dancing Shadows"],
+          "p": ["Party"],
+          "c": [[255, 0, 0]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.dance_party",
+      "n": "Dance Party",
+      "e": "\ud83d\udd7a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Bpm"],
+          "p": ["Party"],
+          "c": [[255, 0, 0]],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.strobe_party",
+      "n": "Strobe Party",
+      "e": "\u26a1",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Strobe Rainbow"],
+          "p": [],
+          "c": [[255, 255, 255]],
+          "s": 180,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.comets",
+      "n": "Comets",
+      "e": "\u2604\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Multi Comet"],
+          "p": [],
+          "c": [
+            [0, 255, 255],
+            [255, 0, 255]
+          ],
+          "s": 150,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.bouncing",
+      "n": "Bouncy Balls",
+      "e": "\ud83c\udfc0",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Bouncing Balls"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 255, 0],
+            [0, 0, 255]
+          ],
+          "s": 128,
+          "i": 100
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.popcorn",
+      "n": "Popcorn",
+      "e": "\ud83c\udf7f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Popcorn"],
+          "p": [],
+          "c": [
+            [255, 220, 80],
+            [255, 0, 0]
+          ],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.ocean",
+      "n": "Ocean",
+      "e": "\ud83c\udf0a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Pacifica"],
+          "p": [],
+          "c": [[0, 0, 255]],
+          "s": 100,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.aurora",
+      "n": "Aurora",
+      "e": "\ud83c\udf0c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Aurora"],
+          "p": ["Aurora"],
+          "c": [[0, 255, 0]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.sunset",
+      "n": "Sunset",
+      "e": "\ud83c\udf05",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["Sunset"],
+          "c": [[255, 90, 0]],
+          "s": 50,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.lava",
+      "n": "Lava",
+      "e": "\ud83c\udf0b",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Noise 1", "Fill Noise"],
+          "p": ["Lava"],
+          "c": [[255, 0, 0]],
+          "s": 70,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.forest",
+      "n": "Forest",
+      "e": "\ud83c\udf32",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Noise 1", "Fill Noise"],
+          "p": ["Forest"],
+          "c": [[0, 255, 0]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.campfire",
+      "n": "Campfire",
+      "e": "\ud83d\udd25",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fire 2012", "PS Fire 1D", "Fire Flicker"],
+          "p": [],
+          "c": [[255, 90, 0]],
+          "s": 140,
+          "i": 160
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.thunderstorm",
+      "n": "Thunderstorm",
+      "e": "\u26c8\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Lightning"],
+          "p": [],
+          "c": [
+            [220, 235, 255],
+            [0, 0, 120]
+          ],
+          "s": 160,
+          "i": 160
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.rain",
+      "n": "Rain",
+      "e": "\ud83c\udf27\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Rain"],
+          "p": [],
+          "c": [
+            [40, 150, 255],
+            [0, 0, 120]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.fireflies",
+      "n": "Fireflies",
+      "e": "\ud83e\udeb2",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fairytwinkle", "Fairy"],
+          "p": [],
+          "c": [
+            [140, 255, 0],
+            [0, 0, 0]
+          ],
+          "s": 60,
+          "i": 60
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.sunrise",
+      "n": "Sunrise",
+      "e": "\u2600\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Sunrise"],
+          "p": [],
+          "c": [[255, 90, 0]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.hw_candy_corn",
+      "n": "Candy Corn",
+      "e": "\ud83c\udf6c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Candy Corn", "Orangery"],
+          "c": [[255, 90, 0]],
+          "s": 70,
+          "i": 170
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_witch_potion",
+      "n": "Witch's Potion",
+      "e": "\ud83e\uddea",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Witch's Brew", "Toxy Reaf"],
+          "c": [[140, 0, 255]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_jack_glow",
+      "n": "Jack-o'-Lantern",
+      "e": "\ud83c\udf83",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": ["\u2605 Jack-o'-Lantern", "Fire"],
+          "c": [[255, 60, 0]],
+          "s": 90,
+          "i": 220
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_spooky_flow",
+      "n": "Spooky Night",
+      "e": "\ud83e\udd87",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Palette"],
+          "p": ["\u2605 Spooky Night", "Retro Clown"],
+          "c": [[140, 0, 255]],
+          "s": 40,
+          "i": 60
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_blood_moon",
+      "n": "Blood Moon",
+      "e": "\ud83e\ude78",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Noise Pal"],
+          "p": ["\u2605 Blood Moon", "Lava"],
+          "c": [[255, 0, 0]],
+          "s": 50,
+          "i": 100
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_ghost_lights",
+      "n": "Ghost Lights",
+      "e": "\ud83d\udc7b",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fairytwinkle", "Fairy"],
+          "p": ["\u2605 Ghostly", "Breeze"],
+          "c": [[220, 235, 255]],
+          "s": 50,
+          "i": 90
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_haunted_storm",
+      "n": "Haunted Storm",
+      "e": "\u26c8\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [[140, 0, 255]],
+          "s": 40,
+          "i": 128
+        },
+        {
+          "t": { "kind": "alternateZones", "phase": 1 },
+          "e": ["Lightning"],
+          "p": [],
+          "c": [
+            [220, 235, 255],
+            [0, 0, 0]
+          ],
+          "s": 170,
+          "i": 150
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_monster_bulbs",
+      "n": "Monster Bulbs",
+      "e": "\ud83e\udddf",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Pattern Tri"],
+          "p": [],
+          "c": [
+            [255, 90, 0],
+            [140, 0, 255],
+            [140, 255, 0]
+          ],
+          "s": 128,
+          "i": 0
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_creepy_crawl",
+      "n": "Creepy Crawl",
+      "e": "\ud83d\udd77\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Meteor Smooth", "Meteor"],
+          "p": [],
+          "c": [
+            [140, 255, 0],
+            [140, 0, 255]
+          ],
+          "s": 110,
+          "i": 170
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_trick_or_treat",
+      "n": "Trick or Treat",
+      "e": "\ud83c\udf6d",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Popcorn"],
+          "p": ["\u2605 Candy Corn", "Orangery"],
+          "c": [[255, 90, 0]],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.hw_cauldron",
+      "n": "Bubbling Cauldron",
+      "e": "\ud83e\uded5",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip"],
+          "p": [],
+          "c": [
+            [140, 255, 0],
+            [120, 0, 140]
+          ],
+          "s": 100,
+          "i": 140
+        }
+      ],
+      "c": "Holidays",
+      "h": "halloween"
+    },
+    {
+      "i": "builtin.xm_peppermint",
+      "n": "Peppermint Swirl",
+      "e": "\ud83c\udf6d",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Palette"],
+          "p": ["\u2605 Peppermint", "Rewhi"],
+          "c": [[255, 0, 0]],
+          "s": 70,
+          "i": 40
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_candy_twinkle",
+      "n": "Candy Cane Twinkle",
+      "e": "\ud83c\udf80",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Peppermint", "Rewhi"],
+          "c": [[255, 0, 0]],
+          "s": 70,
+          "i": 190
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_grinch",
+      "n": "Grinch",
+      "e": "\ud83d\udc9a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Grinch", "Jul"],
+          "c": [[0, 255, 0]],
+          "s": 90,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_wonderland",
+      "n": "Winter Wonderland",
+      "e": "\u2744\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fairytwinkle", "Fairy"],
+          "p": ["\u2605 Winter Wonderland", "Breeze"],
+          "c": [[255, 255, 255]],
+          "s": 40,
+          "i": 110
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_snowflakes",
+      "n": "Snowflakes",
+      "e": "\ud83c\udf28\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Sparkle"],
+          "p": [],
+          "c": [
+            [255, 255, 255],
+            [0, 0, 120]
+          ],
+          "s": 110,
+          "i": 80
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_nutcracker",
+      "n": "Nutcracker March",
+      "e": "\ud83e\ude96",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Running"],
+          "p": ["\u2605 Nutcracker", "C9 New"],
+          "c": [[255, 0, 0]],
+          "s": 90,
+          "i": 140
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_ugly_sweater",
+      "n": "Ugly Sweater",
+      "e": "\ud83e\uddf6",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colortwinkles"],
+          "p": ["\u2605 Ugly Sweater", "C9"],
+          "c": [[255, 0, 0]],
+          "s": 120,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_evergreen",
+      "n": "Evergreen & Gold",
+      "e": "\ud83c\udf32",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Evergreen & Gold", "Jul"],
+          "c": [[0, 120, 10]],
+          "s": 50,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_reindeer",
+      "n": "Reindeer Run",
+      "e": "\ud83e\udd8c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Multi Comet"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 170, 0]
+          ],
+          "s": 150,
+          "i": 140
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_north_pole",
+      "n": "North Pole Lights",
+      "e": "\ud83c\udf85",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 North Pole", "Rewhi"],
+          "c": [[255, 255, 255]],
+          "s": 60,
+          "i": 160
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_tree_farm",
+      "n": "Tree Farm",
+      "e": "\ud83c\udf84",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Evergreen & Gold", "Jul"],
+          "c": [[0, 120, 10]],
+          "s": 60,
+          "i": 200
+        },
+        {
+          "t": { "kind": "alternateZones", "phase": 1 },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 170, 90]],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.xm_silver_bells",
+      "n": "Silver Bells",
+      "e": "\ud83d\udd14",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Glitter", "Glitter"],
+          "p": [],
+          "c": [
+            [220, 235, 255],
+            [255, 255, 255]
+          ],
+          "s": 128,
+          "i": 120
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.ea_pastel_eggs",
+      "n": "Pastel Eggs",
+      "e": "\ud83e\udd5a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Palette"],
+          "p": ["\u2605 Pastel Eggs", "Pastel"],
+          "c": [[255, 150, 190]],
+          "s": 40,
+          "i": 80
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.ea_egg_hunt",
+      "n": "Egg Hunt",
+      "e": "\ud83e\uddfa",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Popcorn"],
+          "p": ["\u2605 Jelly Beans", "Party"],
+          "c": [[140, 190, 255]],
+          "s": 110,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.ea_spring_garden",
+      "n": "Spring Garden",
+      "e": "\ud83c\udf37",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Spring Garden", "Sherbet"],
+          "c": [[140, 255, 0]],
+          "s": 50,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.ea_bunny_hop",
+      "n": "Bunny Hop",
+      "e": "\ud83d\udc30",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Bouncing Balls"],
+          "p": [],
+          "c": [
+            [255, 150, 190],
+            [140, 190, 255],
+            [255, 240, 140]
+          ],
+          "s": 128,
+          "i": 110
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.ea_jelly_beans",
+      "n": "Jelly Beans",
+      "e": "\ud83e\uded8",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Jelly Beans", "Party"],
+          "c": [[255, 40, 140]],
+          "s": 80,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.ea_cotton_tail",
+      "n": "Cotton Tail",
+      "e": "\ud83d\udc07",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Bunny Pink", "Light Pink"],
+          "c": [[255, 150, 190]],
+          "s": 40,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.ea_sunrise",
+      "n": "Easter Sunrise",
+      "e": "\ud83c\udf05",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Sunrise"],
+          "p": [],
+          "c": [[255, 130, 60]],
+          "s": 40,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "easter"
+    },
+    {
+      "i": "builtin.j4_old_glory",
+      "n": "Old Glory",
+      "e": "\ud83c\uddfa\ud83c\uddf8",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Palette"],
+          "p": ["\u2605 Old Glory", "Red & Blue"],
+          "c": [[255, 0, 0]],
+          "s": 30,
+          "i": 0
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_stars_stripes",
+      "n": "Stars & Stripes",
+      "e": "\u2b50",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Railway", "Theater"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255]
+          ],
+          "s": 80,
+          "i": 150
+        },
+        {
+          "t": { "kind": "alternateZones", "phase": 1 },
+          "e": ["Sparkle"],
+          "p": [],
+          "c": [
+            [255, 255, 255],
+            [0, 0, 120]
+          ],
+          "s": 120,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_firecrackers",
+      "n": "Firecrackers",
+      "e": "\ud83e\udde8",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Popcorn"],
+          "p": ["\u2605 Firecracker", "Red & Blue"],
+          "c": [[255, 0, 0]],
+          "s": 150,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_grand_finale",
+      "n": "Grand Finale",
+      "e": "\ud83c\udf86",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fireworks Starburst", "PS Starburst"],
+          "p": ["\u2605 Firecracker", "Red & Blue"],
+          "c": [[255, 255, 255]],
+          "s": 170,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_sparklers",
+      "n": "Sparklers",
+      "e": "\ud83c\udf87",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["PS Sparkler", "Sparkle+"],
+          "p": ["\u2605 Sparkler", "Yellowout"],
+          "c": [
+            [255, 170, 0],
+            [255, 255, 255]
+          ],
+          "s": 200,
+          "i": 160
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_patriot_wave",
+      "n": "Patriotic Wave",
+      "e": "\ud83c\udf0a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Old Glory", "Red & Blue"],
+          "c": [[0, 0, 255]],
+          "s": 60,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_liberty_chase",
+      "n": "Liberty Chase",
+      "e": "\ud83d\uddfd",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 3"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255],
+            [0, 0, 255]
+          ],
+          "s": 110,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.j4_rockets",
+      "n": "Rockets' Red Glare",
+      "e": "\ud83d\ude80",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fireworks 1D", "PS Fireworks 1D"],
+          "p": ["\u2605 Firecracker", "Red & Blue"],
+          "c": [[255, 0, 0]],
+          "s": 140,
+          "i": 150
+        }
+      ],
+      "c": "Holidays",
+      "h": "july_4th"
+    },
+    {
+      "i": "builtin.tg_harvest",
+      "n": "Harvest Glow",
+      "e": "\ud83c\udf3e",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Harvest", "Autumn"],
+          "c": [[255, 140, 0]],
+          "s": 40,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.tg_leaves",
+      "n": "Falling Leaves",
+      "e": "\ud83c\udf41",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Harvest", "Autumn"],
+          "c": [[200, 40, 0]],
+          "s": 60,
+          "i": 170
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.tg_hearth",
+      "n": "Warm Hearth",
+      "e": "\ud83d\udd25",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": ["\u2605 Harvest", "Autumn"],
+          "c": [[255, 140, 0]],
+          "s": 80,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.vd_sweetheart",
+      "n": "Sweetheart",
+      "e": "\ud83d\udc98",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": ["\u2605 Sweetheart", "Magred"],
+          "c": [[255, 30, 90]],
+          "s": 70,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "valentines"
+    },
+    {
+      "i": "builtin.vd_love_bugs",
+      "n": "Love Bugs",
+      "e": "\ud83d\udc1e",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Bouncing Balls"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 40, 140],
+            [255, 255, 255]
+          ],
+          "s": 128,
+          "i": 90
+        }
+      ],
+      "c": "Holidays",
+      "h": "valentines"
+    },
+    {
+      "i": "builtin.sp_lucky_clover",
+      "n": "Lucky Clover",
+      "e": "\u2618\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Shamrock", "Rivendell"],
+          "c": [[0, 180, 30]],
+          "s": 50,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "st_patricks"
+    },
+    {
+      "i": "builtin.sp_pot_of_gold",
+      "n": "Pot of Gold",
+      "e": "\ud83e\ude99",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid Glitter", "Glitter"],
+          "p": [],
+          "c": [
+            [0, 200, 60],
+            [255, 170, 0]
+          ],
+          "s": 128,
+          "i": 100
+        }
+      ],
+      "c": "Holidays",
+      "h": "st_patricks"
+    },
+    {
+      "i": "builtin.ny_champagne",
+      "n": "Champagne Toast",
+      "e": "\ud83e\udd42",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colortwinkles"],
+          "p": ["\u2605 Champagne", "Yellowout"],
+          "c": [[255, 170, 0]],
+          "s": 110,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "new_year"
+    },
+    {
+      "i": "builtin.ny_countdown",
+      "n": "Midnight Fireworks",
+      "e": "\ud83c\udf89",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fireworks"],
+          "p": ["\u2605 Champagne", "Yellowout"],
+          "c": [
+            [255, 170, 0],
+            [0, 0, 0]
+          ],
+          "s": 150,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "new_year"
+    },
+    {
+      "i": "builtin.hk_festival",
+      "n": "Festival of Lights",
+      "e": "\ud83d\udd4e",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": ["\u2605 Festival of Lights", "Semi Blue"],
+          "c": [[20, 40, 255]],
+          "s": 80,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "hanukkah"
+    },
+    {
+      "i": "builtin.hk_blue_silver",
+      "n": "Blue & Silver",
+      "e": "\u2721\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox", "Twinkle"],
+          "p": [],
+          "c": [
+            [20, 40, 255],
+            [220, 235, 255]
+          ],
+          "s": 70,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "hanukkah"
+    },
+    {
+      "i": "builtin.mg_carnival",
+      "n": "Carnival",
+      "e": "\ud83c\udfad",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": ["\u2605 Mardi Gras", "Tiamat"],
+          "c": [[140, 0, 255]],
+          "s": 70,
+          "i": 128
+        }
+      ],
+      "c": "Holidays",
+      "h": "mardi_gras"
+    },
+    {
+      "i": "builtin.dw_diyas",
+      "n": "Diyas",
+      "e": "\ud83e\ude94",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi", "Candle"],
+          "p": ["\u2605 Diwali Diyas", "Orangery"],
+          "c": [[255, 170, 0]],
+          "s": 80,
+          "i": 220
+        }
+      ],
+      "c": "Holidays",
+      "h": "diwali"
+    },
+    {
+      "i": "builtin.magic_icicles",
+      "n": "Magic Icicles",
+      "e": "\ud83d\udd2e",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[66, 70, 77]],
+          "s": 128,
+          "i": 128
+        },
+        {
+          "t": { "kind": "all" },
+          "e": ["Fairytwinkle", "Twinklecat", "Twinkle"],
+          "p": ["* Color 1"],
+          "c": [
+            [220, 235, 255],
+            [66, 70, 77]
+          ],
+          "s": 70,
+          "i": 170,
+          "o": 4
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.ocean_breeze",
+      "n": "Ocean Breeze",
+      "e": "\ud83c\udf0a",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Flow"],
+          "p": [],
+          "c": [
+            [0, 100, 200],
+            [0, 200, 200],
+            [100, 255, 255]
+          ],
+          "s": 128,
+          "i": 128
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.sunset_glow",
+      "n": "Sunset Glow",
+      "e": "\ud83c\udf05",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Gradient"],
+          "p": [],
+          "c": [
+            [255, 100, 0],
+            [255, 0, 100],
+            [100, 0, 200]
+          ],
+          "s": 64,
+          "i": 128
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.neon_city",
+      "n": "Neon City",
+      "e": "\ud83c\udf03",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Running"],
+          "p": [],
+          "c": [
+            [255, 0, 255],
+            [0, 255, 255],
+            [255, 255, 0]
+          ],
+          "s": 200,
+          "i": 200
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.forest_canopy",
+      "n": "Forest Canopy",
+      "e": "\ud83c\udf32",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [0, 150, 50],
+            [50, 200, 0],
+            [100, 255, 100]
+          ],
+          "s": 100,
+          "i": 150
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.galaxy",
+      "n": "Galaxy",
+      "e": "\ud83c\udf0c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Meteor Smooth"],
+          "p": [],
+          "c": [
+            [100, 0, 200],
+            [200, 0, 255],
+            [0, 0, 100]
+          ],
+          "s": 150,
+          "i": 180
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.festive_sparkle",
+      "n": "Festive Sparkle",
+      "e": "\ud83c\udf84",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 255, 0],
+            [255, 255, 255]
+          ],
+          "s": 180,
+          "i": 200
+        }
+      ],
+      "c": "Holidays"
+    },
+    {
+      "i": "builtin.warm_amber",
+      "n": "Warm Amber",
+      "e": "\ud83d\udd6f\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[255, 180, 60]],
+          "s": 128,
+          "i": 100
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.christmas_classic2",
+      "n": "Classic Christmas",
+      "e": "\ud83c\udf84",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [0, 180, 0],
+            [255, 255, 255]
+          ],
+          "s": 160,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.christmas_warm",
+      "n": "Warm Christmas",
+      "e": "\ud83d\udd6f\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Fire"],
+          "p": [],
+          "c": [
+            [255, 100, 0],
+            [255, 50, 0],
+            [200, 0, 0]
+          ],
+          "s": 80,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.christmas_ice",
+      "n": "Ice & Snow",
+      "e": "\u2744\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox"],
+          "p": [],
+          "c": [
+            [200, 230, 255],
+            [150, 200, 255],
+            [255, 255, 255]
+          ],
+          "s": 120,
+          "i": 150
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.christmas_gold",
+      "n": "Gold & Red",
+      "e": "\ud83c\udf81",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [
+            [255, 200, 50],
+            [200, 0, 0]
+          ],
+          "s": 60,
+          "i": 180
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.christmas_candy",
+      "n": "Candy Cane",
+      "e": "\ud83c\udf6c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 2"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 255, 255]
+          ],
+          "s": 150,
+          "i": 200
+        }
+      ],
+      "c": "Holidays",
+      "h": "christmas"
+    },
+    {
+      "i": "builtin.thanksgiving_harvest",
+      "n": "Harvest",
+      "e": "\ud83c\udf42",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Gradient"],
+          "p": [],
+          "c": [
+            [200, 100, 0],
+            [255, 150, 0],
+            [150, 50, 0]
+          ],
+          "s": 50,
+          "i": 150
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.thanksgiving_warm",
+      "n": "Warm Feast",
+      "e": "\ud83e\udd83",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [
+            [255, 120, 0],
+            [200, 80, 0]
+          ],
+          "s": 40,
+          "i": 120
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.thanksgiving_glow",
+      "n": "Autumn Glow",
+      "e": "\ud83c\udf41",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [255, 100, 0],
+            [200, 50, 0],
+            [255, 200, 100]
+          ],
+          "s": 90,
+          "i": 160
+        }
+      ],
+      "c": "Holidays",
+      "h": "thanksgiving"
+    },
+    {
+      "i": "builtin.twolves_blue",
+      "n": "Team Blue",
+      "e": "\ud83d\udd35",
+      "l": [
+        { "t": { "kind": "all" }, "e": ["Solid"], "p": [], "c": [[0, 80, 131]], "s": 128, "i": 200 }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.twolves_green",
+      "n": "Team Green",
+      "e": "\ud83d\udfe2",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [[120, 190, 32]],
+          "s": 128,
+          "i": 200
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.twolves_combo",
+      "n": "Team Combo",
+      "e": "\ud83c\udfc0",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Gradient"],
+          "p": [],
+          "c": [
+            [0, 80, 131],
+            [120, 190, 32],
+            [255, 255, 255]
+          ],
+          "s": 80,
+          "i": 180
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.twolves_chase",
+      "n": "Team Chase",
+      "e": "\u26a1",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 2"],
+          "p": [],
+          "c": [
+            [0, 80, 131],
+            [120, 190, 32]
+          ],
+          "s": 180,
+          "i": 200
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.twolves_twinkle",
+      "n": "Team Twinkle",
+      "e": "\u2b50",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [0, 80, 131],
+            [120, 190, 32],
+            [255, 255, 255]
+          ],
+          "s": 150,
+          "i": 180
+        }
+      ],
+      "c": "Sports"
+    },
+    {
+      "i": "builtin.disco_fever",
+      "n": "Disco Fever",
+      "e": "\ud83e\udea9",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Strobe"],
+          "p": [],
+          "c": [
+            [255, 0, 255],
+            [0, 255, 255],
+            [255, 255, 0],
+            [255, 0, 0]
+          ],
+          "s": 255,
+          "i": 255
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.neon_pulse",
+      "n": "Neon Pulse",
+      "e": "\ud83d\udcab",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [
+            [255, 0, 200],
+            [0, 200, 255]
+          ],
+          "s": 120,
+          "i": 220
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.laser_show",
+      "n": "Laser Show",
+      "e": "\ud83d\udfe9",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 2"],
+          "p": [],
+          "c": [
+            [0, 255, 0],
+            [0, 0, 0]
+          ],
+          "s": 255,
+          "i": 255
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.rainbow_wave",
+      "n": "Rainbow Wave",
+      "e": "\ud83c\udf08",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Colorwaves"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 127, 0],
+            [255, 255, 0],
+            [0, 255, 0],
+            [0, 0, 255],
+            [75, 0, 130],
+            [148, 0, 211]
+          ],
+          "s": 100,
+          "i": 200
+        }
+      ],
+      "c": "Party"
+    },
+    {
+      "i": "builtin.ocean_deep",
+      "n": "Deep Ocean",
+      "e": "\ud83d\udc0b",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Pacifica"],
+          "p": [],
+          "c": [
+            [0, 0, 80],
+            [0, 50, 150],
+            [0, 100, 200]
+          ],
+          "s": 60,
+          "i": 160
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.northern_lights",
+      "n": "Northern Lights",
+      "e": "\ud83c\udf0c",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Aurora"],
+          "p": [],
+          "c": [
+            [0, 255, 100],
+            [50, 200, 255],
+            [150, 255, 200],
+            [100, 150, 255]
+          ],
+          "s": 50,
+          "i": 180
+        }
+      ],
+      "c": "Nature"
+    },
+    {
+      "i": "builtin.cozy_evening",
+      "n": "Cozy Evening",
+      "e": "\ud83d\udecb\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Candle Multi"],
+          "p": [],
+          "c": [
+            [255, 140, 50],
+            [200, 100, 30]
+          ],
+          "s": 40,
+          "i": 120
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.morning_light",
+      "n": "Morning Light",
+      "e": "\u2600\ufe0f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Breathe"],
+          "p": [],
+          "c": [
+            [255, 240, 200],
+            [255, 220, 150]
+          ],
+          "s": 30,
+          "i": 100
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.soft_glow",
+      "n": "Soft Glow",
+      "e": "\ud83d\udd6f\ufe0f",
+      "l": [
+        { "t": { "kind": "all" }, "e": ["Fade"], "p": [], "c": [[255, 200, 150]], "s": 20, "i": 80 }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.starry_night",
+      "n": "Starry Night",
+      "e": "\ud83c\udf1f",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinklefox"],
+          "p": [],
+          "c": [
+            [255, 255, 200],
+            [200, 200, 255],
+            [255, 255, 255]
+          ],
+          "s": 40,
+          "i": 100
+        }
+      ],
+      "c": "Everyday"
+    },
+    {
+      "i": "builtin.c7_classic",
+      "n": "C7 Classic",
+      "e": "\ud83d\udca1",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Solid"],
+          "p": [],
+          "c": [
+            [255, 100, 50],
+            [0, 150, 255],
+            [0, 200, 0],
+            [255, 200, 0]
+          ],
+          "s": 128,
+          "i": 200
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.fairy_lights",
+      "n": "Fairy Lights",
+      "e": "\ud83e\uddda",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [255, 220, 100],
+            [255, 180, 50]
+          ],
+          "s": 80,
+          "i": 150
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.led_strip_rainbow",
+      "n": "LED Rainbow",
+      "e": "\ud83c\udf08",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Rainbow"],
+          "p": [],
+          "c": [[255, 0, 0]],
+          "s": 128,
+          "i": 200
+        }
+      ],
+      "c": "Bulbs"
+    },
+    {
+      "i": "builtin.drip_blue",
+      "n": "Blue Drip",
+      "e": "\ud83d\udca7",
+      "c": "Nature",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip"],
+          "p": [],
+          "c": [
+            [0, 100, 200],
+            [0, 150, 255]
+          ],
+          "s": 120,
+          "i": 180
+        }
+      ]
+    },
+    {
+      "i": "builtin.drip_green",
+      "n": "Green Drip",
+      "e": "\ud83c\udf3f",
+      "c": "Nature",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip Drop"],
+          "p": [],
+          "c": [
+            [0, 200, 100],
+            [50, 255, 150]
+          ],
+          "s": 100,
+          "i": 160
+        }
+      ]
+    },
+    {
+      "i": "builtin.drip_rainbow",
+      "n": "Rainbow Drip",
+      "e": "\ud83c\udf08",
+      "c": "Party",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip"],
+          "p": [],
+          "c": [
+            [255, 0, 0],
+            [255, 127, 0],
+            [255, 255, 0],
+            [0, 255, 0],
+            [0, 0, 255]
+          ],
+          "s": 150,
+          "i": 200
+        }
+      ]
+    },
+    {
+      "i": "builtin.drip_warm",
+      "n": "Warm Drip",
+      "e": "\ud83d\udd6f\ufe0f",
+      "c": "Everyday",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip Drop"],
+          "p": [],
+          "c": [
+            [255, 150, 50],
+            [255, 100, 0]
+          ],
+          "s": 80,
+          "i": 140
+        }
+      ]
+    },
+    {
+      "i": "builtin.drip_ice",
+      "n": "Ice Drip",
+      "e": "\ud83e\uddca",
+      "c": "Nature",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Drip"],
+          "p": [],
+          "c": [
+            [200, 230, 255],
+            [150, 200, 255],
+            [255, 255, 255]
+          ],
+          "s": 90,
+          "i": 150
+        }
+      ]
+    },
+    {
+      "i": "builtin.lightning_flash",
+      "n": "Lightning Flash",
+      "e": "\u26a1",
+      "c": "Nature",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Blink"],
+          "p": [],
+          "c": [
+            [255, 255, 200],
+            [0, 0, 0]
+          ],
+          "s": 255,
+          "i": 255
+        }
+      ]
+    },
+    {
+      "i": "builtin.gameday_twolves",
+      "n": "Game Day",
+      "e": "\ud83c\udfc0",
+      "c": "Sports",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Chase 2"],
+          "p": [],
+          "c": [
+            [0, 80, 131],
+            [120, 190, 32]
+          ],
+          "s": 255,
+          "i": 255
+        }
+      ]
+    },
+    {
+      "i": "builtin.gameday_twolves_alt",
+      "n": "Team Pride",
+      "e": "\ud83c\udfc6",
+      "c": "Sports",
+      "l": [
+        {
+          "t": { "kind": "all" },
+          "e": ["Twinkle"],
+          "p": [],
+          "c": [
+            [0, 80, 131],
+            [120, 190, 32],
+            [255, 255, 255]
+          ],
+          "s": 200,
+          "i": 220
+        }
+      ]
+    }
+  ],
+  "sc": [
+    { "id": "steady", "label": "Steady", "emoji": "\ud83d\udfe6" },
+    { "id": "gentle", "label": "Gentle", "emoji": "\ud83c\udf0a" },
+    { "id": "twinkle", "label": "Twinkle", "emoji": "\u2728" },
+    { "id": "motion", "label": "Motion", "emoji": "\ud83c\udfc3" },
+    { "id": "party", "label": "Party", "emoji": "\ud83c\udf89" },
+    { "id": "nature", "label": "Nature", "emoji": "\ud83d\udd25" }
+  ],
+  "s": [
+    {
+      "i": "solid",
+      "l": "Solid",
+      "e": "\ud83d\udfe5",
+      "c": "steady",
+      "w": ["Solid"],
+      "ns": true,
+      "na": true
+    },
+    {
+      "i": "pattern",
+      "l": "Pattern",
+      "e": "\ud83d\udff0",
+      "c": "steady",
+      "w": ["Solid Pattern"],
+      "ns": true
+    },
+    {
+      "i": "tri_pattern",
+      "l": "Tri Pattern",
+      "e": "\ud83d\udea6",
+      "c": "steady",
+      "w": ["Solid Pattern Tri"],
+      "ns": true
+    },
+    { "i": "gradient", "l": "Gradient", "e": "\ud83c\udf08", "c": "steady", "w": ["Gradient"] },
+    { "i": "palette", "l": "Color Flow", "e": "\ud83c\udfa8", "c": "steady", "w": ["Palette"] },
+    {
+      "i": "breathe",
+      "l": "Breathe",
+      "e": "\ud83c\udf2c\ufe0f",
+      "c": "gentle",
+      "w": ["Breathe"],
+      "na": true
+    },
+    { "i": "fade", "l": "Fade", "e": "\ud83c\udf17", "c": "gentle", "w": ["Fade"], "na": true },
+    {
+      "i": "candle",
+      "l": "Candle",
+      "e": "\ud83d\udd6f\ufe0f",
+      "c": "gentle",
+      "w": ["Candle Multi", "Candle"]
+    },
+    {
+      "i": "colorwaves",
+      "l": "Color Waves",
+      "e": "\u3030\ufe0f",
+      "c": "gentle",
+      "w": ["Colorwaves"]
+    },
+    { "i": "pacifica", "l": "Pacifica", "e": "\ud83c\udf0a", "c": "gentle", "w": ["Pacifica"] },
+    { "i": "lake", "l": "Lake", "e": "\ud83c\udfde\ufe0f", "c": "gentle", "w": ["Lake"] },
+    { "i": "flow", "l": "Flow", "e": "\ud83d\udca7", "c": "gentle", "w": ["Flow"] },
+    { "i": "aurora", "l": "Aurora", "e": "\ud83c\udf0c", "c": "gentle", "w": ["Aurora"] },
+    { "i": "sunrise", "l": "Sunrise", "e": "\ud83c\udf05", "c": "gentle", "w": ["Sunrise"] },
+    { "i": "heartbeat", "l": "Heartbeat", "e": "\ud83d\udc93", "c": "gentle", "w": ["Heartbeat"] },
+    {
+      "i": "dynamic_smooth",
+      "l": "Color Drift",
+      "e": "\ud83e\udee7",
+      "c": "gentle",
+      "w": ["Dynamic Smooth"]
+    },
+    { "i": "tv", "l": "TV Glow", "e": "\ud83d\udcfa", "c": "gentle", "w": ["TV Simulator"] },
+    {
+      "i": "color_clouds",
+      "l": "Color Clouds",
+      "e": "\u2601\ufe0f",
+      "c": "gentle",
+      "w": ["Color Clouds"]
+    },
+    {
+      "i": "slow_change",
+      "l": "Slow Change",
+      "e": "\ud83d\udc0c",
+      "c": "gentle",
+      "w": ["Slow Transition"]
+    },
+    {
+      "i": "twinkle",
+      "l": "Twinkle",
+      "e": "\u2728",
+      "c": "twinkle",
+      "w": ["Twinklefox", "Twinkle"]
+    },
+    { "i": "twinkle_cat", "l": "Twinkle Pop", "e": "\u2b50", "c": "twinkle", "w": ["Twinklecat"] },
+    {
+      "i": "classic_twinkle",
+      "l": "Classic Twinkle",
+      "e": "\ud83c\udf1f",
+      "c": "twinkle",
+      "w": ["Twinkle"]
+    },
+    {
+      "i": "fairy",
+      "l": "Fairy Lights",
+      "e": "\ud83e\uddda",
+      "c": "twinkle",
+      "w": ["Fairytwinkle", "Fairy"]
+    },
+    { "i": "sparkle", "l": "Sparkle", "e": "\ud83d\udc8e", "c": "twinkle", "w": ["Sparkle"] },
+    {
+      "i": "sparkle_dark",
+      "l": "Dark Sparkle",
+      "e": "\ud83d\udda4",
+      "c": "twinkle",
+      "w": ["Sparkle Dark"]
+    },
+    {
+      "i": "sparkle_plus",
+      "l": "Sparkle Plus",
+      "e": "\ud83d\udca5",
+      "c": "twinkle",
+      "w": ["Sparkle+"]
+    },
+    {
+      "i": "glitter",
+      "l": "Glitter",
+      "e": "\ud83e\udea9",
+      "c": "twinkle",
+      "w": ["Solid Glitter", "Glitter"]
+    },
+    {
+      "i": "colortwinkles",
+      "l": "Color Twinkles",
+      "e": "\ud83c\udf87",
+      "c": "twinkle",
+      "w": ["Colortwinkles"]
+    },
+    {
+      "i": "twinkle_up",
+      "l": "Twinkle Up",
+      "e": "\ud83d\udd06",
+      "c": "twinkle",
+      "w": ["Twinkleup"]
+    },
+    { "i": "dissolve", "l": "Dissolve", "e": "\ud83e\udee5", "c": "twinkle", "w": ["Dissolve"] },
+    { "i": "spots", "l": "Spots", "e": "\ud83d\udd35", "c": "twinkle", "w": ["Spots Fade"] },
+    {
+      "i": "shimmer",
+      "l": "Shimmer",
+      "e": "\ud83c\udf1f",
+      "c": "twinkle",
+      "w": ["Shimmer", "Sparkle+"]
+    },
+    {
+      "i": "sparkler",
+      "l": "Sparkler",
+      "e": "\ud83c\udf87",
+      "c": "twinkle",
+      "w": ["PS Sparkler", "Sparkle+"]
+    },
+    { "i": "chase", "l": "Chase", "e": "\ud83c\udfc3", "c": "motion", "w": ["Theater"] },
+    { "i": "running", "l": "Running", "e": "\ud83c\udfc1", "c": "motion", "w": ["Running"] },
+    {
+      "i": "stripes",
+      "l": "Stripes",
+      "e": "\ud83c\udf6d",
+      "c": "motion",
+      "w": ["Railway", "Theater"]
+    },
+    {
+      "i": "color_chase",
+      "l": "Color Chase",
+      "e": "\ud83d\ude82",
+      "c": "motion",
+      "w": ["Chase 2"]
+    },
+    { "i": "tri_chase", "l": "Tri Chase", "e": "\ud83d\ude83", "c": "motion", "w": ["Chase 3"] },
+    { "i": "wipe", "l": "Wipe", "e": "\ud83e\uddf9", "c": "motion", "w": ["Wipe"] },
+    { "i": "sweep", "l": "Sweep", "e": "\u2194\ufe0f", "c": "motion", "w": ["Sweep"] },
+    {
+      "i": "tri_wipe",
+      "l": "Tri Wipe",
+      "e": "\ud83c\uddfa\ud83c\uddf8",
+      "c": "motion",
+      "w": ["Tri Wipe"]
+    },
+    { "i": "tri_fade", "l": "Tri Fade", "e": "\ud83d\udd3a", "c": "motion", "w": ["Tri Fade"] },
+    { "i": "scanner", "l": "Scanner", "e": "\ud83d\udc40", "c": "motion", "w": ["Scanner"] },
+    {
+      "i": "dual_scanner",
+      "l": "Dual Scanner",
+      "e": "\ud83d\udd01",
+      "c": "motion",
+      "w": ["Scanner Dual"]
+    },
+    { "i": "comet", "l": "Comets", "e": "\u2604\ufe0f", "c": "motion", "w": ["Multi Comet"] },
+    {
+      "i": "meteor",
+      "l": "Meteor",
+      "e": "\ud83c\udf20",
+      "c": "motion",
+      "w": ["Meteor Smooth", "Meteor"]
+    },
+    {
+      "i": "lighthouse",
+      "l": "Lighthouse",
+      "e": "\ud83d\uddfc",
+      "c": "motion",
+      "w": ["Lighthouse"]
+    },
+    {
+      "i": "rolling_balls",
+      "l": "Rolling Balls",
+      "e": "\ud83c\udfb1",
+      "c": "motion",
+      "w": ["Rolling Balls", "PS Pinball"]
+    },
+    {
+      "i": "bouncing_balls",
+      "l": "Bouncing Balls",
+      "e": "\ud83c\udfc0",
+      "c": "motion",
+      "w": ["Bouncing Balls"]
+    },
+    { "i": "popcorn", "l": "Popcorn", "e": "\ud83c\udf7f", "c": "motion", "w": ["Popcorn"] },
+    { "i": "drip", "l": "Drip", "e": "\ud83d\udca6", "c": "motion", "w": ["Drip"] },
+    {
+      "i": "drip_drop",
+      "l": "Drip Drop",
+      "e": "\ud83c\udf27",
+      "c": "motion",
+      "w": ["PS DripDrop", "Drip"]
+    },
+    {
+      "i": "pinball",
+      "l": "Pinball",
+      "e": "\ud83e\ude80",
+      "c": "motion",
+      "w": ["PS Pinball", "Bouncing Balls"]
+    },
+    { "i": "hourglass", "l": "Hourglass", "e": "\u231b", "c": "motion", "w": ["PS Hourglass"] },
+    { "i": "balance", "l": "Balance", "e": "\u2696\ufe0f", "c": "motion", "w": ["PS 1D Balance"] },
+    {
+      "i": "particle_chase",
+      "l": "Particle Chase",
+      "e": "\ud83e\udee7",
+      "c": "motion",
+      "w": ["PS Chase"]
+    },
+    { "i": "sinelon", "l": "Sinelon", "e": "\u303d\ufe0f", "c": "motion", "w": ["Sinelon"] },
+    {
+      "i": "oscillate",
+      "l": "Oscillate",
+      "e": "\ud83c\udf9a\ufe0f",
+      "c": "motion",
+      "w": ["Oscillate"]
+    },
+    { "i": "juggle", "l": "Juggle", "e": "\ud83e\udd39", "c": "motion", "w": ["Juggle"] },
+    { "i": "two_dots", "l": "Two Dots", "e": "\u26ab", "c": "motion", "w": ["Two Dots"] },
+    { "i": "stream", "l": "Stream", "e": "\ud83c\udfde", "c": "motion", "w": ["Stream"] },
+    { "i": "loading", "l": "Loading", "e": "\u23f3", "c": "motion", "w": ["Loading"] },
+    { "i": "rainbow", "l": "Rainbow", "e": "\ud83c\udf08", "c": "party", "w": ["Rainbow"] },
+    { "i": "colorloop", "l": "Color Loop", "e": "\ud83d\udd04", "c": "party", "w": ["Colorloop"] },
+    {
+      "i": "rainbow_runner",
+      "l": "Rainbow Runner",
+      "e": "\ud83c\udfc3\u200d\u2640\ufe0f",
+      "c": "party",
+      "w": ["Rainbow Runner"]
+    },
+    {
+      "i": "theater_rainbow",
+      "l": "Rainbow Chase",
+      "e": "\ud83c\udfa0",
+      "c": "party",
+      "w": ["Theater Rainbow"]
+    },
+    {
+      "i": "pride",
+      "l": "Pride",
+      "e": "\ud83c\udff3\ufe0f\u200d\ud83c\udf08",
+      "c": "party",
+      "w": ["Pride 2015"]
+    },
+    {
+      "i": "random_colors",
+      "l": "Random Colors",
+      "e": "\ud83c\udfb2",
+      "c": "party",
+      "w": ["Random Colors"]
+    },
+    { "i": "dynamic", "l": "Confetti", "e": "\ud83c\udf8a", "c": "party", "w": ["Dynamic"] },
+    { "i": "blink", "l": "Blink", "e": "\ud83d\ude09", "c": "party", "w": ["Blink"] },
+    { "i": "strobe", "l": "Strobe", "e": "\u26a1", "c": "party", "w": ["Strobe"] },
+    {
+      "i": "strobe_rainbow",
+      "l": "Rainbow Strobe",
+      "e": "\ud83c\udf08",
+      "c": "party",
+      "w": ["Strobe Rainbow"]
+    },
+    {
+      "i": "strobe_mega",
+      "l": "Mega Strobe",
+      "e": "\ud83d\udcf8",
+      "c": "party",
+      "w": ["Strobe Mega"]
+    },
+    { "i": "fireworks", "l": "Fireworks", "e": "\ud83c\udf86", "c": "party", "w": ["Fireworks"] },
+    {
+      "i": "starburst",
+      "l": "Starburst",
+      "e": "\ud83d\udcab",
+      "c": "party",
+      "w": ["Fireworks Starburst", "PS Starburst"]
+    },
+    {
+      "i": "rockets",
+      "l": "Rockets",
+      "e": "\ud83d\ude80",
+      "c": "party",
+      "w": ["Fireworks 1D", "PS Fireworks 1D"]
+    },
+    { "i": "ripple", "l": "Ripple", "e": "\ud83d\udca7", "c": "party", "w": ["Ripple"] },
+    {
+      "i": "ripple_rainbow",
+      "l": "Rainbow Ripple",
+      "e": "\ud83e\udee7",
+      "c": "party",
+      "w": ["Ripple Rainbow"]
+    },
+    { "i": "bpm", "l": "Beat", "e": "\ud83e\udd41", "c": "party", "w": ["Bpm"] },
+    { "i": "plasma", "l": "Plasma", "e": "\ud83d\udd2e", "c": "party", "w": ["Plasma"] },
+    {
+      "i": "dancing_shadows",
+      "l": "Dancing Shadows",
+      "e": "\ud83d\udd7a",
+      "c": "party",
+      "w": ["Dancing Shadows", "PS Dancing Shadows"]
+    },
+    { "i": "blends", "l": "Blends", "e": "\ud83c\udf79", "c": "party", "w": ["Blends"] },
+    {
+      "i": "halloween_eyes",
+      "l": "Spooky Eyes",
+      "e": "\ud83d\udc40",
+      "c": "party",
+      "w": ["Halloween Eyes"]
+    },
+    { "i": "police", "l": "Police", "e": "\ud83d\udea8", "c": "party", "w": ["Chase Flash"] },
+    { "i": "pacman", "l": "Pac-Man", "e": "\ud83d\udc7e", "c": "party", "w": ["PacMan"] },
+    { "i": "spray", "l": "Spray", "e": "\ud83d\udebf", "c": "party", "w": ["PS Spray 1D"] },
+    {
+      "i": "fire",
+      "l": "Fire",
+      "e": "\ud83d\udd25",
+      "c": "nature",
+      "w": ["Fire 2012", "PS Fire 1D", "Fire Flicker"]
+    },
+    {
+      "i": "fire_flicker",
+      "l": "Flicker",
+      "e": "\ud83e\ude94",
+      "c": "nature",
+      "w": ["Fire Flicker"]
+    },
+    {
+      "i": "lightning",
+      "l": "Lightning",
+      "e": "\ud83c\udf29\ufe0f",
+      "c": "nature",
+      "w": ["Lightning"]
+    },
+    { "i": "rain", "l": "Rain", "e": "\ud83c\udf27\ufe0f", "c": "nature", "w": ["Rain"] },
+    {
+      "i": "noise",
+      "l": "Noise",
+      "e": "\ud83c\udf2b\ufe0f",
+      "c": "nature",
+      "w": ["Noise 1", "Fill Noise"]
+    },
+    {
+      "i": "noise_pal",
+      "l": "Color Noise",
+      "e": "\ud83e\udeb8",
+      "c": "nature",
+      "w": ["Noise Pal"]
+    },
+    { "i": "phased", "l": "Phased", "e": "\ud83c\udf00", "c": "nature", "w": ["Phased"] },
+    { "i": "chunchun", "l": "Birds", "e": "\ud83d\udc26", "c": "nature", "w": ["Chunchun"] }
+  ],
+  "p": [
+    {
+      "l": "Rainbow",
+      "e": "\ud83c\udf08",
+      "w": "Rainbow",
+      "s": [
+        [255, 0, 0],
+        [255, 128, 0],
+        [255, 255, 0],
+        [0, 255, 0],
+        [0, 0, 255],
+        [140, 0, 255]
+      ]
+    },
+    {
+      "l": "Rainbow Bands",
+      "e": "\ud83c\udff3\ufe0f\u200d\ud83c\udf08",
+      "w": "Rainbow Bands",
+      "s": [
+        [255, 0, 0],
+        [0, 0, 0],
+        [255, 255, 0],
+        [0, 0, 0],
+        [0, 255, 0],
+        [0, 0, 0],
+        [0, 0, 255]
+      ]
+    },
+    {
+      "l": "Party",
+      "e": "\ud83c\udf89",
+      "w": "Party",
+      "s": [
+        [85, 0, 171],
+        [229, 0, 27],
+        [171, 119, 0],
+        [242, 0, 14],
+        [47, 0, 208]
+      ]
+    },
+    {
+      "l": "Sunset",
+      "e": "\ud83c\udf05",
+      "w": "Sunset",
+      "s": [
+        [120, 0, 0],
+        [255, 104, 0],
+        [167, 22, 18],
+        [100, 0, 103],
+        [16, 0, 130]
+      ]
+    },
+    {
+      "l": "Golden Hour",
+      "e": "\ud83c\udf07",
+      "w": "Sunset 2",
+      "s": [
+        [181, 0, 0],
+        [255, 80, 0],
+        [255, 198, 10],
+        [255, 240, 160]
+      ]
+    },
+    {
+      "l": "Ocean",
+      "e": "\ud83c\udf0a",
+      "w": "Ocean",
+      "s": [
+        [25, 25, 112],
+        [0, 0, 139],
+        [0, 128, 128],
+        [0, 255, 255],
+        [70, 130, 180]
+      ]
+    },
+    {
+      "l": "Beach",
+      "e": "\ud83c\udfd6\ufe0f",
+      "w": "Beach",
+      "s": [
+        [255, 240, 180],
+        [255, 190, 110],
+        [0, 200, 200],
+        [0, 110, 180]
+      ]
+    },
+    {
+      "l": "Atlantica",
+      "e": "\ud83d\udc20",
+      "w": "Atlantica",
+      "s": [
+        [0, 28, 112],
+        [32, 96, 255],
+        [0, 243, 45],
+        [12, 95, 82],
+        [25, 190, 95]
+      ]
+    },
+    {
+      "l": "Breeze",
+      "e": "\ud83d\udca8",
+      "w": "Breeze",
+      "s": [
+        [1, 6, 7],
+        [1, 99, 111],
+        [144, 209, 255],
+        [0, 73, 82]
+      ]
+    },
+    {
+      "l": "Clouds",
+      "e": "\u2601\ufe0f",
+      "w": "Cloud",
+      "s": [
+        [0, 0, 255],
+        [135, 206, 235],
+        [255, 255, 255],
+        [0, 0, 139]
+      ]
+    },
+    {
+      "l": "Aurora",
+      "e": "\ud83c\udf0c",
+      "w": "Aurora",
+      "s": [
+        [1, 5, 45],
+        [0, 200, 23],
+        [0, 255, 0],
+        [0, 243, 45],
+        [0, 135, 7]
+      ]
+    },
+    {
+      "l": "Northern Lights",
+      "e": "\ud83c\udf20",
+      "w": "Aurora 2",
+      "s": [
+        [17, 177, 13],
+        [121, 242, 5],
+        [25, 173, 121],
+        [250, 77, 127],
+        [171, 101, 221]
+      ]
+    },
+    {
+      "l": "Forest",
+      "e": "\ud83c\udf32",
+      "w": "Forest",
+      "s": [
+        [0, 100, 0],
+        [85, 107, 47],
+        [0, 128, 0],
+        [154, 205, 50],
+        [144, 238, 144]
+      ]
+    },
+    {
+      "l": "Rivendell",
+      "e": "\ud83c\udf43",
+      "w": "Rivendell",
+      "s": [
+        [1, 14, 5],
+        [16, 36, 14],
+        [56, 68, 30],
+        [150, 156, 99]
+      ]
+    },
+    {
+      "l": "Landscape",
+      "e": "\ud83c\udfde\ufe0f",
+      "w": "Landscape",
+      "s": [
+        [2, 25, 1],
+        [15, 115, 5],
+        [126, 211, 47],
+        [144, 182, 205],
+        [1, 37, 192]
+      ]
+    },
+    {
+      "l": "Lava",
+      "e": "\ud83c\udf0b",
+      "w": "Lava",
+      "s": [
+        [0, 0, 0],
+        [128, 0, 0],
+        [255, 0, 0],
+        [255, 165, 0],
+        [255, 255, 255]
+      ]
+    },
+    {
+      "l": "Fire",
+      "e": "\ud83d\udd25",
+      "w": "Fire",
+      "s": [
+        [0, 0, 0],
+        [180, 0, 0],
+        [255, 80, 0],
+        [255, 200, 0],
+        [255, 255, 200]
+      ]
+    },
+    {
+      "l": "Ice & Fire",
+      "e": "\ud83e\uddca",
+      "w": "Icefire",
+      "s": [
+        [0, 0, 0],
+        [0, 51, 255],
+        [0, 200, 255],
+        [255, 255, 255]
+      ]
+    },
+    {
+      "l": "Temperature",
+      "e": "\ud83c\udf21\ufe0f",
+      "w": "Temperature",
+      "s": [
+        [1, 27, 105],
+        [1, 99, 172],
+        [1, 186, 133],
+        [255, 213, 0],
+        [255, 28, 0]
+      ]
+    },
+    {
+      "l": "Autumn",
+      "e": "\ud83c\udf42",
+      "w": "Autumn",
+      "s": [
+        [67, 4, 1],
+        [118, 14, 1],
+        [137, 152, 52],
+        [113, 65, 1]
+      ]
+    },
+    {
+      "l": "Orangery",
+      "e": "\ud83c\udf4a",
+      "w": "Orangery",
+      "s": [
+        [255, 95, 23],
+        [255, 82, 0],
+        [223, 13, 8],
+        [144, 44, 2],
+        [255, 110, 17]
+      ]
+    },
+    {
+      "l": "Vintage",
+      "e": "\ud83d\udcfb",
+      "w": "Vintage",
+      "s": [
+        [16, 0, 1],
+        [97, 104, 3],
+        [255, 131, 19],
+        [67, 9, 4]
+      ]
+    },
+    {
+      "l": "Classic Bulbs",
+      "e": "\ud83d\udca1",
+      "w": "C9",
+      "s": [
+        [184, 4, 0],
+        [144, 44, 2],
+        [4, 96, 2],
+        [7, 7, 88]
+      ]
+    },
+    {
+      "l": "Retro Bulbs",
+      "e": "\ud83c\udf84",
+      "w": "C9 New",
+      "s": [
+        [255, 5, 0],
+        [255, 135, 0],
+        [0, 225, 5],
+        [0, 5, 255],
+        [255, 200, 0]
+      ]
+    },
+    {
+      "l": "Candy",
+      "e": "\ud83c\udf6c",
+      "w": "Candy",
+      "s": [
+        [229, 227, 1],
+        [227, 101, 3],
+        [40, 1, 80],
+        [1, 0, 32]
+      ]
+    },
+    {
+      "l": "Pink Candy",
+      "e": "\ud83c\udf6d",
+      "w": "Pink Candy",
+      "s": [
+        [255, 255, 255],
+        [7, 12, 255],
+        [227, 1, 127],
+        [255, 255, 255],
+        [171, 1, 190]
+      ]
+    },
+    {
+      "l": "Retro Clown",
+      "e": "\ud83e\udd21",
+      "w": "Retro Clown",
+      "s": [
+        [227, 101, 3],
+        [194, 18, 19],
+        [92, 8, 192]
+      ]
+    },
+    {
+      "l": "Sakura",
+      "e": "\ud83c\udf38",
+      "w": "Sakura",
+      "s": [
+        [196, 19, 10],
+        [255, 69, 45],
+        [223, 45, 72],
+        [255, 82, 103],
+        [223, 13, 17]
+      ]
+    },
+    {
+      "l": "Sherbet",
+      "e": "\ud83c\udf67",
+      "w": "Sherbet",
+      "s": [
+        [255, 33, 4],
+        [255, 68, 25],
+        [255, 82, 103],
+        [255, 255, 242],
+        [42, 255, 22]
+      ]
+    },
+    {
+      "l": "Pastel",
+      "e": "\ud83c\udfa8",
+      "w": "Pastel",
+      "s": [
+        [10, 62, 123],
+        [56, 130, 103],
+        [153, 225, 85],
+        [255, 207, 54],
+        [239, 107, 61]
+      ]
+    },
+    {
+      "l": "Fairy Reef",
+      "e": "\ud83e\uddda",
+      "w": "Fairy Reaf",
+      "s": [
+        [220, 19, 187],
+        [12, 225, 219],
+        [203, 242, 223],
+        [255, 255, 255]
+      ]
+    },
+    {
+      "l": "Toxic Reef",
+      "e": "\u2622\ufe0f",
+      "w": "Toxy Reaf",
+      "s": [
+        [1, 221, 53],
+        [73, 3, 178]
+      ]
+    },
+    {
+      "l": "Tiamat",
+      "e": "\ud83d\udc09",
+      "w": "Tiamat",
+      "s": [
+        [2, 5, 35],
+        [13, 135, 92],
+        [43, 255, 193],
+        [247, 7, 249],
+        [4, 213, 236]
+      ]
+    },
+    {
+      "l": "April Night",
+      "e": "\ud83c\udf03",
+      "w": "April Night",
+      "s": [
+        [1, 5, 45],
+        [5, 169, 175],
+        [45, 175, 31],
+        [249, 150, 5],
+        [223, 45, 72]
+      ]
+    },
+    {
+      "l": "Orange & Teal",
+      "e": "\ud83e\udde1",
+      "w": "Orange & Teal",
+      "s": [
+        [0, 150, 92],
+        [255, 72, 0]
+      ]
+    },
+    {
+      "l": "Red & Blue",
+      "e": "\u2764\ufe0f",
+      "w": "Red & Blue",
+      "s": [
+        [255, 0, 0],
+        [0, 0, 255]
+      ]
+    },
+    {
+      "l": "Magenta",
+      "e": "\ud83d\udc9c",
+      "w": "Magenta",
+      "s": [
+        [0, 0, 0],
+        [0, 0, 255],
+        [255, 0, 255],
+        [255, 255, 255]
+      ]
+    },
+    {
+      "l": "Pink & Red",
+      "e": "\ud83d\udc97",
+      "w": "Magred",
+      "s": [
+        [255, 0, 255],
+        [255, 0, 128],
+        [255, 0, 0]
+      ]
+    },
+    {
+      "l": "Yellow & Pink",
+      "e": "\ud83c\udf3a",
+      "w": "Yelmag",
+      "s": [
+        [255, 255, 0],
+        [255, 0, 128],
+        [255, 0, 255]
+      ]
+    },
+    {
+      "l": "Yellow & Blue",
+      "e": "\ud83d\udc9b",
+      "w": "Yelblu",
+      "s": [
+        [255, 255, 0],
+        [128, 128, 128],
+        [0, 0, 255]
+      ]
+    },
+    {
+      "l": "Deep Sea",
+      "e": "\ud83d\udc0b",
+      "w": "Semi Blue",
+      "s": [
+        [0, 0, 0],
+        [12, 1, 60],
+        [53, 1, 140],
+        [24, 107, 255]
+      ]
+    },
+    {
+      "l": "Traffic Light",
+      "e": "\ud83d\udea6",
+      "w": "Traffic Light",
+      "s": [
+        [255, 0, 0],
+        [255, 200, 0],
+        [0, 255, 0]
+      ]
+    },
+    {
+      "l": "Red Tide",
+      "e": "\ud83e\udd9e",
+      "w": "Red Tide",
+      "s": [
+        [251, 46, 0],
+        [255, 139, 25],
+        [246, 158, 63],
+        [103, 21, 6]
+      ]
+    },
+    {
+      "l": "Candy Corn",
+      "e": "\ud83c\udf6c",
+      "w": "\u2605 Candy Corn",
+      "s": [
+        [255, 255, 255],
+        [255, 196, 0],
+        [255, 106, 0],
+        [255, 106, 0]
+      ],
+      "po": [0, 85, 170, 255],
+      "f": "Orangery"
+    },
+    {
+      "l": "Witch's Brew",
+      "e": "\ud83e\uddea",
+      "w": "\u2605 Witch's Brew",
+      "s": [
+        [42, 0, 80],
+        [122, 0, 255],
+        [57, 255, 20],
+        [11, 61, 0]
+      ],
+      "f": "Toxy Reaf"
+    },
+    {
+      "l": "Jack-o'-Lantern",
+      "e": "\ud83c\udf83",
+      "w": "\u2605 Jack-o'-Lantern",
+      "s": [
+        [32, 3, 0],
+        [255, 77, 0],
+        [255, 160, 0],
+        [255, 77, 0],
+        [32, 3, 0]
+      ],
+      "f": "Fire"
+    },
+    {
+      "l": "Spooky Night",
+      "e": "\ud83d\udc7b",
+      "w": "\u2605 Spooky Night",
+      "s": [
+        [58, 0, 112],
+        [255, 90, 0],
+        [140, 255, 0],
+        [58, 0, 112]
+      ],
+      "f": "Retro Clown"
+    },
+    {
+      "l": "Blood Moon",
+      "e": "\ud83e\ude78",
+      "w": "\u2605 Blood Moon",
+      "s": [
+        [16, 0, 0],
+        [139, 0, 0],
+        [255, 26, 26],
+        [48, 0, 0]
+      ],
+      "f": "Lava"
+    },
+    {
+      "l": "Ghostly",
+      "e": "\ud83c\udf2b\ufe0f",
+      "w": "\u2605 Ghostly",
+      "s": [
+        [184, 200, 255],
+        [94, 58, 174],
+        [0, 179, 164],
+        [232, 240, 255]
+      ],
+      "f": "Breeze"
+    },
+    {
+      "l": "Peppermint",
+      "e": "\ud83c\udf6d",
+      "w": "\u2605 Peppermint",
+      "s": [
+        [255, 0, 0],
+        [255, 0, 0],
+        [255, 255, 255],
+        [255, 255, 255],
+        [255, 0, 0]
+      ],
+      "po": [0, 60, 100, 190, 255],
+      "f": "Rewhi"
+    },
+    {
+      "l": "Grinch",
+      "e": "\ud83d\udc9a",
+      "w": "\u2605 Grinch",
+      "s": [
+        [0, 192, 0],
+        [102, 255, 0],
+        [255, 0, 0],
+        [0, 192, 0]
+      ],
+      "f": "Jul"
+    },
+    {
+      "l": "Winter Wonderland",
+      "e": "\u2744\ufe0f",
+      "w": "\u2605 Winter Wonderland",
+      "s": [
+        [255, 255, 255],
+        [159, 216, 255],
+        [58, 123, 255],
+        [221, 238, 255]
+      ],
+      "f": "Breeze"
+    },
+    {
+      "l": "Nutcracker",
+      "e": "\ud83e\ude96",
+      "w": "\u2605 Nutcracker",
+      "s": [
+        [192, 0, 0],
+        [255, 176, 0],
+        [0, 100, 0],
+        [0, 0, 128],
+        [192, 0, 0]
+      ],
+      "f": "C9 New"
+    },
+    {
+      "l": "Ugly Sweater",
+      "e": "\ud83e\uddf6",
+      "w": "\u2605 Ugly Sweater",
+      "s": [
+        [224, 0, 0],
+        [255, 255, 255],
+        [0, 160, 0],
+        [255, 192, 0],
+        [224, 0, 0]
+      ],
+      "f": "C9"
+    },
+    {
+      "l": "Evergreen & Gold",
+      "e": "\ud83c\udf32",
+      "w": "\u2605 Evergreen & Gold",
+      "s": [
+        [0, 77, 26],
+        [0, 160, 64],
+        [255, 180, 0],
+        [0, 77, 26]
+      ],
+      "f": "Jul"
+    },
+    {
+      "l": "North Pole",
+      "e": "\ud83c\udf85",
+      "w": "\u2605 North Pole",
+      "s": [
+        [255, 255, 255],
+        [255, 0, 0],
+        [255, 255, 255],
+        [128, 200, 255]
+      ],
+      "f": "Rewhi"
+    },
+    {
+      "l": "Pastel Eggs",
+      "e": "\ud83e\udd5a",
+      "w": "\u2605 Pastel Eggs",
+      "s": [
+        [255, 158, 196],
+        [158, 232, 255],
+        [198, 163, 255],
+        [255, 242, 158],
+        [168, 255, 176]
+      ],
+      "f": "Pastel"
+    },
+    {
+      "l": "Spring Garden",
+      "e": "\ud83c\udf37",
+      "w": "\u2605 Spring Garden",
+      "s": [
+        [124, 255, 77],
+        [255, 102, 179],
+        [255, 225, 77],
+        [178, 102, 255]
+      ],
+      "f": "Sherbet"
+    },
+    {
+      "l": "Jelly Beans",
+      "e": "\ud83e\uded8",
+      "w": "\u2605 Jelly Beans",
+      "s": [
+        [255, 46, 99],
+        [255, 210, 63],
+        [59, 206, 172],
+        [123, 47, 247],
+        [255, 140, 66]
+      ],
+      "f": "Party"
+    },
+    {
+      "l": "Bunny Pink",
+      "e": "\ud83d\udc30",
+      "w": "\u2605 Bunny Pink",
+      "s": [
+        [255, 255, 255],
+        [255, 179, 209],
+        [255, 102, 163],
+        [255, 255, 255]
+      ],
+      "f": "Light Pink"
+    },
+    {
+      "l": "Old Glory",
+      "e": "\ud83c\uddfa\ud83c\uddf8",
+      "w": "\u2605 Old Glory",
+      "s": [
+        [255, 0, 0],
+        [255, 0, 0],
+        [255, 255, 255],
+        [255, 255, 255],
+        [0, 48, 255],
+        [0, 48, 255]
+      ],
+      "po": [0, 84, 85, 169, 170, 255],
+      "f": "Red & Blue"
+    },
+    {
+      "l": "Firecracker",
+      "e": "\ud83e\udde8",
+      "w": "\u2605 Firecracker",
+      "s": [
+        [255, 0, 0],
+        [255, 122, 0],
+        [255, 255, 255],
+        [0, 64, 255]
+      ],
+      "f": "Red & Blue"
+    },
+    {
+      "l": "Sparkler",
+      "e": "\ud83c\udf87",
+      "w": "\u2605 Sparkler",
+      "s": [
+        [255, 255, 255],
+        [255, 210, 122],
+        [255, 154, 0],
+        [255, 255, 255]
+      ],
+      "f": "Yellowout"
+    },
+    {
+      "l": "Harvest",
+      "e": "\ud83e\udd83",
+      "w": "\u2605 Harvest",
+      "s": [
+        [122, 46, 0],
+        [210, 105, 30],
+        [255, 176, 0],
+        [139, 26, 26]
+      ],
+      "f": "Autumn"
+    },
+    {
+      "l": "Sweetheart",
+      "e": "\ud83d\udc98",
+      "w": "\u2605 Sweetheart",
+      "s": [
+        [255, 0, 64],
+        [255, 102, 163],
+        [255, 255, 255],
+        [192, 0, 48]
+      ],
+      "f": "Magred"
+    },
+    {
+      "l": "Shamrock",
+      "e": "\ud83c\udf40",
+      "w": "\u2605 Shamrock",
+      "s": [
+        [0, 107, 31],
+        [0, 200, 83],
+        [178, 255, 89],
+        [255, 215, 0]
+      ],
+      "f": "Rivendell"
+    },
+    {
+      "l": "Champagne",
+      "e": "\ud83e\udd42",
+      "w": "\u2605 Champagne",
+      "s": [
+        [255, 231, 163],
+        [255, 255, 255],
+        [212, 175, 55],
+        [255, 246, 214]
+      ],
+      "f": "Yellowout"
+    },
+    {
+      "l": "Festival of Lights",
+      "e": "\ud83d\udd4e",
+      "w": "\u2605 Festival of Lights",
+      "s": [
+        [0, 56, 184],
+        [255, 255, 255],
+        [143, 184, 255],
+        [0, 56, 184]
+      ],
+      "f": "Semi Blue"
+    },
+    {
+      "l": "Mardi Gras",
+      "e": "\ud83c\udfad",
+      "w": "\u2605 Mardi Gras",
+      "s": [
+        [106, 0, 200],
+        [255, 196, 0],
+        [0, 160, 64],
+        [106, 0, 200]
+      ],
+      "f": "Tiamat"
+    },
+    {
+      "l": "Diwali Diyas",
+      "e": "\ud83e\ude94",
+      "w": "\u2605 Diwali Diyas",
+      "s": [
+        [255, 106, 0],
+        [255, 196, 0],
+        [255, 46, 99],
+        [255, 230, 160]
+      ],
+      "f": "Orangery"
+    }
+  ],
+  "h": [
+    { "i": "new_year", "n": "New Year's", "e": "\ud83e\udd42", "r": "fixed:1-1" },
+    { "i": "valentines", "n": "Valentine's Day", "e": "\u2764\ufe0f", "r": "fixed:2-14" },
+    { "i": "mardi_gras", "n": "Mardi Gras", "e": "\ud83c\udfad", "r": "easter:-47" },
+    { "i": "st_patricks", "n": "St. Patrick's Day", "e": "\ud83c\udf40", "r": "fixed:3-17" },
+    { "i": "easter", "n": "Easter", "e": "\ud83d\udc23", "r": "easter:0" },
+    {
+      "i": "cinco_de_mayo",
+      "n": "Cinco de Mayo",
+      "e": "\ud83c\uddf2\ud83c\uddfd",
+      "r": "fixed:5-5"
+    },
+    { "i": "memorial_day", "n": "Memorial Day", "e": "\ud83c\udf96\ufe0f", "r": "last:5:1" },
+    {
+      "i": "pride",
+      "n": "Pride Month",
+      "e": "\ud83c\udff3\ufe0f\u200d\ud83c\udf08",
+      "r": "fixed:6-1"
+    },
+    { "i": "july_4th", "n": "4th of July", "e": "\ud83c\uddfa\ud83c\uddf8", "r": "fixed:7-4" },
+    { "i": "halloween", "n": "Halloween", "e": "\ud83c\udf83", "r": "fixed:10-31" },
+    {
+      "i": "diwali",
+      "n": "Diwali",
+      "e": "\ud83e\ude94",
+      "r": "dates:2026-11-08,2027-10-29,2028-10-17,2029-11-05,2030-10-26"
+    },
+    { "i": "thanksgiving", "n": "Thanksgiving", "e": "\ud83e\udd83", "r": "nth:11:4:4" },
+    {
+      "i": "hanukkah",
+      "n": "Hanukkah",
+      "e": "\ud83d\udd4e",
+      "r": "dates:2026-12-04,2027-12-24,2028-12-12,2029-12-01,2030-12-20"
+    },
+    { "i": "christmas", "n": "Christmas", "e": "\ud83c\udf84", "r": "fixed:12-25" }
+  ],
+  "cg": [
+    {
+      "n": "Reds",
+      "c": [
+        { "n": "Red", "r": [255, 0, 0] },
+        { "n": "Crimson", "r": [220, 0, 30] },
+        { "n": "Cherry", "r": [200, 0, 10] },
+        { "n": "Ruby", "r": [255, 0, 60] },
+        { "n": "Coral", "r": [255, 60, 40] },
+        { "n": "Salmon", "r": [255, 90, 70] }
+      ]
+    },
+    {
+      "n": "Oranges",
+      "c": [
+        { "n": "Orange", "r": [255, 90, 0] },
+        { "n": "Pumpkin", "r": [255, 60, 0] },
+        { "n": "Tangerine", "r": [255, 120, 0] },
+        { "n": "Amber", "r": [255, 140, 0] },
+        { "n": "Peach", "r": [255, 130, 60] },
+        { "n": "Rust", "r": [200, 40, 0] }
+      ]
+    },
+    {
+      "n": "Yellows",
+      "c": [
+        { "n": "Yellow", "r": [255, 200, 0] },
+        { "n": "Gold", "r": [255, 170, 0] },
+        { "n": "Lemon", "r": [255, 230, 0] },
+        { "n": "Sunflower", "r": [255, 185, 20] },
+        { "n": "Honey", "r": [255, 150, 20] },
+        { "n": "Butter", "r": [255, 220, 80] }
+      ]
+    },
+    {
+      "n": "Greens",
+      "c": [
+        { "n": "Green", "r": [0, 255, 0] },
+        { "n": "Emerald", "r": [0, 200, 60] },
+        { "n": "Forest", "r": [0, 120, 10] },
+        { "n": "Lime", "r": [140, 255, 0] },
+        { "n": "Mint", "r": [60, 255, 120] },
+        { "n": "Shamrock", "r": [0, 180, 30] },
+        { "n": "Olive", "r": [110, 140, 0] }
+      ]
+    },
+    {
+      "n": "Teals & Cyans",
+      "c": [
+        { "n": "Teal", "r": [0, 200, 160] },
+        { "n": "Turquoise", "r": [0, 255, 200] },
+        { "n": "Aqua", "r": [0, 255, 255] },
+        { "n": "Seafoam", "r": [60, 255, 180] },
+        { "n": "Lagoon", "r": [0, 160, 200] }
+      ]
+    },
+    {
+      "n": "Blues",
+      "c": [
+        { "n": "Blue", "r": [0, 0, 255] },
+        { "n": "Royal", "r": [20, 40, 255] },
+        { "n": "Sky", "r": [40, 150, 255] },
+        { "n": "Ice", "r": [120, 200, 255] },
+        { "n": "Navy", "r": [0, 0, 120] },
+        { "n": "Cobalt", "r": [0, 70, 255] },
+        { "n": "Azure", "r": [0, 120, 255] }
+      ]
+    },
+    {
+      "n": "Purples",
+      "c": [
+        { "n": "Purple", "r": [140, 0, 255] },
+        { "n": "Violet", "r": [100, 0, 255] },
+        { "n": "Lavender", "r": [170, 100, 255] },
+        { "n": "Plum", "r": [120, 0, 140] },
+        { "n": "Indigo", "r": [60, 0, 200] },
+        { "n": "Amethyst", "r": [170, 40, 255] }
+      ]
+    },
+    {
+      "n": "Pinks",
+      "c": [
+        { "n": "Pink", "r": [255, 40, 140] },
+        { "n": "Hot Pink", "r": [255, 0, 120] },
+        { "n": "Magenta", "r": [255, 0, 255] },
+        { "n": "Rose", "r": [255, 30, 90] },
+        { "n": "Blush", "r": [255, 110, 150] },
+        { "n": "Fuchsia", "r": [230, 0, 200] }
+      ]
+    },
+    {
+      "n": "Whites",
+      "c": [
+        { "n": "Candlelight", "r": [255, 120, 30] },
+        { "n": "Warm White", "r": [255, 170, 90] },
+        { "n": "Soft White", "r": [255, 200, 140] },
+        { "n": "Neutral White", "r": [255, 225, 190] },
+        { "n": "Cool White", "r": [220, 235, 255] },
+        { "n": "Daylight", "r": [200, 220, 255] },
+        { "n": "Pure White", "r": [255, 255, 255] }
+      ]
+    },
+    {
+      "n": "Pastels",
+      "c": [
+        { "n": "Pastel Pink", "r": [255, 150, 190] },
+        { "n": "Pastel Blue", "r": [140, 190, 255] },
+        { "n": "Pastel Green", "r": [150, 255, 160] },
+        { "n": "Pastel Yellow", "r": [255, 240, 140] },
+        { "n": "Pastel Purple", "r": [200, 150, 255] },
+        { "n": "Pastel Orange", "r": [255, 180, 120] }
+      ]
+    },
+    {
+      "n": "Earth",
+      "c": [
+        { "n": "Brown", "r": [140, 50, 5] },
+        { "n": "Copper", "r": [200, 80, 20] },
+        { "n": "Bronze", "r": [180, 100, 20] },
+        { "n": "Cinnamon", "r": [170, 60, 10] }
+      ]
+    }
+  ]
+}

@@ -14,7 +14,9 @@ import { Home } from './ui/home';
 import { LookEditor } from './ui/lookEditor';
 import { PropsPage } from './ui/props';
 import { SchedulePage } from './ui/schedule';
+import { ShowsPage } from './ui/shows';
 import { ZonesPage } from './ui/zones';
+import { HelpPage } from './ui/help';
 
 interface AppContext {
   client: WledClient;
@@ -32,26 +34,44 @@ interface AppContext {
   propSync: PropSync;
   /** Writes the schedule (and seasons, if autopilot is on) to the
    * controller, then saves both to settings. */
-  saveSchedule: (schedule: Schedule, autopilot: Autopilot | undefined, resave?: boolean) => Promise<ScheduleResult>;
+  saveSchedule: (
+    schedule: Schedule,
+    autopilot: Autopilot | undefined,
+    resave?: boolean
+  ) => Promise<ScheduleResult>;
   go: (route: string) => void;
+  guest: boolean;
   /** Back to the previous Eaveglow page, or Home if there isn't one (e.g.
    * a home-screen web app that reopened directly on this page). */
   back: () => void;
 }
 
-const Ctx = createContext<AppContext>(null as unknown as AppContext);
+export const Ctx = createContext<AppContext>(null as unknown as AppContext);
 export const useApp = () => useContext(Ctx);
 
 const route = () => location.hash.replace(/^#/, '') || '/';
+const isGuest = new URLSearchParams(location.search).get('view') === '1';
 
 export function App() {
   const client = useMemo(() => new WledClient(), []);
   const store = useMemo(() => new SettingsStore(client), [client]);
   const installer = useMemo(
-    () => new CustomPaletteInstaller(client, () => store.settings.customPalettes ?? {}, (m) => store.update('customPalettes', m)),
-    [client, store],
+    () =>
+      new CustomPaletteInstaller(
+        client,
+        () => store.settings.customPalettes ?? {},
+        (m) => store.update('customPalettes', m)
+      ),
+    [client, store]
   );
-  const propSync = useMemo(() => new PropSync(() => ({ controllers: store.settings.controllers ?? [], props: store.settings.props ?? [] })), [store]);
+  const propSync = useMemo(
+    () =>
+      new PropSync(() => ({
+        controllers: store.settings.controllers ?? [],
+        props: store.settings.props ?? [],
+      })),
+    [store]
+  );
   const [settings, setSettings] = useState(store.settings);
   const [snapshot, setSnapshot] = useState<WledSnapshot>();
   const [error, setError] = useState<string>();
@@ -110,19 +130,24 @@ export function App() {
       // possible the look falls back to a similar built-in palette.
       const notes: string[] = [];
       let extra: Record<string, number> = {};
-      const wanted = customPalettesIn(look.layers.map((l) => l.palette));
+      const wanted = customPalettesIn(look.l.map((l) => l.p));
       if (wanted.length) {
         const r = await installer.ensure(wanted, paletteSlots(snap.info.ver, snap.info.arch));
         extra = r.ids;
         if (r.failed.length) {
-          notes.push(`Couldn't add ${r.failed.map((n) => n.replace('★ ', '')).join(', ')} to your controller (is it PIN-locked?), so a similar built-in color theme is used.`);
+          notes.push(
+            `Couldn't add ${r.failed.map((n) => n.replace('★ ', '')).join(', ')} to your controller (is it PIN-locked?), so a similar built-in color theme is used.`
+          );
         }
       }
       const catalog = new EffectCatalog(snap.effects, snap.palettes, extra);
       const compiled = compileLook(layout, look, catalog, snap.info.maxSegments);
-      return { state: toStateJson(compiled, snap.state.seg.length), notes: [...notes, ...compiled.warnings] };
+      return {
+        state: toStateJson(compiled, snap.state.seg.length, store.settings.transition ?? 7),
+        notes: [...notes, ...compiled.warnings],
+      };
     },
-    [store, installer],
+    [store, installer]
   );
 
   const applyLook = useCallback(
@@ -132,11 +157,14 @@ export function App() {
       await client.setState(state);
       notes.push(...describeFailures(await props));
       store.update('activeLookId', look.id);
-      store.update('recentLooks', [look.id, ...(store.settings.recentLooks ?? []).filter((id) => id !== look.id)].slice(0, 6));
+      store.update(
+        'recentLooks',
+        [look.id, ...(store.settings.recentLooks ?? []).filter((id) => id !== look.id)].slice(0, 6)
+      );
       void refresh();
       return notes;
     },
-    [client, store, refresh, lookState, propSync],
+    [client, store, refresh, lookState, propSync]
   );
 
   const setLights = useCallback(
@@ -145,16 +173,25 @@ export function App() {
       await client.setState(state);
       return describeFailures(await props);
     },
-    [client, propSync],
+    [client, propSync]
   );
 
   const saveSchedule = useCallback(
     async (schedule: Schedule, autopilot: Autopilot | undefined, resave = true) => {
-      const plan = autopilot?.enabled && schedule.enabled ? seasonPeriods(autopilot, holidayGroups) : undefined;
+      const plan =
+        autopilot?.enabled && schedule.enabled
+          ? seasonPeriods(autopilot, holidayGroups)
+          : undefined;
       const looks = [...builtinLooks, ...store.settings.customLooks];
       // A deleted custom look falls back to the everyday look.
-      const findLook = (id: string) => looks.find((l) => l.id === id) ?? looks.find((l) => l.id === autopilot?.everydayLookId) ?? looks[0];
-      const periods = plan?.periods.map((p) => ({ ...p, lookIds: [...new Set(p.lookIds.map((id) => findLook(id).id))] }));
+      const findLook = (id: string) =>
+        looks.find((l) => l.id === id) ??
+        looks.find((l) => l.id === autopilot?.everydayLookId) ??
+        looks[0];
+      const periods = plan?.periods.map((p) => ({
+        ...p,
+        lookIds: [...new Set(p.lookIds.map((id) => findLook(id).id))],
+      }));
       let snap: WledSnapshot | undefined;
       const r = await applySchedule(
         client,
@@ -165,29 +202,45 @@ export function App() {
         periods && {
           periods,
           resave,
-          stateFor: async (id) => (await lookState(findLook(id), (snap ??= await client.fetchSnapshot()))).state,
+          stateFor: async (id) =>
+            (await lookState(findLook(id), (snap ??= await client.fetchSnapshot()))).state,
           nameOf: (id) => findLook(id).name,
-        },
+        }
       );
       if (r.errors.length) return r;
       // The same schedule on every prop controller, with its own look presets.
       const propResults = await propSync.each(async (c, propClient, props) => {
-        const pr = await applySchedule(propClient, schedule, browserTimezone(), browserUtcOffsetMinutes(), new Date(), periods && {
-          periods,
-          resave,
-          stateFor: (id) => propSync.stateFor(c, props, findLook(id)),
-          nameOf: (id) => findLook(id).name,
-        });
+        const pr = await applySchedule(
+          propClient,
+          schedule,
+          browserTimezone(),
+          browserUtcOffsetMinutes(),
+          new Date(),
+          periods && {
+            periods,
+            resave,
+            stateFor: (id) => propSync.stateFor(c, props, findLook(id)),
+            nameOf: (id) => findLook(id).name,
+          }
+        );
         if (pr.errors.length) throw new Error(pr.errors.join(' '));
       });
-      const propProblems = describeFailures(propResults).map((m) => `The schedule wasn't saved on ${m}`);
+      const propProblems = describeFailures(propResults).map(
+        (m) => `The schedule wasn't saved on ${m}`
+      );
       store.update('schedule', schedule);
-      if (autopilot) store.update('autopilot', { ...autopilot, syncedDates: plan ? datesFingerprint(plan.periods) : undefined });
+      if (autopilot)
+        store.update('autopilot', {
+          ...autopilot,
+          syncedDates: plan ? datesFingerprint(plan.periods) : undefined,
+        });
       void refresh();
-      const skipped = plan?.skipped.length ? [`No date is known for ${plan.skipped.join(', ')} this year, so it was skipped.`] : [];
+      const skipped = plan?.skipped.length
+        ? [`No date is known for ${plan.skipped.join(', ')} this year, so it was skipped.`]
+        : [];
       return { errors: [], warnings: [...skipped, ...r.warnings, ...propProblems] };
     },
-    [client, store, refresh, lookState, propSync],
+    [client, store, refresh, lookState, propSync]
   );
 
   // Moving holidays (Easter, Thanksgiving…) fall on different days each
@@ -196,12 +249,15 @@ export function App() {
   const resync = useCallback(async () => {
     const { schedule, autopilot } = store.settings;
     if (!schedule.enabled || !autopilot?.enabled) return;
-    if (datesFingerprint(seasonPeriods(autopilot, holidayGroups).periods) === autopilot.syncedDates) return;
+    if (datesFingerprint(seasonPeriods(autopilot, holidayGroups).periods) === autopilot.syncedDates)
+      return;
     try {
       const r = await saveSchedule(schedule, autopilot, false);
       if (r.errors.length) throw new Error(r.errors.join(' '));
     } catch (e) {
-      toast(`🗓 Couldn't update the autopilot dates on your lights: ${e instanceof Error ? e.message : e} Open Schedule and save to try again.`);
+      toast(
+        `🗓 Couldn't update the autopilot dates on your lights: ${e instanceof Error ? e.message : e} Open Schedule and save to try again.`
+      );
     }
   }, [store, saveSchedule, toast]);
 
@@ -223,7 +279,22 @@ export function App() {
     }
   }, []);
 
-  const ctx: AppContext = { client, store, settings, snapshot, offline: !!error, refresh, toast, applyLook, setLights, propSync, saveSchedule, go, back };
+  const ctx: AppContext = {
+    client,
+    store,
+    settings,
+    snapshot,
+    offline: !!error,
+    refresh,
+    toast,
+    applyLook,
+    setLights,
+    propSync,
+    saveSchedule,
+    go,
+    back,
+    guest: isGuest,
+  };
   const [page, arg] = path.split('/').filter(Boolean);
 
   return (
@@ -231,7 +302,10 @@ export function App() {
       {error && (
         <div class="banner error" role="alert">
           {error}
-          {snapshot && ' Showing what the lights were doing last.'} <button class="link" onClick={refresh}>Retry</button>
+          {snapshot && ' Showing what the lights were doing last.'}{' '}
+          <button class="link" onClick={refresh}>
+            Retry
+          </button>
         </div>
       )}
       {page === 'look' ? (
@@ -242,12 +316,18 @@ export function App() {
         <PropsPage />
       ) : page === 'schedule' ? (
         <SchedulePage />
+      ) : page === 'shows' ? (
+        <ShowsPage />
+      ) : page === 'help' ? (
+        <HelpPage />
       ) : (
         <Home />
       )}
       <div class="toasts">
         {toasts.map((t) => (
-          <div key={t.id} class="toast">{t.text}</div>
+          <div key={t.id} class="toast">
+            {t.text}
+          </div>
         ))}
       </div>
     </Ctx.Provider>

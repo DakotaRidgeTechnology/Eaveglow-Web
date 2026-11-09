@@ -27,6 +27,13 @@ export interface SpecialDate {
   enabled: boolean;
 }
 
+export interface WeatherRule {
+  id: string;
+  condition: 'rain' | 'snow' | 'clear' | 'cloudy' | 'storm';
+  lookId: string;
+  enabled: boolean;
+}
+
 export interface Autopilot {
   enabled: boolean;
   seasons: Season[];
@@ -35,6 +42,8 @@ export interface Autopilot {
   everydayLookId: string;
   /** datesFingerprint of the periods last written to the controller. */
   syncedDates?: string;
+  /** Weather-triggered look overrides. */
+  weatherRules?: WeatherRule[];
 }
 
 export interface MonthDay {
@@ -71,18 +80,20 @@ export function defaultAutopilot(holidays: HolidayGroup[], looks: Look[]): Autop
   return {
     enabled: false,
     everydayLookId: EVERYDAY_LOOK,
-    seasons: DEFAULTS.filter(([id]) => holidays.some((h) => h.id === id)).map(([holidayId, daysBefore, daysAfter]) => ({
-      holidayId,
-      lookIds: rotationFor(holidayId, looks),
-      daysBefore,
-      daysAfter,
-      enabled: true,
-    })),
+    seasons: DEFAULTS.filter(([id]) => holidays.some((h) => h.id === id)).map(
+      ([holidayId, daysBefore, daysAfter]) => ({
+        holidayId,
+        lookIds: rotationFor(holidayId, looks),
+        daysBefore,
+        daysAfter,
+        enabled: true,
+      })
+    ),
   };
 }
 
 function rotationFor(holidayId: string, looks: Look[]): string[] {
-  const ids = looks.filter((l) => l.group === holidayId).map((l) => l.id);
+  const ids = looks.filter((l) => l.h === holidayId).map((l) => l.id);
   // Holidays with many looks (Christmas, Halloween) mix the classics with the newer ones.
   const step = Math.max(1, Math.floor(ids.length / MAX_ROTATION));
   const out = ids.filter((_, i) => i % step === 0).slice(0, MAX_ROTATION);
@@ -104,7 +115,8 @@ export function rotationDays(count: number): number[] {
 }
 
 const DAY = 86400000;
-const dayIndex = (d: Date) => Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
+const dayIndex = (d: Date) =>
+  Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
 const fromIndex = (i: number): MonthDay => {
   const d = new Date(i * DAY);
   return { mon: d.getUTCMonth() + 1, day: d.getUTCDate() };
@@ -153,31 +165,65 @@ export interface SeasonPlan {
  * days where seasons overlap the shorter one wins (Thanksgiving week over the
  * start of Christmas).
  */
-export function seasonPeriods(autopilot: Autopilot, holidays: HolidayGroup[], today = new Date()): SeasonPlan {
+export function seasonPeriods(
+  autopilot: Autopilot,
+  holidays: HolidayGroup[],
+  today = new Date()
+): SeasonPlan {
   const t = dayIndex(today);
   const skipped: string[] = [];
   type Info = Omit<Period, 'start' | 'end'>;
-  const rotation = (ids: string[]) => (ids.length ? ids.slice(0, MAX_ROTATION) : [autopilot.everydayLookId]);
+  const rotation = (ids: string[]) =>
+    ids.length ? ids.slice(0, MAX_ROTATION) : [autopilot.everydayLookId];
   const ranges: { info: Info; special: boolean; from: number; to: number }[] = [];
   for (const season of autopilot.seasons) {
     const group = holidays.find((h) => h.id === season.holidayId);
     if (!season.enabled || !group) continue;
     const r = nextRange(season, group, t);
     if (!r) skipped.push(group.name);
-    else ranges.push({ info: { key: group.id, label: group.name, emoji: group.emoji, lookIds: rotation(season.lookIds) }, special: false, from: r[0], to: r[1] });
+    else
+      ranges.push({
+        info: {
+          key: group.id,
+          label: group.name,
+          emoji: group.emoji,
+          lookIds: rotation(season.lookIds),
+        },
+        special: false,
+        from: r[0],
+        to: r[1],
+      });
   }
   for (const d of autopilot.dates ?? []) {
     const r = d.enabled ? dateRange(d, t) : null;
-    if (r) ranges.push({ info: { key: d.id, label: d.name || 'Special date', emoji: '📅', lookIds: rotation(d.lookIds) }, special: true, from: r[0], to: r[1] });
+    if (r)
+      ranges.push({
+        info: {
+          key: d.id,
+          label: d.name || 'Special date',
+          emoji: '📅',
+          lookIds: rotation(d.lookIds),
+        },
+        special: true,
+        from: r[0],
+        to: r[1],
+      });
   }
   ranges.sort((a, b) => Number(b.special) - Number(a.special) || a.to - a.from - (b.to - b.from));
 
   // Days until this date next year: 365, or 366 across a Feb 29.
   const now = new Date(t * DAY);
-  const year = dayIndex(new Date(now.getUTCFullYear() + 1, now.getUTCMonth(), now.getUTCDate())) - t;
-  const covers = (x: (typeof ranges)[number], i: number) => (i >= x.from && i <= x.to) || (i - year >= x.from && i - year <= x.to);
+  const year =
+    dayIndex(new Date(now.getUTCFullYear() + 1, now.getUTCMonth(), now.getUTCDate())) - t;
+  const covers = (x: (typeof ranges)[number], i: number) =>
+    (i >= x.from && i <= x.to) || (i - year >= x.from && i - year <= x.to);
 
-  const everyday: Info = { key: EVERYDAY, label: 'Everyday', emoji: '🏡', lookIds: [autopilot.everydayLookId] };
+  const everyday: Info = {
+    key: EVERYDAY,
+    label: 'Everyday',
+    emoji: '🏡',
+    lookIds: [autopilot.everydayLookId],
+  };
   const days: Info[] = [];
   for (let i = t; i < t + year; i++) {
     // Special dates first, then shortest first, so they win on shared days.
@@ -195,13 +241,20 @@ export function seasonPeriods(autopilot: Autopilot, holidays: HolidayGroup[], to
     runs.at(-1)!.to = runs[0].to + year;
     runs.shift();
   }
-  if (runs.length === 1) return { periods: [{ ...runs[0].info, start: { mon: 1, day: 1 }, end: { mon: 12, day: 31 } }], skipped };
+  if (runs.length === 1)
+    return {
+      periods: [{ ...runs[0].info, start: { mon: 1, day: 1 }, end: { mon: 12, day: 31 } }],
+      skipped,
+    };
   // A period ending Feb 28 also takes Feb 29, which WLED sees in leap years only.
   const end = (i: number) => {
     const d = fromIndex(i);
     return d.mon === 2 && d.day === 28 ? { mon: 2, day: 29 } : d;
   };
-  return { periods: runs.map((r) => ({ ...r.info, start: fromIndex(r.from), end: end(r.to) })), skipped };
+  return {
+    periods: runs.map((r) => ({ ...r.info, start: fromIndex(r.from), end: end(r.to) })),
+    skipped,
+  };
 }
 
 const inRange = (p: Period, mon: number, day: number) => {
@@ -217,6 +270,12 @@ export function currentPeriod(periods: Period[], today = new Date()): Period | u
 }
 
 export const datesFingerprint = (periods: Period[]) =>
-  periods.map((p) => `${p.key}:${p.lookIds.join('+')}:${p.start.mon}-${p.start.day}:${p.end.mon}-${p.end.day}`).join(',');
+  periods
+    .map(
+      (p) =>
+        `${p.key}:${p.lookIds.join('+')}:${p.start.mon}-${p.start.day}:${p.end.mon}-${p.end.day}`
+    )
+    .join(',');
 
-export const describeMonthDay = (d: MonthDay) => new Date(2001, d.mon - 1, d.day).toLocaleDateString([], { month: 'short', day: 'numeric' });
+export const describeMonthDay = (d: MonthDay) =>
+  new Date(2001, d.mon - 1, d.day).toLocaleDateString([], { month: 'short', day: 'numeric' });

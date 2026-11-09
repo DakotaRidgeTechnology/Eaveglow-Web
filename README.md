@@ -1,8 +1,8 @@
 # Eaveglow
 
-*Beautiful roofline lighting, made easy. Works with WLED.*
+_Beautiful roofline lighting, made easy. Works with WLED._
 
-Eaveglow's looks, zones, light spacing and schedules, as one small web page (about 40 KB) that lives
+Eaveglow's looks, zones, light spacing and schedules, as one small web page (about 54 KB gzipped) that lives
 **on the ESP32 running WLED**. There's nothing to install on phones, no app store, and nothing expires.
 Everyone on your Wi-Fi opens the same page and shares the same settings.
 
@@ -55,7 +55,7 @@ To update, rebuild and upload `eaveglow.htm.gz` again. Your settings are kept.
 
 ## Features
 
-- **Looks:** 132 looks (Everyday, Holidays, Bulbs, Party, Sports, Nature). Holidays are grouped by holiday,
+- **Looks:** 174 looks (Everyday, Holidays, Bulbs, Party, Sports, Nature). Holidays are grouped by holiday,
   sorted by which comes next, with a "coming up" card.
 - **Make your own look:** 94 effect styles, 66 colors plus any color, and 70 color themes. 27 of the themes are
   Eaveglow's own (★) and get installed on the controller as WLED custom palettes when first used.
@@ -65,6 +65,19 @@ To update, rebuild and upload `eaveglow.htm.gz` again. Your settings are kept.
 - **Seasonal autopilot:** looks change by date for each holiday (a new look each night if you like), plus special
   dates such as game days and birthdays, and an everyday look the rest of the year.
 - **Recent looks and a sleep timer** on Home.
+- **Shows:** choreographed multi-step look sequences.
+- **Weather-aware autopilot:** override looks based on current weather (Open-Meteo, no API key).
+- **Sound reactive mode:** microphone-driven brightness and color temperature.
+- **Dark/light theme:** manual toggle with system preference fallback.
+- **Look hiding:** hide looks you don't use; excluded from grid and autopilot.
+- **Manual zone positions:** scattered lights (peaks) without overlapping segments.
+- **Zone splitting:** split a zone into 1-pixel peak zones.
+- **Color temperature slider:** warm-to-cool white control.
+- **Guest/read-only mode:** `?view=1` URL param.
+- **Look sharing:** export/import looks via clipboard.
+- **Multi-controller sync:** apply active look to all controllers at once.
+- **Keyboard shortcuts:** Space, arrows, 1-9.
+- **Help page:** `/help` with full documentation.
 - **Props on other controllers:** candy canes with diagonal stripes (from the prop's xLights model file), path
   lights and pixel-wrapped trees that follow the look, on another WLED controller. Eaveglow drives each controller itself, so layouts and
   spacing don't have to match, and writes the schedule to all of them (House zones → Props).

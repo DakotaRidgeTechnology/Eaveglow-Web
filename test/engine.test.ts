@@ -1,4 +1,11 @@
-import { builtinLooks, effectStyles, lookCategories, palettePresets, colorGroups, styleById } from '../src/engine/library';
+import {
+  builtinLooks,
+  effectStyles,
+  lookCategories,
+  palettePresets,
+  colorGroups,
+  styleById,
+} from '../src/engine/library';
 import { HouseLayout, Look, sequential, suggestedSpacing, spacingLabel } from '../src/engine/model';
 import { EffectCatalog, compileLook, toStateJson } from '../src/engine/segmentCompiler';
 import { wled015Effects, wled015Palettes } from './fixtures_wled015';
@@ -6,10 +13,18 @@ import { wled16Effects, wled16Palettes } from './fixtures_wled16';
 
 const cat015 = new EffectCatalog(wled015Effects, wled015Palettes);
 const cat16 = new EffectCatalog(wled16Effects, wled16Palettes);
-const zone = (id: string, start: number, length: number, reversed = false) => ({ id, name: id, start, length, reversed });
+const zone = (id: string, start: number, length: number, reversed = false) => ({
+  id,
+  name: id,
+  start,
+  length,
+  reversed,
+});
 const solid = (rgb: [number, number, number], target: any = { kind: 'all' }): Look => ({
-  id: 't', name: 't', emoji: '',
-  layers: [{ target, effect: ['Solid'], palette: [], colors: [rgb], speed: 128, intensity: 128 }],
+  id: 't',
+  name: 't',
+  emoji: '',
+  l: [{ t: target, e: ['Solid'], p: [], c: [rgb], s: 128, i: 128 }],
 });
 const look = (id: string) => builtinLooks.find((l) => l.id === `builtin.${id}`)!;
 
@@ -23,8 +38,14 @@ describe('library (exported from the Flutter app)', () => {
   });
 
   it('every look compiles on WLED 0.15 and 16.0.1 without warnings', () => {
-    const layout: HouseLayout = { totalPixels: 300, zones: sequential([zone('left', 0, 100), zone('peak', 0, 50, true), zone('right', 0, 150)]) };
-    for (const [v, cat] of [['0.15', cat015], ['16', cat16]] as const) {
+    const layout: HouseLayout = {
+      totalPixels: 300,
+      zones: sequential([zone('left', 0, 100), zone('peak', 0, 50, true), zone('right', 0, 150)]),
+    };
+    for (const [v, cat] of [
+      ['0.15', cat015],
+      ['16', cat16],
+    ] as const) {
       for (const l of builtinLooks) {
         const r = compileLook(layout, l, cat, 32);
         expect(r.warnings, `${l.name} on ${v}`).toEqual([]);
@@ -48,18 +69,42 @@ describe('segment compiler', () => {
   });
 
   it('alternate zones and painter order (Christmas Classic)', () => {
-    const r = compileLook({ totalPixels: 90, zones: [zone('a', 0, 30), zone('b', 30, 30), zone('c', 60, 30)] }, look('christmas_classic'), cat16);
-    expect(r.segments.map((s) => [s.start, s.stop])).toEqual([[0, 30], [30, 60], [60, 90]]);
-    expect(r.segments.map((s) => s.col![0])).toEqual([[255, 0, 0], [0, 255, 0], [255, 0, 0]]);
+    const r = compileLook(
+      { totalPixels: 90, zones: [zone('a', 0, 30), zone('b', 30, 30), zone('c', 60, 30)] },
+      look('christmas_classic'),
+      cat16
+    );
+    expect(r.segments.map((s) => [s.start, s.stop])).toEqual([
+      [0, 30],
+      [30, 60],
+      [60, 90],
+    ]);
+    expect(r.segments.map((s) => s.col![0])).toEqual([
+      [255, 0, 0],
+      [0, 255, 0],
+      [255, 0, 0],
+    ]);
   });
 
   it('gaps become off segments; untargeted zones are off', () => {
-    const r = compileLook({ totalPixels: 100, zones: [zone('a', 10, 20), zone('b', 50, 20)] }, solid([0, 0, 255], { kind: 'zones', zoneIds: ['b'] }), cat16);
-    expect(r.segments.map((s) => [s.start, s.stop, s.on])).toEqual([[0, 50, false], [50, 70, true], [70, 100, false]]);
+    const r = compileLook(
+      { totalPixels: 100, zones: [zone('a', 10, 20), zone('b', 50, 20)] },
+      solid([0, 0, 255], { kind: 'zones', zoneIds: ['b'] }),
+      cat16
+    );
+    expect(r.segments.map((s) => [s.start, s.stop, s.on])).toEqual([
+      [0, 50, false],
+      [50, 70, true],
+      [70, 100, false],
+    ]);
   });
 
   it('reversed zones', () => {
-    const r = compileLook({ totalPixels: 60, zones: [zone('a', 0, 30), zone('b', 30, 30, true)] }, solid([255, 0, 0]), cat16);
+    const r = compileLook(
+      { totalPixels: 60, zones: [zone('a', 0, 30), zone('b', 30, 30, true)] },
+      solid([255, 0, 0]),
+      cat16
+    );
     expect(r.segments.map((s) => s.rev)).toEqual([false, true]);
   });
 
@@ -69,13 +114,13 @@ describe('segment compiler', () => {
     expect(wled16Effects[bulbs.fx!]).toBe('Solid Pattern');
     expect([bulbs.sx, bulbs.ix, bulbs.grp, bulbs.spc]).toEqual([0, 0, 1, 3]);
     const override = solid([1, 2, 3]);
-    override.layers[0].spacing = { lit: 1, skip: 0 };
+    override.l[0].sp = { lit: 1, skip: 0 };
     expect(compileLook(layout, override, cat16).segments[0].spc).toBe(0);
   });
 
   it('unknown effects fall back with a warning; too many segments are simplified', () => {
     const l = solid([1, 1, 1]);
-    l.layers[0].effect = ['Nope'];
+    l.l[0].e = ['Nope'];
     expect(compileLook({ totalPixels: 10, zones: [] }, l, cat16).warnings[0]).toContain('Nope');
     const zones = Array.from({ length: 10 }, (_, i) => zone(`z${i}`, i * 10, i === 0 ? 2 : 10));
     const r = compileLook({ totalPixels: 92, zones }, look('christmas_classic'), cat16, 4);
@@ -93,18 +138,48 @@ describe('segment compiler', () => {
     const one = compileLook({ totalPixels: 300, zones: [] }, look('magic_icicles'), cat16, 32);
     expect(one.warnings).toEqual([]);
     expect(one.segments).toHaveLength(2);
-    expect(one.segments[0]).toMatchObject({ id: 0, start: 0, stop: 300, grp: 1, spc: 0, col: [[66, 70, 77]] });
+    expect(one.segments[0]).toMatchObject({
+      id: 0,
+      start: 0,
+      stop: 300,
+      grp: 1,
+      spc: 0,
+      col: [[66, 70, 77]],
+    });
     expect(fxName(one.segments[0])).toBe('Solid');
-    expect(one.segments[1]).toMatchObject({ id: 1, start: 0, stop: 300, grp: 1, spc: 3, col: [[220, 235, 255], [66, 70, 77]] });
+    expect(one.segments[1]).toMatchObject({
+      id: 1,
+      start: 0,
+      stop: 300,
+      grp: 1,
+      spc: 3,
+      col: [
+        [220, 235, 255],
+        [66, 70, 77],
+      ],
+    });
     expect(fxName(one.segments[1])).toBe('Fairytwinkle');
     expect(wled16Palettes[one.segments[1].pal!]).toBe('* Color 1');
 
     // With house spacing (1 on, 3 off) the twinkles land on every 4th *lit* light.
-    const spaced = compileLook({ totalPixels: 300, zones: [], spacing: { lit: 1, skip: 3 } }, look('magic_icicles'), cat16, 32);
-    expect(spaced.segments.map((s) => [s.grp, s.spc])).toEqual([[1, 3], [1, 15]]);
+    const spaced = compileLook(
+      { totalPixels: 300, zones: [], spacing: { lit: 1, skip: 3 } },
+      look('magic_icicles'),
+      cat16,
+      32
+    );
+    expect(spaced.segments.map((s) => [s.grp, s.spc])).toEqual([
+      [1, 3],
+      [1, 15],
+    ]);
 
     // Two parts with an unlit gap: one overlay per lit part, after every base segment.
-    const parts = compileLook({ totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] }, look('magic_icicles'), cat16, 32);
+    const parts = compileLook(
+      { totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] },
+      look('magic_icicles'),
+      cat16,
+      32
+    );
     expect(parts.segments.map((s) => [s.start, s.stop, s.on, fxName(s)])).toEqual([
       [0, 100, true, 'Solid'],
       [100, 150, false, 'Solid'],
@@ -116,13 +191,24 @@ describe('segment compiler', () => {
     expect(parts.segments.map((s) => s.id)).toEqual([0, 1, 2, 3, 4]);
 
     // On a small segment budget the house is simplified so base + overlays fit.
-    const tight = compileLook({ totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] }, look('magic_icicles'), cat16, 3);
+    const tight = compileLook(
+      { totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] },
+      look('magic_icicles'),
+      cat16,
+      3
+    );
     expect(tight.segments.length).toBeLessThanOrEqual(3);
   });
 
   it('state JSON deletes leftover segments', () => {
-    const j = toStateJson(compileLook({ totalPixels: 10, zones: [] }, solid([1, 1, 1]), cat16), 3) as any;
-    expect(j.seg.slice(1)).toEqual([{ id: 1, stop: 0 }, { id: 2, stop: 0 }]);
+    const j = toStateJson(
+      compileLook({ totalPixels: 10, zones: [] }, solid([1, 1, 1]), cat16),
+      3
+    ) as any;
+    expect(j.seg.slice(1)).toEqual([
+      { id: 1, stop: 0 },
+      { id: 2, stop: 0 },
+    ]);
   });
 
   it('spacing helpers', () => {
