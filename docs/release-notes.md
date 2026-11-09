@@ -1,9 +1,9 @@
 Eaveglow is a simple phone app for WLED that lives on the controller itself. It's one small web page you upload to the ESP32 running WLED, so there's no extra hardware, no cloud account and no app store.
 
 <p>
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.0/docs/screenshots/home.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.0/docs/screenshots/editor.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.0/docs/screenshots/autopilot.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.1/docs/screenshots/home.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.1/docs/screenshots/editor.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.1/docs/screenshots/autopilot.png" width="240">
 </p>
 
 ## Install
@@ -14,16 +14,11 @@ Eaveglow is a simple phone app for WLED that lives on the controller itself. It'
 
 To update later, upload the new `eaveglow.htm.gz` over the old one. Your settings are kept.
 
-## New in 1.1.0
+## New in 1.1.1
 
-- Recent looks at the top of Home, shared by every phone in the house
-- Sleep timer: turn the lights off in 30 minutes to 4 hours, using WLED's own nightlight
-- Special dates in autopilot for game days, birthdays and the like, once or every year
-- The timers you had in WLED are backed up before Eaveglow first replaces them, with a one-tap restore
-- A clear message when the controller can't be reached, which clears by itself when it's back
-- White now shows up in the light-theme preview strip
-- Backup: download everything you've set up (looks, house parts, schedule, autopilot) to your phone or computer, and restore it later, from House zones. WLED's own backup doesn't include it.
-- Optional update check, off by default: turn it on per phone under House zones > About and it asks GitHub once a day whether there's a newer version. Nothing else leaves your network.
+- **Magic Icicles** (Holidays > Christmas): one cool white light, then three dimmer ones, repeating along the house. The bright lights each fade softly up and down on their own, like icicles catching the light. It works with house light spacing, and you can add it to your Christmas autopilot rotation.
+
+For everything added in 1.1.0 (recent looks, sleep timer, special dates, backup and more), see the [1.1.0 release](https://github.com/DakotaRidgeTechnology/Eaveglow-Web/releases/tag/v1.1.0).
 
 ## What's in it
 
