@@ -15,7 +15,7 @@ const look = (id: string) => builtinLooks.find((l) => l.id === `builtin.${id}`)!
 
 describe('library (exported from the Flutter app)', () => {
   it('has the full catalogue', () => {
-    expect(builtinLooks.length).toBe(131);
+    expect(builtinLooks.length).toBe(132);
     expect(effectStyles.length).toBe(94);
     expect(palettePresets.length).toBe(70);
     expect(colorGroups.flatMap((g) => g.colors).length).toBe(66);
@@ -86,6 +86,38 @@ describe('segment compiler', () => {
       cursor = s.stop;
     }
     expect(cursor).toBe(92);
+  });
+
+  it('Magic Icicles: a dim base with every 4th lit light twinkling on top', () => {
+    const fxName = (s: any) => wled16Effects[s.fx];
+    const one = compileLook({ totalPixels: 300, zones: [] }, look('magic_icicles'), cat16, 32);
+    expect(one.warnings).toEqual([]);
+    expect(one.segments).toHaveLength(2);
+    expect(one.segments[0]).toMatchObject({ id: 0, start: 0, stop: 300, grp: 1, spc: 0, col: [[55, 90, 135]] });
+    expect(fxName(one.segments[0])).toBe('Solid');
+    expect(one.segments[1]).toMatchObject({ id: 1, start: 0, stop: 300, grp: 1, spc: 3, col: [[215, 235, 255], [55, 90, 135]] });
+    expect(fxName(one.segments[1])).toBe('Fairytwinkle');
+    expect(wled16Palettes[one.segments[1].pal!]).toBe('* Color 1');
+
+    // With house spacing (1 on, 3 off) the twinkles land on every 4th *lit* light.
+    const spaced = compileLook({ totalPixels: 300, zones: [], spacing: { lit: 1, skip: 3 } }, look('magic_icicles'), cat16, 32);
+    expect(spaced.segments.map((s) => [s.grp, s.spc])).toEqual([[1, 3], [1, 15]]);
+
+    // Two parts with an unlit gap: one overlay per lit part, after every base segment.
+    const parts = compileLook({ totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] }, look('magic_icicles'), cat16, 32);
+    expect(parts.segments.map((s) => [s.start, s.stop, s.on, fxName(s)])).toEqual([
+      [0, 100, true, 'Solid'],
+      [100, 150, false, 'Solid'],
+      [150, 300, true, 'Solid'],
+      [0, 100, true, 'Fairytwinkle'],
+      [150, 300, true, 'Fairytwinkle'],
+    ]);
+    expect(parts.segments[4].rev).toBe(true);
+    expect(parts.segments.map((s) => s.id)).toEqual([0, 1, 2, 3, 4]);
+
+    // On a small segment budget the house is simplified so base + overlays fit.
+    const tight = compileLook({ totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] }, look('magic_icicles'), cat16, 3);
+    expect(tight.segments.length).toBeLessThanOrEqual(3);
   });
 
   it('state JSON deletes leftover segments', () => {

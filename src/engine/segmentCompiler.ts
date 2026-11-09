@@ -1,7 +1,7 @@
 // Turns a Look into WLED segments for a house layout (port of
 // lib/engine/segment_compiler.dart).
 import { previewColorsFor } from './library';
-import { BLACK, HouseLayout, Look, Rgb, SOLID_SPACING, WledSegment, effectiveZones, targetMatches } from './model';
+import { BLACK, HouseLayout, Look, LookLayer, Rgb, SOLID_SPACING, WledSegment, effectiveZones, targetMatches } from './model';
 
 /** Resolves effect/palette names to a device's ids (they vary by build). */
 export class EffectCatalog {
@@ -66,13 +66,26 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
   const warnings: string[] = [];
   const runs = buildRuns(layout, look, warnings);
   mergeAdjacent(runs);
-  if (runs.length > maxSegments) {
+  const overlays = look.layers.filter((l) => l.overlayEvery);
+  const needed = () => runs.length + runs.filter((r) => r.layer !== null).length * overlays.length;
+  if (needed() > maxSegments) {
     warnings.push(`This look was simplified to fit the controller's limit of ${maxSegments} segments.`);
-    reduceTo(runs, maxSegments);
+    while (needed() > maxSegments && runs.length > 1) reduceTo(runs, runs.length - 1);
   }
 
   const missingFx = new Set<string>();
   const missingPal = new Set<string>();
+  const resolveFx = (layer: LookLayer) => {
+    const fx = catalog.effectId(layer.effect);
+    if (fx === undefined) missingFx.add(layer.effect[0]);
+    return fx ?? 0;
+  };
+  const resolvePal = (layer: LookLayer) => {
+    if (!layer.palette.length) return 0;
+    const id = catalog.paletteId(layer.palette);
+    if (id === undefined) missingPal.add(layer.palette[0]);
+    return id ?? 0;
+  };
   const segments: WledSegment[] = [];
   const previews: Rgb[][] = [];
   runs.forEach((run, i) => {
@@ -83,17 +96,8 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
     }
     const layer = look.layers[run.layer];
     const spacing = layer.spacing ?? layout.spacing ?? SOLID_SPACING;
-    let fx = catalog.effectId(layer.effect);
-    if (fx === undefined) {
-      missingFx.add(layer.effect[0]);
-      fx = 0;
-    }
-    let pal = 0;
-    if (layer.palette.length) {
-      const id = catalog.paletteId(layer.palette);
-      if (id === undefined) missingPal.add(layer.palette[0]);
-      pal = id ?? 0;
-    }
+    const fx = resolveFx(layer);
+    const pal = resolvePal(layer);
     segments.push({
       id: i,
       start: run.start,
@@ -111,6 +115,32 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
     });
     previews.push(previewColorsFor(layer.colors, fx === 0 ? 'Solid' : layer.effect[0], layer.palette[0]));
   });
+  // Overlays come after every base segment: WLED draws segments in id order
+  // and leaves a segment's spacing gaps alone, so the layer below shows there.
+  for (const overlay of overlays) {
+    runs.forEach((run) => {
+      if (run.layer === null) return;
+      const base = look.layers[run.layer].spacing ?? layout.spacing ?? SOLID_SPACING;
+      const every = Math.max(1, Math.round(overlay.overlayEvery!));
+      const fx = resolveFx(overlay);
+      segments.push({
+        id: segments.length,
+        start: run.start,
+        stop: run.stop,
+        grp: base.lit,
+        spc: every * (base.lit + base.skip) - base.lit,
+        on: true,
+        bri: 255,
+        col: overlay.colors.slice(0, 3),
+        fx,
+        sx: overlay.speed,
+        ix: overlay.intensity,
+        pal: resolvePal(overlay),
+        rev: run.reverse,
+      });
+      previews.push(previewColorsFor(overlay.colors, fx === 0 ? 'Solid' : overlay.effect[0], overlay.palette[0]));
+    });
+  }
   for (const name of missingFx) warnings.push(`Your controller doesn't have the "${name}" effect, so a solid color is shown instead.`);
   for (const name of missingPal) warnings.push(`Your controller doesn't have the "${name}" color theme, so your colors are used instead.`);
   return { segments, warnings, previewColors: previews };
@@ -130,7 +160,7 @@ function buildRuns(layout: HouseLayout, look: Look, warnings: string[]): Run[] {
     if (start > cursor) runs.push({ start: cursor, stop: start, layer: null, reverse: false });
     let layer: number | null = null;
     look.layers.forEach((l, li) => {
-      if (targetMatches(l.target, zone, index)) layer = li;
+      if (!l.overlayEvery && targetMatches(l.target, zone, index)) layer = li;
     });
     const layerReverse = layer !== null && !!look.layers[layer].reverse;
     runs.push({ start, stop, layer, reverse: layer === null ? false : !!zone.reversed !== layerReverse });

@@ -132,3 +132,15 @@ Eaveglow" on the Schedule page posts them back with `preservedConfig`, and turns
   (`SettingsStore.replace`), and re-saves the schedule so timers and season presets are rewritten.
 - The only request that leaves the network is the optional update check (`src/engine/updates.ts`): off by
   default, per device (localStorage), at most once a day, `GET api.github.com/repos/…/releases/latest` (CORS `*`).
+
+## Overlay layers (Magic Icicles)
+
+A layer with `overlayEvery: N` is drawn on top of the look's other layers on every Nth lit light. For each lit
+run, `compileLook` adds a second segment over the same pixels, after all base segments: WLED draws segments in id
+order and `blendSegment` (`FX_fcn.cpp`) writes only a segment's grouped pixels, leaving its spacing gaps to the
+segments below. With house spacing `lit`/`skip`, the overlay uses `grp = lit` and
+`spc = N × (lit + skip) − lit`, so it lands on every Nth *lit* light (both segments start at the same pixel).
+
+Magic Icicles uses Fairytwinkle for the overlay: it fades each light between color 2 (unscaled) and the palette
+color, so with color 2 = the dim base color, the bright lights never drop below their neighbours. Twinklefox
+would scale its background to 1/16–1/3 and dip darker.

@@ -112,11 +112,14 @@ export function LookEditor(props: { lookId?: string }) {
       {zones.length > 1 ? (
         <>
           <div class="chips parts">
-            {look.layers.map((_, i) => (
-              <Chip key={i} selected={i === active} onClick={() => selectLayer(i)}>
-                {partLabel(i)}
-              </Chip>
-            ))}
+            {look.layers.map((l, i) =>
+              // Overlays (e.g. Magic Icicles' twinkling lights) aren't a part of the house; they're kept as they are.
+              l.overlayEvery ? null : (
+                <Chip key={i} selected={i === active} onClick={() => selectLayer(i)}>
+                  {partLabel(i)}
+                </Chip>
+              ),
+            )}
             <Chip onClick={addPart}>＋ Different look for a part</Chip>
           </div>
           {active > 0 && (

@@ -55,7 +55,7 @@ To update, rebuild and upload `eaveglow.htm.gz` again. Your settings are kept.
 
 ## Features
 
-- **Looks:** 131 looks (Everyday, Holidays, Bulbs, Party, Sports, Nature). Holidays are grouped by holiday,
+- **Looks:** 132 looks (Everyday, Holidays, Bulbs, Party, Sports, Nature). Holidays are grouped by holiday,
   sorted by which comes next, with a "coming up" card.
 - **Make your own look:** 94 effect styles, 66 colors plus any color, and 70 color themes. 27 of the themes are
   Eaveglow's own (★) and get installed on the controller as WLED custom palettes when first used.

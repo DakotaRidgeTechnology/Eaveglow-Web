@@ -103,6 +103,15 @@ try {
     const warm = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1);
     check(warm.body.seg[0].spc === 3, 'house spacing applied to looks (spc 3)');
 
+    // Magic Icicles: dim base on every lit light, a twinkling overlay on every 4th lit one.
+    await page.locator('.tile', { has: page.getByText('Magic Icicles', { exact: true }) }).first().click();
+    await page.locator('.tile.active', { has: page.getByText('Magic Icicles', { exact: true }) }).first().waitFor();
+    const icy = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1).body.seg.filter((x) => x.stop);
+    check(
+      icy.length === 2 && fxNames[icy[0].fx] === 'Solid' && icy[0].spc === 3 && fxNames[icy[1].fx] === 'Fairytwinkle' && icy[1].spc === 15 && icy[1].start === icy[0].start,
+      `Magic Icicles: ${icy.map((x) => `${fxNames[x.fx]} spc ${x.spc}`).join(', ')}`,
+    );
+
     // Make a custom look.
     await page.getByText('Make a look').click();
     await page.locator('.name-input').fill('Team Spirit');

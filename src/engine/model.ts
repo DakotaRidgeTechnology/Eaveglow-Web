@@ -118,6 +118,10 @@ export interface LookLayer {
   /** Light spacing for this layer; undefined = the house setting. */
   spacing?: LightSpacing;
   reverse?: boolean;
+  /** Drawn on top of the look's other layers on every Nth lit light (e.g. 4:
+   * one twinkling light, then three of the layer below). Covers the whole
+   * house; `target` is ignored. */
+  overlayEvery?: number;
 }
 
 export interface Look {
