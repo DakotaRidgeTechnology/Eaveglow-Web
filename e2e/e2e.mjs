@@ -229,6 +229,7 @@ try {
       await page.getByText('＋ Candy canes').click();
       await page.locator('input[aria-label="Candy canes model file"]').setInputFiles(new URL('./test-cane.xmodel', import.meta.url).pathname);
       await page.getByText('Test Cane: 6 lights per cane · 2 canes = 12 lights').waitFor();
+      await page.getByLabel('Candy canes brightness').fill('40');
       await page.getByText('＋ Path lights').click();
       // Only the first 3 lights of the 5 on output 2 are path lights (the rest, e.g. arches, stay off).
       await page.getByLabel('Path lights count').fill('3');
@@ -242,6 +243,7 @@ try {
       const red = propSeg.find((x) => x.start === 0);
       const white = propSeg.find((x) => x.start === red?.stop);
       check(JSON.stringify(red?.col) === '[[255,0,0]]' && JSON.stringify(white?.col) === '[[220,235,255]]' && white.stop === 12, 'candy canes: red and cool white stripe segments');
+      check(red.bri === 102 && white.bri === 102 && propSeg.find((x) => x.start === 12)?.bri === 255, 'candy canes at 40% brightness, path lights at 100%');
       check(propSeg.some((x) => x.start === 12 && x.stop === 15 && x.on), 'path lights (first 3 of output 2) follow the look');
       const offSeg = props.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1)?.body.seg.find((x) => x.start === 15);
       check(offSeg?.stop === 17 && offSeg.on === false, 'the rest of output 2 is turned off');

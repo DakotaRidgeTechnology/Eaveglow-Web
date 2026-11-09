@@ -31,7 +31,12 @@ export interface Prop {
   stripeWidth?: number;
   /** Candy canes: the two stripe colors. */
   colors?: [Rgb, Rgb];
+  /** 1-100 % of the overall brightness (WLED segment brightness); default 100. */
+  brightness?: number;
 }
+
+/** A prop's brightness as WLED segment brightness (0-255). */
+export const propBri = (p: Prop) => Math.round((Math.min(100, Math.max(1, p.brightness ?? 100)) / 100) * 255);
 
 export const CANE_COLORS: [Rgb, Rgb] = [
   [255, 0, 0],
@@ -170,12 +175,12 @@ export function compileController(
     if (p.kind === 'pathLights') {
       const c = compileLook({ totalPixels: stop - start, zones: [] }, look, catalog, maxSegments);
       warnings.push(...c.warnings);
-      for (const s of c.segments) base.push({ ...s, start: s.start + start, stop: s.stop + start });
+      for (const s of c.segments) base.push({ ...s, start: s.start + start, stop: s.stop + start, bri: propBri(p) });
     } else {
       const [a, b] = ledmap.stripes.get(p.id) ?? [[start, stop], [stop, stop]];
       const colors = p.colors ?? CANE_COLORS;
       for (const [[from, to], col] of [[a, colors[0]], [b, colors[1]]] as const) {
-        if (to > from) base.push({ id: 0, start: from, stop: to, grp: 1, spc: 0, on: true, bri: 255, col: [col], fx: solid, sx: 128, ix: 128, pal: 0, rev: false });
+        if (to > from) base.push({ id: 0, start: from, stop: to, grp: 1, spc: 0, on: true, bri: propBri(p), col: [col], fx: solid, sx: 128, ix: 128, pal: 0, rev: false });
       }
     }
     cursor = stop;

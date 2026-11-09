@@ -201,6 +201,18 @@ function PropCard(props: { prop: Prop; outputs: Output[]; onChange: (p: Prop) =>
           ))}
         </select>
       )}
+      <label class="row brightness">
+        <span>🔅</span>
+        <input
+          type="range"
+          min={1}
+          max={100}
+          aria-label={`${p.name} brightness`}
+          value={p.brightness ?? 100}
+          onInput={(e) => onChange({ ...p, brightness: +e.currentTarget.value })}
+        />
+        <span class="pct">{p.brightness ?? 100}%</span>
+      </label>
       {p.kind === 'candyCanes' ? (
         <>
           <label class="field">

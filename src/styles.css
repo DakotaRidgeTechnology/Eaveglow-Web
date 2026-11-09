@@ -237,3 +237,5 @@ select {
 /* Grid columns default to their content's width; let them shrink so dropdowns stay inside the card. */
 .controller .prop, .season { grid-template-columns: minmax(0, 1fr); }
 .controller .prop > *, .season > * { min-width: 0; }
+.prop .brightness { margin: 0; }
+.prop .brightness .pct { width: 44px; text-align: right; color: var(--muted); }

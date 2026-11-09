@@ -82,6 +82,9 @@ describe('props', () => {
     expect(c.segments[0].col).toEqual([CANE_COLORS[0]]);
     expect(c.segments[1].col).toEqual([CANE_COLORS[1]]);
     expect(c.segments.map((s) => s.id)).toEqual([0, 1, 2, 3, 4]);
+    // Brightness per prop: WLED segment brightness, on every segment of that prop only.
+    const dim = compileController([canes({ brightness: 50 }), { ...path(12, 3), brightness: 20 }], look('magic_icicles'), cat, 20, 32);
+    expect(dim.segments.map((s) => s.bri)).toEqual([128, 128, 51, 51, 255]);
     const custom = compileController([canes({ colors: [[0, 255, 0], [255, 255, 255]] })], look('warm_white'), cat, 12);
     expect(custom.segments[0].col).toEqual([[0, 255, 0]]);
   });

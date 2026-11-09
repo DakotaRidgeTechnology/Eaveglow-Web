@@ -156,6 +156,8 @@ would scale its background to 1/16–1/3 and dip darker.
   The schedule (timers, On/Off presets, autopilot season presets) is written to each controller, so each runs on
   its own clock.
 - Output layout comes from `/json/cfg` `hw.led.ins[]` (`start`, `len`).
+- Each prop has its own brightness (1-100 %), sent as WLED segment brightness (`bri` 0-255) on that prop's
+  segments; the overall brightness still applies on top.
 
 ### Candy cane stripes: a pixel map, not per-pixel colors
 

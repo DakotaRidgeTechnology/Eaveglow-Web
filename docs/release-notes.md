@@ -18,7 +18,8 @@ To update later, upload the new `eaveglow.htm.gz` over the old one. Your setting
 
 - **Props on another controller.** Add a second WLED controller under House zones > Props and Eaveglow drives it alongside your roofline. Each controller gets its own part of every look, so layouts and light spacing don't have to match (no WLED Sync needed). Looks, power, brightness, the sleep timer, schedules and autopilot all reach every controller.
 - **Candy canes with diagonal stripes.** Upload the cane's xLights model file from the prop maker, pick the stripe colors (red and cool white to start) and width, and the stripes stay put through power cycles, schedules and autopilot.
-- **Path lights** that follow the current look.
+- **Path lights** that follow the current look, using as many lights of an output as you choose (so arches on the same output are left alone).
+- **Brightness per prop**, on top of the overall brightness.
 
 ## What's in it
 
