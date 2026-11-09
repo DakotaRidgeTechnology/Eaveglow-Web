@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'preact/ho
 import { Autopilot, datesFingerprint, seasonPeriods } from './engine/autopilot';
 import { builtinLooks, holidayGroups } from './engine/library';
 import { Look, Schedule, WledSnapshot } from './engine/model';
+import { PropSync, describeFailures } from './engine/propSync';
 import { ScheduleResult, applySchedule } from './engine/scheduleService';
 import { browserTimezone, browserUtcOffsetMinutes } from './engine/timezones';
 import { CustomPaletteInstaller, customPalettesIn, paletteSlots } from './engine/customPalettes';
@@ -11,6 +12,7 @@ import { WledClient } from './engine/wledClient';
 import { SettingsStore, Settings } from './store';
 import { Home } from './ui/home';
 import { LookEditor } from './ui/lookEditor';
+import { PropsPage } from './ui/props';
 import { SchedulePage } from './ui/schedule';
 import { ZonesPage } from './ui/zones';
 
@@ -24,6 +26,10 @@ interface AppContext {
   refresh: () => Promise<void>;
   toast: (message: string) => void;
   applyLook: (look: Look) => Promise<string[]>;
+  /** Sends a state change (power, brightness, sleep timer) to every
+   * controller; returns problems with the prop controllers. */
+  setLights: (state: object) => Promise<string[]>;
+  propSync: PropSync;
   /** Writes the schedule (and seasons, if autopilot is on) to the
    * controller, then saves both to settings. */
   saveSchedule: (schedule: Schedule, autopilot: Autopilot | undefined, resave?: boolean) => Promise<ScheduleResult>;
@@ -45,6 +51,7 @@ export function App() {
     () => new CustomPaletteInstaller(client, () => store.settings.customPalettes ?? {}, (m) => store.update('customPalettes', m)),
     [client, store],
   );
+  const propSync = useMemo(() => new PropSync(() => ({ controllers: store.settings.controllers ?? [], props: store.settings.props ?? [] })), [store]);
   const [settings, setSettings] = useState(store.settings);
   const [snapshot, setSnapshot] = useState<WledSnapshot>();
   const [error, setError] = useState<string>();
@@ -120,14 +127,25 @@ export function App() {
 
   const applyLook = useCallback(
     async (look: Look) => {
+      const props = propSync.applyLook(look);
       const { state, notes } = await lookState(look, await client.fetchSnapshot());
       await client.setState(state);
+      notes.push(...describeFailures(await props));
       store.update('activeLookId', look.id);
       store.update('recentLooks', [look.id, ...(store.settings.recentLooks ?? []).filter((id) => id !== look.id)].slice(0, 6));
       void refresh();
       return notes;
     },
-    [client, store, refresh, lookState],
+    [client, store, refresh, lookState, propSync],
+  );
+
+  const setLights = useCallback(
+    async (state: object) => {
+      const props = propSync.setState(state);
+      await client.setState(state);
+      return describeFailures(await props);
+    },
+    [client, propSync],
   );
 
   const saveSchedule = useCallback(
@@ -152,13 +170,24 @@ export function App() {
         },
       );
       if (r.errors.length) return r;
+      // The same schedule on every prop controller, with its own look presets.
+      const propResults = await propSync.each(async (c, propClient, props) => {
+        const pr = await applySchedule(propClient, schedule, browserTimezone(), browserUtcOffsetMinutes(), new Date(), periods && {
+          periods,
+          resave,
+          stateFor: (id) => propSync.stateFor(c, props, findLook(id)),
+          nameOf: (id) => findLook(id).name,
+        });
+        if (pr.errors.length) throw new Error(pr.errors.join(' '));
+      });
+      const propProblems = describeFailures(propResults).map((m) => `The schedule wasn't saved on ${m}`);
       store.update('schedule', schedule);
       if (autopilot) store.update('autopilot', { ...autopilot, syncedDates: plan ? datesFingerprint(plan.periods) : undefined });
       void refresh();
       const skipped = plan?.skipped.length ? [`No date is known for ${plan.skipped.join(', ')} this year, so it was skipped.`] : [];
-      return { errors: [], warnings: [...skipped, ...r.warnings] };
+      return { errors: [], warnings: [...skipped, ...r.warnings, ...propProblems] };
     },
-    [client, store, refresh, lookState],
+    [client, store, refresh, lookState, propSync],
   );
 
   // Moving holidays (Easter, Thanksgiving…) fall on different days each
@@ -194,7 +223,7 @@ export function App() {
     }
   }, []);
 
-  const ctx: AppContext = { client, store, settings, snapshot, offline: !!error, refresh, toast, applyLook, saveSchedule, go, back };
+  const ctx: AppContext = { client, store, settings, snapshot, offline: !!error, refresh, toast, applyLook, setLights, propSync, saveSchedule, go, back };
   const [page, arg] = path.split('/').filter(Boolean);
 
   return (
@@ -209,6 +238,8 @@ export function App() {
         <LookEditor lookId={arg === 'new' ? undefined : decodeURIComponent(arg ?? '')} />
       ) : page === 'zones' ? (
         <ZonesPage />
+      ) : page === 'props' ? (
+        <PropsPage />
       ) : page === 'schedule' ? (
         <SchedulePage />
       ) : (

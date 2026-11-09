@@ -4,13 +4,16 @@
 import { createServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
 
-export function startMockWled(port = 8099) {
+/** `opts.leds` / `opts.name` / `opts.outputs` ([[start, len]…]) make a second, different controller. */
+export function startMockWled(port = 8099, opts = {}) {
+  const leds = () => opts.leds ?? +(process.env.LEDS ?? 200);
   const effects = JSON.parse(readFileSync(new URL('../e2e/wled16-effects.json', import.meta.url)));
   const palettes = JSON.parse(readFileSync(new URL('../e2e/wled16-palettes.json', import.meta.url)));
   const files = {}; // controller file system
   const log = []; // every POST, for tests
-  let state = { on: true, bri: 128, seg: [{ id: 0, start: 0, stop: 200, grp: 1, spc: 0, on: true, col: [[255, 160, 80]], fx: 0, pal: 0 }] };
-  let cfg = { hw: { led: { total: 200, rgbwm: 3, fps: 42 } }, light: { gc: { bri: 1, col: 2.2, val: 2.2 } }, timers: { ins: [{ en: 1, hour: 7, min: 0, macro: 3 }] } };
+  let state = { on: true, bri: 128, seg: [{ id: 0, start: 0, stop: leds(), grp: 1, spc: 0, on: true, col: [[255, 160, 80]], fx: 0, pal: 0 }] };
+  const outputs = opts.outputs ?? [[0, leds()]];
+  let cfg = { hw: { led: { total: leds(), rgbwm: 3, fps: 42, ins: outputs.map(([start, len]) => ({ start, len, type: 22 })) } }, light: { gc: { bri: 1, col: 2.2, val: 2.2 } }, timers: { ins: [{ en: 1, hour: 7, min: 0, macro: 3 }] } };
   const presets = { 0: {}, 3: { n: 'Morning' } };
 
   const send = (res, code, body, type = 'application/json', extra = {}) => {
@@ -24,6 +27,8 @@ export function startMockWled(port = 8099) {
     for await (const c of req) chunks.push(c);
     const raw = Buffer.concat(chunks);
     const path = url.pathname;
+    // Browsers ask first before a page on another controller may POST JSON.
+    if (req.method === 'OPTIONS') return send(res, 200, '', 'text/plain', { 'Access-Control-Allow-Methods': '*', 'Access-Control-Allow-Headers': '*' });
     if (req.method === 'POST' && path !== '/upload') log.push({ path, body: JSON.parse(raw.toString() || '{}') });
 
     if (path === '/eaveglow.htm') {
@@ -32,7 +37,7 @@ export function startMockWled(port = 8099) {
       return send(res, 200, readFileSync(gz), 'text/html', { 'Content-Encoding': 'gzip' });
     }
     if (path === '/eaveglow-icon.png') return send(res, 200, readFileSync(new URL('../public/eaveglow-icon.png', import.meta.url)), 'image/png');
-    if (path === '/json') return send(res, 200, { state, info: { name: 'Roofline', ver: '16.0.1', arch: 'esp32', leds: { count: +(process.env.LEDS ?? 200), maxseg: 32 } }, effects, palettes });
+    if (path === '/json') return send(res, 200, { state, info: { name: opts.name ?? 'Roofline', ver: '16.0.1', arch: 'esp32', leds: { count: leds(), maxseg: 32 } }, effects, palettes });
     if (path === '/json/state') {
       if (req.method === 'POST') {
         const b = log.at(-1).body;
@@ -41,6 +46,7 @@ export function startMockWled(port = 8099) {
         if (b.seg) state.seg = b.seg.filter((s) => s.stop !== 0);
         if (b.psave) presets[b.psave] = { n: b.n, on: b.on, ...(b.seg ? { seg: b.seg } : {}) };
         if (b.pdel) delete presets[b.pdel];
+        if ('ledmap' in b) state.ledmapLoads = (state.ledmapLoads ?? 0) + 1;
         if (b.nl) state.nl = b.nl.on ? { on: true, dur: b.nl.dur, rem: b.nl.dur * 60 } : { on: false, rem: -1 };
       }
       return send(res, 200, state);

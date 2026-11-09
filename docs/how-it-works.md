@@ -144,3 +144,29 @@ segments below. With house spacing `lit`/`skip`, the overlay uses `grp = lit` an
 Magic Icicles uses Fairytwinkle for the overlay: it fades each light between color 2 (unscaled) and the palette
 color, so with color 2 = the dim base color (cool white at ~30%), the bright lights never drop below their neighbours. Twinklefox
 would scale its background to 1/16–1/3 and dip darker.
+
+## Props and other controllers
+
+- Eaveglow drives other WLED controllers itself instead of WLED Sync, which copies segments by number and breaks
+  when layouts or spacing differ. Each controller gets segments worked out for its own pixels
+  (`compileController`, `src/engine/props.ts`; `PropSync`, `src/engine/propSync.ts`).
+- The page served by the main controller can call others: `wled_server.cpp` sends `Access-Control-Allow-Origin: *`
+  and answers OPTIONS preflights. Both are private addresses, so Chrome's private-network checks don't apply.
+- Looks, power, brightness and the sleep timer go to every controller; one failing doesn't stop the others.
+  The schedule (timers, On/Off presets, autopilot season presets) is written to each controller, so each runs on
+  its own clock.
+- Output layout comes from `/json/cfg` `hw.led.ins[]` (`start`, `len`).
+
+### Candy cane stripes: a pixel map, not per-pixel colors
+
+- Per-pixel colors (`seg.i`) freeze a segment, but `json.cpp` unfreezes every segment when the lights turn on
+  (`bri && !onBefore`), so stripes would vanish after any off/on or a plain "Lights On" timer.
+- Instead Eaveglow writes `/ledmap.json` (`{"n":"Eaveglow","map":[…]}`, logical → physical) and reloads it with
+  `{"ledmap":0}`. Each cane prop is reordered so all nodes of the first diagonal band come first, then the second;
+  two plain Solid segments then draw the stripes and survive power cycles, presets and timers.
+- In 1D, `deserializeMap` (`FX_fcn.cpp`) sizes the map to the whole strip and leaves missing entries unmapped
+  (black), so the map always lists every pixel (identity outside canes). `width`/`height` keys would make it a 2D
+  map, so they're never written. A ledmap.json Eaveglow didn't write is only replaced after asking, with a copy
+  in `/ledmap-backup.json`.
+- Node positions come from the prop maker's xLights model (`.xmodel`, `CustomModelCompressed` = `node,row,col`;
+  `src/engine/xmodel.ts`). Band = `floor((row + col) / stripeWidth) % 2`.

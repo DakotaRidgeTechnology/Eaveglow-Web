@@ -132,9 +132,21 @@ export function ZonesPage() {
         <button class="primary" onClick={save}>Save</button>
       </div>
 
+      <PropsLink />
       <BackupCard />
       <AboutCard />
     </main>
+  );
+}
+
+function PropsLink() {
+  const { settings, go } = useApp();
+  const n = settings.props?.length ?? 0;
+  return (
+    <button class="banner action" onClick={() => go('/props')}>
+      🍭 Props &amp; other controllers
+      <small> · {n ? `${n} prop${n === 1 ? '' : 's'} set up` : 'candy canes, path lights on another WLED'} →</small>
+    </button>
   );
 }
 

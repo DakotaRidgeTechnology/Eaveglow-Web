@@ -10,6 +10,8 @@ const shots = new URL('./shots/', import.meta.url).pathname;
 mkdirSync(shots, { recursive: true });
 
 const mock = startMockWled(8099);
+// A second controller for props: 2 six-light test canes on output 1, 5 path lights on output 2.
+const props = startMockWled(8096, { leds: 17, name: 'Props', outputs: [[0, 12], [12, 5]] });
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox'] });
 let failures = 0;
 const check = (ok, what) => {
@@ -218,6 +220,45 @@ try {
       await page.waitForTimeout(800);
       check(JSON.parse(mock.files['/eaveglow.json']).customLooks[0]?.name === 'Team Spirit', 'restoring the backup brings the custom look back');
 
+      // Props on another controller: candy canes (striped by a pixel map) and path lights.
+      await page.getByTitle('House zones').click();
+      await page.getByText('Props & other controllers').click();
+      await page.getByPlaceholder('IP address').fill('localhost:8096');
+      await page.getByRole('button', { name: 'Add', exact: true }).first().click();
+      await page.getByText('WLED 16.0.1 · 17 lights').waitFor();
+      await page.getByText('＋ Candy canes').click();
+      await page.locator('input[aria-label="Candy canes model file"]').setInputFiles(new URL('./test-cane.xmodel', import.meta.url).pathname);
+      await page.getByText('Test Cane: 6 lights per cane · 2 canes = 12 lights').waitFor();
+      await page.getByText('＋ Path lights').click();
+      await page.screenshot({ path: `${shots}props.png`, fullPage: true });
+      await page.getByRole('button', { name: 'Save', exact: true }).click();
+      await page.getByText('Props saved', { exact: false }).waitFor({ timeout: 20000 });
+      const ledmap = JSON.parse(props.files['/ledmap.json'] ?? '{}');
+      check(ledmap.n === 'Eaveglow' && ledmap.map?.length === 17 && new Set(ledmap.map).size === 17 && props.state.ledmapLoads >= 1, `prop controller got a full pixel map: ${JSON.stringify(ledmap.map)}`);
+      const propSeg = props.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1)?.body.seg.filter((x) => x.stop) ?? [];
+      const red = propSeg.find((x) => x.start === 0);
+      const white = propSeg.find((x) => x.start === red?.stop);
+      check(JSON.stringify(red?.col) === '[[255,0,0]]' && JSON.stringify(white?.col) === '[[220,235,255]]' && white.stop === 12, 'candy canes: red and cool white stripe segments');
+      check(propSeg.some((x) => x.start === 12 && x.stop === 17 && x.on), 'path lights follow the look');
+      check(JSON.stringify(mock.state.seg) !== '[]', 'main controller still has its look');
+
+      // The schedule goes to the prop controller too.
+      await page.getByRole('button', { name: 'Back', exact: true }).click(); // House zones → Home
+      await page.getByTitle('Schedule').click();
+      await page.locator('.card .toggle input').first().check(); // turned off by "restore old timers" above
+      await page.getByText('Save to my lights').click();
+      await page.getByText('Schedule saved').waitFor({ timeout: 20000 });
+      check(props.log.some((l) => l.path === '/json/cfg' && l.body.timers?.ins?.length), 'schedule written to the prop controller');
+      await page.getByRole('button', { name: 'OK', exact: true }).click();
+      await page.getByRole('button', { name: 'Back' }).click();
+
+      // Prop controller offline: the main lights still change, and the message says which controller failed.
+      await new Promise((r) => props.server.close(r));
+      props.server.closeAllConnections?.();
+      await page.locator('.tile', { has: page.getByText('Warm White', { exact: true }) }).first().click();
+      await page.locator('.toast', { hasText: 'Props (localhost:8096)' }).waitFor({ timeout: 15000 });
+      check(true, 'an offline prop controller is named, the main look still applies');
+
       // Controller unreachable: a clear banner, then it recovers by itself.
       await new Promise((r) => mock.server.close(r) || setTimeout(r, 300));
       mock.server.closeAllConnections?.();
@@ -233,6 +274,7 @@ try {
 } finally {
   await browser.close();
   mock.server.close();
+  props.server.close();
 }
 console.log(failures ? `\n${failures} check(s) failed` : '\nAll end-to-end checks passed');
 process.exit(failures ? 1 : 0);

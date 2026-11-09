@@ -1,9 +1,9 @@
 Eaveglow is a simple phone app for WLED that lives on the controller itself. It's one small web page you upload to the ESP32 running WLED, so there's no extra hardware, no cloud account and no app store.
 
 <p>
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.1/docs/screenshots/home.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.1/docs/screenshots/editor.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.1.1/docs/screenshots/autopilot.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.2.0/docs/screenshots/home.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.2.0/docs/screenshots/editor.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.2.0/docs/screenshots/autopilot.png" width="240">
 </p>
 
 ## Install
@@ -14,11 +14,11 @@ Eaveglow is a simple phone app for WLED that lives on the controller itself. It'
 
 To update later, upload the new `eaveglow.htm.gz` over the old one. Your settings are kept.
 
-## New in 1.1.1
+## New in 1.2.0
 
-- **Magic Icicles** (Holidays > Christmas): one cool white light, then three dimmer ones, repeating along the house. The bright lights each fade softly up and down on their own, like icicles catching the light. It works with house light spacing, and you can add it to your Christmas autopilot rotation.
-
-For everything added in 1.1.0 (recent looks, sleep timer, special dates, backup and more), see the [1.1.0 release](https://github.com/DakotaRidgeTechnology/Eaveglow-Web/releases/tag/v1.1.0).
+- **Props on another controller.** Add a second WLED controller under House zones > Props and Eaveglow drives it alongside your roofline. Each controller gets its own part of every look, so layouts and light spacing don't have to match (no WLED Sync needed). Looks, power, brightness, the sleep timer, schedules and autopilot all reach every controller.
+- **Candy canes with diagonal stripes.** Upload the cane's xLights model file from the prop maker, pick the stripe colors (red and cool white to start) and width, and the stripes stay put through power cycles, schedules and autopilot.
+- **Path lights** that follow the current look.
 
 ## What's in it
 

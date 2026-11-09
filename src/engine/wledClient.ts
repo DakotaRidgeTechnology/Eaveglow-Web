@@ -10,12 +10,16 @@ export class WledError extends Error {
 
 export class WledClient {
   /** `base` is '' (same origin) or e.g. 'http://192.168.1.50'. */
-  constructor(readonly base = '', private fetchImpl: typeof fetch = (...a) => fetch(...a)) {}
+  constructor(
+    readonly base = '',
+    private fetchImpl: typeof fetch = (...a) => fetch(...a),
+    private timeoutMs = 6000,
+  ) {}
 
   private async request(path: string, init?: RequestInit): Promise<Response> {
     let res: Response;
     try {
-      res = await this.fetchImpl(this.base + path, { ...init, signal: AbortSignal.timeout?.(6000) });
+      res = await this.fetchImpl(this.base + path, { ...init, signal: AbortSignal.timeout?.(this.timeoutMs) });
     } catch {
       throw new WledError("Couldn't reach your lights. Are you on the same Wi-Fi?");
     }

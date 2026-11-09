@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A made-up 6-light "cane" for tests: two columns, wired up one side and down the other. -->
+<custommodel name="Test Cane" parm1="3" parm2="5" CustomModelCompressed="1,4,2;2,2,2;3,0,2;4,0,0;5,2,0;6,4,0" />

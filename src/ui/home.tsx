@@ -19,7 +19,7 @@ const describeRemaining = (seconds: number) => {
 const HOLIDAYS = 'Holidays';
 
 export function Home() {
-  const { snapshot, offline, settings, client, refresh, applyLook, toast, go, store, saveSchedule } = useApp();
+  const { snapshot, offline, settings, refresh, applyLook, setLights, toast, go, store, saveSchedule } = useApp();
   const [sleepOpen, setSleepOpen] = useState(false);
   const [update, setUpdate] = useState<UpdateInfo>();
   // Only on phones where online update checks were turned on (House zones → About).
@@ -83,8 +83,9 @@ export function Home() {
   const sleep = async (minutes: number | null) => {
     setSleepOpen(false);
     try {
-      await client.setState(minutes ? { nl: { on: true, dur: minutes, mode: 0, tbri: 0 } } : { nl: { on: false } });
-      toast(minutes ? `The lights will turn off in ${minutes < 60 ? `${minutes} minutes` : `${minutes / 60} hour${minutes > 60 ? 's' : ''}`}.` : 'Sleep timer cancelled.');
+      const problems = await setLights(minutes ? { nl: { on: true, dur: minutes, mode: 0, tbri: 0 } } : { nl: { on: false } });
+      if (problems.length) toast(problems.join(' '));
+      else toast(minutes ? `The lights will turn off in ${minutes < 60 ? `${minutes} minutes` : `${minutes / 60} hour${minutes > 60 ? 's' : ''}`}.` : 'Sleep timer cancelled.');
       await refresh();
     } catch (e) {
       toast(String(e instanceof Error ? e.message : e));
@@ -108,7 +109,8 @@ export function Home() {
 
   const setPower = async (on: boolean) => {
     try {
-      await client.setState({ on });
+      const problems = await setLights({ on });
+      if (problems.length) toast(problems.join(' '));
       await refresh();
     } catch (e) {
       toast(String(e instanceof Error ? e.message : e));
@@ -151,7 +153,9 @@ export function Home() {
             disabled={!state}
             onInput={(e) => setBri(+e.currentTarget.value)}
             onChange={async (e) => {
-              await client.setState({ on: true, bri: +e.currentTarget.value }).catch((err) => toast(String(err.message ?? err)));
+              await setLights({ on: true, bri: +e.currentTarget.value })
+                .then((problems) => problems.length && toast(problems.join(' ')))
+                .catch((err) => toast(String(err.message ?? err)));
               setBri(undefined);
               void refresh();
             }}
