@@ -42,9 +42,64 @@ export const DEFAULT_STRIPE_WIDTH = 6;
 /** Pixels a prop takes on its controller. */
 export const propLength = (p: Prop) => (p.kind === 'candyCanes' ? p.count * (p.model?.nodes.length ?? 0) : p.count);
 
-/** 0 or 1 for each node: diagonal bands across the model's grid. */
-export const stripeBands = (model: PropModel, width = DEFAULT_STRIPE_WIDTH): number[] =>
-  model.nodes.map(([col, row]) => Math.floor((row + col) / Math.max(1, width)) % 2);
+/**
+ * Where each node sits along the prop and across it. `along` is the
+ * shortest distance from the bottom of the shaft through neighbouring nodes
+ * (so it follows the hook's curve); `across` is the signed distance from the
+ * centre line there.
+ */
+export function propCoordinates(model: PropModel): { along: number[]; across: number[] } {
+  const cached = coordCache.get(model);
+  if (cached) return cached;
+  const p = model.nodes;
+  const n = p.length;
+  const dist = (a: number, b: number) => Math.hypot(p[a][0] - p[b][0], p[a][1] - p[b][1]);
+  // Neighbours: within 1.5× the typical spacing between nodes.
+  const nearest = p.map((_, i) => Math.min(...p.map((_, j) => (i === j ? Infinity : dist(i, j))))).sort((a, b) => a - b);
+  const radius = (nearest[Math.floor(n / 2)] || 1) * 1.5;
+  const along = p.map(() => Infinity);
+  const bottom = Math.max(...p.map(([, row]) => row));
+  const queue: number[] = [];
+  p.forEach(([, row], i) => row === bottom && ((along[i] = 0), queue.push(i)));
+  // Dijkstra over the node graph (n is ~100, so a simple scan is fine).
+  const done = new Set<number>();
+  while (queue.length) {
+    queue.sort((a, b) => along[a] - along[b]);
+    const i = queue.shift()!;
+    if (done.has(i)) continue;
+    done.add(i);
+    for (let j = 0; j < n; j++) {
+      const d = dist(i, j);
+      if (j === i || d > radius || along[i] + d >= along[j]) continue;
+      along[j] = along[i] + d;
+      queue.push(j);
+    }
+  }
+  const max = Math.max(...along.filter(Number.isFinite));
+  along.forEach((v, i) => !Number.isFinite(v) && (along[i] = max));
+  const centre = (s: number) => {
+    const near = p.filter((_, i) => Math.abs(along[i] - s) <= 2.5);
+    return [near.reduce((a, q) => a + q[0], 0) / near.length, near.reduce((a, q) => a + q[1], 0) / near.length];
+  };
+  const across = p.map(([x, y], i) => {
+    const s = along[i];
+    const [x0, y0] = centre(Math.max(0, s - 2));
+    const [x1, y1] = centre(Math.min(max, s + 2));
+    const [cx, cy] = centre(s);
+    const len = Math.hypot(x1 - x0, y1 - y0) || 1;
+    return ((x - cx) * (y1 - y0) - (y - cy) * (x1 - x0)) / len;
+  });
+  const result = { along, across };
+  coordCache.set(model, result);
+  return result;
+}
+const coordCache = new WeakMap<PropModel, { along: number[]; across: number[] }>();
+
+/** 0 or 1 for each node: stripes slanted 45° to the prop, following its bends. */
+export function stripeBands(model: PropModel, width = DEFAULT_STRIPE_WIDTH): number[] {
+  const { along, across } = propCoordinates(model);
+  return along.map((s, i) => ((Math.floor((s + across[i]) / Math.max(1, width)) % 2) + 2) % 2);
+}
 
 export interface Ledmap {
   /** map[logical] = physical, for every pixel of the controller. */

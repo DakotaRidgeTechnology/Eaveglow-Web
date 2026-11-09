@@ -172,6 +172,7 @@ function PropCard(props: { prop: Prop; outputs: Output[]; onChange: (p: Prop) =>
   const { prop: p, outputs, onChange } = props;
   const { toast } = useApp();
   const perProp = p.kind === 'candyCanes' ? p.model?.nodes.length ?? 0 : 1;
+  const output = outputs.find((x) => x.start === p.start);
   const pickOutput = (start: number) => {
     const o = outputs.find((x) => x.start === start);
     onChange({ ...p, start, count: o && perProp ? Math.max(1, Math.floor(o.len / perProp)) : p.count });
@@ -240,10 +241,17 @@ function PropCard(props: { prop: Prop; outputs: Output[]; onChange: (p: Prop) =>
           )}
         </>
       ) : (
-        <div class="row">
-          <NumberField value={p.count} min={1} ariaLabel={`${p.name} count`} onChange={(count) => onChange({ ...p, count })} />
-          <span>lights · follow the current look</span>
-        </div>
+        <>
+          <div class="row">
+            <span>Use the first</span>
+            <NumberField value={p.count} min={1} ariaLabel={`${p.name} count`} onChange={(count) => onChange({ ...p, count: output ? Math.min(count, output.len) : count })} />
+            <span>{output ? `of ${output.len} lights on this output` : 'lights'}</span>
+          </div>
+          <small class="hint">
+            They follow the current look.
+            {output && p.count < output.len ? ` The other ${output.len - p.count} lights on this output (e.g. arches) are turned off by Eaveglow's looks.` : ''}
+          </small>
+        </>
       )}
     </div>
   );

@@ -230,6 +230,9 @@ try {
       await page.locator('input[aria-label="Candy canes model file"]').setInputFiles(new URL('./test-cane.xmodel', import.meta.url).pathname);
       await page.getByText('Test Cane: 6 lights per cane · 2 canes = 12 lights').waitFor();
       await page.getByText('＋ Path lights').click();
+      // Only the first 3 lights of the 5 on output 2 are path lights (the rest, e.g. arches, stay off).
+      await page.getByLabel('Path lights count').fill('3');
+      await page.getByText('The other 2 lights on this output', { exact: false }).waitFor();
       await page.screenshot({ path: `${shots}props.png`, fullPage: true });
       await page.getByRole('button', { name: 'Save', exact: true }).click();
       await page.getByText('Props saved', { exact: false }).waitFor({ timeout: 20000 });
@@ -239,7 +242,9 @@ try {
       const red = propSeg.find((x) => x.start === 0);
       const white = propSeg.find((x) => x.start === red?.stop);
       check(JSON.stringify(red?.col) === '[[255,0,0]]' && JSON.stringify(white?.col) === '[[220,235,255]]' && white.stop === 12, 'candy canes: red and cool white stripe segments');
-      check(propSeg.some((x) => x.start === 12 && x.stop === 17 && x.on), 'path lights follow the look');
+      check(propSeg.some((x) => x.start === 12 && x.stop === 15 && x.on), 'path lights (first 3 of output 2) follow the look');
+      const offSeg = props.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1)?.body.seg.find((x) => x.start === 15);
+      check(offSeg?.stop === 17 && offSeg.on === false, 'the rest of output 2 is turned off');
       check(JSON.stringify(mock.state.seg) !== '[]', 'main controller still has its look');
 
       // The schedule goes to the prop controller too.
@@ -263,10 +268,10 @@ try {
       await new Promise((r) => mock.server.close(r) || setTimeout(r, 300));
       mock.server.closeAllConnections?.();
       await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-      await page.getByText("Couldn't reach your lights").waitFor({ timeout: 10000 });
+      await page.locator('.banner.error', { hasText: "Couldn't reach your lights" }).waitFor({ timeout: 10000 });
       check(true, 'offline banner shown when the controller is unreachable');
       mock.server.listen(8099);
-      await page.getByText("Couldn't reach your lights").waitFor({ state: 'detached', timeout: 15000 });
+      await page.locator('.banner.error').waitFor({ state: 'detached', timeout: 15000 });
       check(true, 'banner clears when the controller is back');
     }
     await ctx.close();

@@ -1,5 +1,5 @@
 import { builtinLooks } from '../src/engine/library';
-import { CANE_COLORS, Prop, buildLedmap, compileController, isIdentity, ledmapFile, stripeBands } from '../src/engine/props';
+import { CANE_COLORS, Prop, buildLedmap, compileController, isIdentity, ledmapFile, propCoordinates, stripeBands } from '../src/engine/props';
 import { EffectCatalog } from '../src/engine/segmentCompiler';
 import { parseXModel } from '../src/engine/xmodel';
 import { wled16Effects, wled16Palettes } from './fixtures_wled16';
@@ -34,9 +34,29 @@ describe('xLights models', () => {
 });
 
 describe('props', () => {
-  it('diagonal bands', () => {
-    // (row + col) / 2: node 1 (2,4)=6→3→1, node 2 (2,2)=4→0, node 3 (2,0)=2→1, node 4 (0,0)=0→0, node 5 (0,2)=2→1, node 6 (0,4)=4→0
+  it('stripes alternate up a straight cane', () => {
     expect(stripeBands(parseXModel(XMODEL), 2)).toEqual([1, 0, 1, 0, 1, 0]);
+  });
+
+  it('stripes follow the prop around a bend', () => {
+    // A two-wide tube: up a shaft (col 8-9, rows 9→0), then left along the top (row 0-1, cols 7→0).
+    const nodes: [number, number][] = [];
+    for (let row = 9; row >= 2; row--) nodes.push([8, row], [9, row]);
+    for (let col = 9; col >= 0; col--) nodes.push([col, 0], [col, 1]);
+    const model = { name: 'L', width: 10, height: 10, nodes };
+    const { along, across } = propCoordinates(model);
+    const at = (c: number, r: number) => nodes.findIndex(([x, y]) => x === c && y === r);
+    // Distance keeps growing around the corner and out to the tip.
+    expect(along[at(8, 9)]).toBe(0);
+    expect(along[at(8, 2)]).toBeLessThan(along[at(4, 1)]);
+    expect(along[at(4, 1)]).toBeLessThan(along[at(0, 1)]);
+    // Across the tube, the two sides sit on opposite sides of the centre line, on the shaft and on the top.
+    expect(Math.sign(across[at(8, 5)])).toBe(-Math.sign(across[at(9, 5)]));
+    expect(Math.sign(across[at(3, 0)])).toBe(-Math.sign(across[at(3, 1)]));
+    // Both stripes show up on the horizontal part too, not just the shaft.
+    const bands = stripeBands(model, 3);
+    const top = nodes.map((n, i) => (n[0] <= 6 ? bands[i] : -1)).filter((b) => b >= 0);
+    expect(new Set(top)).toEqual(new Set([0, 1]));
   });
 
   it('the pixel map puts each stripe together and maps every pixel once', () => {
