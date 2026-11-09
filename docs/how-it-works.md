@@ -142,5 +142,5 @@ segments below. With house spacing `lit`/`skip`, the overlay uses `grp = lit` an
 `spc = N × (lit + skip) − lit`, so it lands on every Nth *lit* light (both segments start at the same pixel).
 
 Magic Icicles uses Fairytwinkle for the overlay: it fades each light between color 2 (unscaled) and the palette
-color, so with color 2 = the dim base color, the bright lights never drop below their neighbours. Twinklefox
+color, so with color 2 = the dim base color (cool white at ~30%), the bright lights never drop below their neighbours. Twinklefox
 would scale its background to 1/16–1/3 and dip darker.

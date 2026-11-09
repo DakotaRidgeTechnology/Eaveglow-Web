@@ -93,9 +93,9 @@ describe('segment compiler', () => {
     const one = compileLook({ totalPixels: 300, zones: [] }, look('magic_icicles'), cat16, 32);
     expect(one.warnings).toEqual([]);
     expect(one.segments).toHaveLength(2);
-    expect(one.segments[0]).toMatchObject({ id: 0, start: 0, stop: 300, grp: 1, spc: 0, col: [[55, 90, 135]] });
+    expect(one.segments[0]).toMatchObject({ id: 0, start: 0, stop: 300, grp: 1, spc: 0, col: [[66, 70, 77]] });
     expect(fxName(one.segments[0])).toBe('Solid');
-    expect(one.segments[1]).toMatchObject({ id: 1, start: 0, stop: 300, grp: 1, spc: 3, col: [[215, 235, 255], [55, 90, 135]] });
+    expect(one.segments[1]).toMatchObject({ id: 1, start: 0, stop: 300, grp: 1, spc: 3, col: [[220, 235, 255], [66, 70, 77]] });
     expect(fxName(one.segments[1])).toBe('Fairytwinkle');
     expect(wled16Palettes[one.segments[1].pal!]).toBe('* Color 1');
 
