@@ -93,9 +93,9 @@ describe('segment compiler', () => {
     const one = compileLook({ totalPixels: 300, zones: [] }, look('magic_icicles'), cat16, 32);
     expect(one.warnings).toEqual([]);
     expect(one.segments).toHaveLength(2);
-    expect(one.segments[0]).toMatchObject({ id: 0, start: 0, stop: 300, grp: 1, spc: 0, col: [[66, 70, 77]] });
+    expect(one.segments[0]).toMatchObject({ id: 0, start: 0, stop: 300, grp: 1, spc: 0, col: [[66, 70, 77], [0, 0, 0], [0, 0, 0]] });
     expect(fxName(one.segments[0])).toBe('Solid');
-    expect(one.segments[1]).toMatchObject({ id: 1, start: 0, stop: 300, grp: 1, spc: 3, col: [[220, 235, 255], [66, 70, 77]] });
+    expect(one.segments[1]).toMatchObject({ id: 1, start: 0, stop: 300, grp: 1, spc: 3, col: [[220, 235, 255], [66, 70, 77], [0, 0, 0]] });
     expect(fxName(one.segments[1])).toBe('Fairytwinkle');
     expect(wled16Palettes[one.segments[1].pal!]).toBe('* Color 1');
 
@@ -121,8 +121,11 @@ describe('segment compiler', () => {
   });
 
   it('state JSON deletes leftover segments', () => {
-    const j = toStateJson(compileLook({ totalPixels: 10, zones: [] }, solid([1, 1, 1]), cat16), 3) as any;
+    const j = toStateJson(compileLook({ totalPixels: 10, zones: [] }, solid([1, 2, 3]), cat16), 3) as any;
+    expect(j.seg[0].col).toEqual([[1, 2, 3], [0, 0, 0], [0, 0, 0]]);
     expect(j.seg.slice(1)).toEqual([{ id: 1, stop: 0 }, { id: 2, stop: 0 }]);
+    const glitter = compileLook({ totalPixels: 10, zones: [] }, look('evergreen'), cat16).segments[0];
+    expect(glitter.col).toEqual([[0, 120, 10], [255, 170, 0], [255, 170, 0]]);
   });
 
   it('spacing helpers', () => {
