@@ -51,7 +51,10 @@ export function App() {
     () => new CustomPaletteInstaller(client, () => store.settings.customPalettes ?? {}, (m) => store.update('customPalettes', m)),
     [client, store],
   );
-  const propSync = useMemo(() => new PropSync(() => ({ controllers: store.settings.controllers ?? [], props: store.settings.props ?? [] })), [store]);
+  const propSync = useMemo(
+    () => new PropSync(() => ({ controllers: store.settings.controllers ?? [], props: store.settings.props ?? [], transition: store.settings.transition })),
+    [store],
+  );
   const [settings, setSettings] = useState(store.settings);
   const [snapshot, setSnapshot] = useState<WledSnapshot>();
   const [error, setError] = useState<string>();
@@ -120,7 +123,7 @@ export function App() {
       }
       const catalog = new EffectCatalog(snap.effects, snap.palettes, extra);
       const compiled = compileLook(layout, look, catalog, snap.info.maxSegments);
-      return { state: toStateJson(compiled, snap.state.seg.length), notes: [...notes, ...compiled.warnings] };
+      return { state: toStateJson(compiled, snap.state.seg.length, store.settings.transition ?? 7), notes: [...notes, ...compiled.warnings] };
     },
     [store, installer],
   );

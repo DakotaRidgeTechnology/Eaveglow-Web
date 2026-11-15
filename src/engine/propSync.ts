@@ -12,6 +12,8 @@ export const LEDMAP_BACKUP = '/ledmap-backup.json';
 export interface PropSetup {
   controllers: Controller[];
   props: Prop[];
+  /** Fade between looks, tenths of a second. */
+  transition?: number;
 }
 
 export type Outcome = { controller: Controller; error?: string };
@@ -50,7 +52,7 @@ export class PropSync {
     await this.ensureLedmap(c, props, snap.info.ledCount, replaceForeignMap);
     const catalog = new EffectCatalog(snap.effects, snap.palettes);
     const compiled = compileController(props, look, catalog, snap.info.ledCount, snap.info.maxSegments);
-    return toStateJson({ ...compiled, previewColors: [] }, Math.max(snap.state.seg.length, snap.info.maxSegments));
+    return toStateJson({ ...compiled, previewColors: [] }, Math.max(snap.state.seg.length, snap.info.maxSegments), this.setup().transition ?? 7);
   }
 
   async ensureLedmap(c: Controller, props: Prop[], totalPixels: number, replaceForeign = false) {

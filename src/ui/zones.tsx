@@ -132,10 +132,34 @@ export function ZonesPage() {
         <button class="primary" onClick={save}>Save</button>
       </div>
 
+      <FadeCard />
       <PropsLink />
       <BackupCard />
       <AboutCard />
     </main>
+  );
+}
+
+/** How long looks take to fade into each other (WLED transition). */
+function FadeCard() {
+  const { settings, store } = useApp();
+  const tenths = settings.transition ?? 7;
+  return (
+    <section class="card">
+      <b>✨ Fade between looks</b>
+      <div class="row">
+        <input
+          type="range"
+          min={0}
+          max={30}
+          aria-label="Fade between looks"
+          value={tenths}
+          onInput={(e) => store.update('transition', +e.currentTarget.value)}
+        />
+        <span class="pct">{tenths === 0 ? 'Instant' : `${(tenths / 10).toFixed(1)} s`}</span>
+      </div>
+      <small class="hint">Used the next time a look is turned on, by hand or by the schedule.</small>
+    </section>
   );
 }
 

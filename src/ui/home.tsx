@@ -5,7 +5,7 @@ import { byUpcoming, describeDays } from '../engine/holidays';
 import { UpdateInfo, checkForUpdate } from '../engine/updates';
 import { builtinLooks, holidayGroups, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
 import { CUSTOM_CATEGORY, Look, isBuiltIn } from '../engine/model';
-import { Chip, Dialog, Header, StripPreview, Swatch } from './common';
+import { Chip, Dialog, GradientBar, Header, StripPreview, Swatch } from './common';
 
 const ALL = 'All';
 
@@ -37,8 +37,17 @@ export function Home() {
   const looks = useMemo(() => [...builtinLooks, ...settings.customLooks], [settings.customLooks]);
   const categories = [ALL, ...(settings.customLooks.length ? [CUSTOM_CATEGORY] : []), ...lookCategories];
   const q = query.trim().toLowerCase();
+  const hidden = new Set(settings.hiddenLooks ?? []);
+  const [showHidden, setShowHidden] = useState(false);
+  // Nothing hidden any more: back to the normal view.
+  useEffect(() => {
+    if (!hidden.size) setShowHidden(false);
+  }, [hidden.size]);
+  const setHidden = (id: string, hide: boolean) =>
+    store.update('hiddenLooks', hide ? [...hidden, id] : [...hidden].filter((x) => x !== id));
   const shown = looks.filter(
     (l) =>
+      (showHidden || !hidden.has(l.id)) &&
       (category === ALL || (l.category ?? CUSTOM_CATEGORY) === category) &&
       (category !== HOLIDAYS || !holiday || l.group === holiday) &&
       (!q || l.name.toLowerCase().includes(q)),
@@ -162,6 +171,21 @@ export function Home() {
           />
           <span>🔆</span>
         </div>
+        <div class="chips presets">
+          {[25, 50, 75, 100].map((pct) => (
+            <Chip
+              key={pct}
+              selected={!!state?.on && Math.round(((state?.bri ?? 0) / 255) * 100) === pct}
+              onClick={async () => {
+                const problems = await setLights({ on: true, bri: Math.round((pct / 100) * 255) }).catch((err) => [String(err.message ?? err)]);
+                if (problems.length) toast(problems.join(' '));
+                void refresh();
+              }}
+            >
+              {pct}%
+            </Chip>
+          ))}
+        </div>
         {layout && state && (
           <StripPreview
             layout={layout}
@@ -214,8 +238,11 @@ export function Home() {
 
       {recent.length > 0 && category === ALL && !q && (
         <>
-          <h3 class="section"><span>Recent</span></h3>
-          <div class="recent">{lookGrid(recent)}</div>
+          <h3 class="section">
+            <span>Recent</span>
+            <button class="link" onClick={() => store.update('recentLooks', [])}>Clear</button>
+          </h3>
+          <div class="recent">{lookGrid(recent, false)}</div>
         </>
       )}
 
@@ -237,6 +264,11 @@ export function Home() {
             {c}
           </Chip>
         ))}
+        {hidden.size > 0 && (
+          <Chip selected={showHidden} onClick={() => setShowHidden(!showHidden)}>
+            {showHidden ? 'Hide hidden' : `Show ${hidden.size} hidden`}
+          </Chip>
+        )}
       </div>
       {category === HOLIDAYS && (
         <div class="chips scroll holidays">
@@ -277,13 +309,14 @@ export function Home() {
     </main>
   );
 
-  function lookGrid(list: Look[]) {
+  /** `hideable`: show the ✕ that hides a look you never use (not on Recent). */
+  function lookGrid(list: Look[], hideable = true) {
     return (
       <div class="grid">
         {list.map((look) => (
           <div
             key={look.id}
-            class={'tile' + (settings.activeLookId === look.id ? ' active' : '')}
+            class={'tile' + (settings.activeLookId === look.id ? ' active' : '') + (hidden.has(look.id) ? ' hidden' : '')}
             role="button"
             tabIndex={0}
             onClick={() => !busy && apply(look)}
@@ -293,15 +326,27 @@ export function Home() {
               {busy === look.id ? (
                 <span class="spinner" />
               ) : (
-                !isBuiltIn(look) && (
-                  <button class="edit" title="Edit" onClick={(e) => (e.stopPropagation(), go(`/look/${encodeURIComponent(look.id)}`))}>
-                    ✎
-                  </button>
-                )
+                <span class="tile-actions">
+                  {!isBuiltIn(look) && (
+                    <button class="edit" title="Edit" onClick={(e) => (e.stopPropagation(), go(`/look/${encodeURIComponent(look.id)}`))}>
+                      ✎
+                    </button>
+                  )}
+                  {hideable && (
+                    <button
+                      class="edit"
+                      title={hidden.has(look.id) ? 'Show this look again' : 'Hide this look'}
+                      onClick={(e) => (e.stopPropagation(), setHidden(look.id, !hidden.has(look.id)))}
+                    >
+                      {hidden.has(look.id) ? '👁' : '✕'}
+                    </button>
+                  )}
+                </span>
               )}
             </div>
             <span class="name">{look.name}</span>
             <Swatch colors={lookPreviewColors(look)} />
+            <GradientBar colors={lookPreviewColors(look)} />
           </div>
         ))}
       </div>
