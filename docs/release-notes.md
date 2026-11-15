@@ -1,9 +1,9 @@
 Eaveglow is a simple phone app for WLED that lives on the controller itself. It's one small web page you upload to the ESP32 running WLED, so there's no extra hardware, no cloud account and no app store.
 
 <p>
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.2.0/docs/screenshots/home.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.2.0/docs/screenshots/editor.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.2.0/docs/screenshots/autopilot.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.0/docs/screenshots/home.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.0/docs/screenshots/editor.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.0/docs/screenshots/autopilot.png" width="240">
 </p>
 
 ## Install
@@ -14,13 +14,17 @@ Eaveglow is a simple phone app for WLED that lives on the controller itself. It'
 
 To update later, upload the new `eaveglow.htm.gz` over the old one. Your settings are kept.
 
-## New in 1.2.0
+## New in 1.3.0
 
-- **Props on another controller.** Add a second WLED controller under House zones > Props and Eaveglow drives it alongside your roofline. Each controller gets its own part of every look, so layouts and light spacing don't have to match (no WLED Sync needed). Looks, power, brightness, the sleep timer, schedules and autopilot all reach every controller.
-- **Candy canes with diagonal stripes.** Upload the cane's xLights model file from the prop maker, pick the stripe colors (red and cool white to start) and width, and the stripes stay put through power cycles, schedules and autopilot.
-- **Path lights** that follow the current look, using as many lights of an output as you choose (so arches on the same output are left alone).
-- **Pixel-wrapped trees**: set how many trees and lights per tree, and each tree shows its own copy of the current look.
-- **Brightness per prop**, on top of the overall brightness.
+Many of these ideas came from a contribution by @cmgj74. Thank you!
+
+- **39 new looks** (171 in all) across Nature, Party, Everyday, Bulbs, Christmas, Thanksgiving and Sports.
+- **Look tiles** show a preview bar under the colors. Hide looks you never use with the small ✕ ("Show hidden" brings them back), and clear the Recent row.
+- **Brightness buttons** (25 / 50 / 75 / 100 %) under the slider, and a **fade between looks** setting under House zones.
+- **Share a look** as text and paste it into Eaveglow on another phone or house (📤 / 📥 in the look editor). Parts of the house are matched by name.
+- **Zone tools:** split a part after any light (for example to give a peak its own look), or set where each part starts for unusual wiring.
+- **Light / dark switch** on Home, saved per phone.
+- **Fix:** looks that use fewer than three colors no longer pick up colors from the previous look, and glitter effects sparkle in the look's own color (thanks @craigteegarden).
 
 ## What's in it
 

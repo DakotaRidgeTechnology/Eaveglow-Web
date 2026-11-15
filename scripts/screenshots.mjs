@@ -58,7 +58,7 @@ try {
       await page.getByText('Save to my lights').click();
       await page.getByText('Schedule saved').waitFor({ timeout: 30000 });
       await page.getByRole('button', { name: 'OK', exact: true }).click();
-      await page.getByRole('button', { name: 'Back' }).click();
+      await page.getByRole('button', { name: 'Back', exact: true }).click();
       await page.waitForSelector('.tile');
 
       await page.locator('.tile', { has: page.getByText('Halloween', { exact: true }) }).first().click();
@@ -73,7 +73,7 @@ try {
 
       await page.getByTitle('House zones').click();
       await shot(page, 'zones');
-      await page.getByRole('button', { name: 'Back' }).click();
+      await page.getByRole('button', { name: 'Back', exact: true }).click();
 
       await page.getByText('Make a look').click();
       await page.locator('.name-input').fill('Game Night');
