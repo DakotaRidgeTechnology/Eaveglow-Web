@@ -53,6 +53,9 @@ export function suggestedSpacing(inchesBetweenLights: number): LightSpacing {
 export interface HouseLayout {
   totalPixels: number;
   zones: Zone[];
+  /** Each part's start pixel is set by hand (wiring that skips or reorders
+   * lights); otherwise parts follow one another in list order. */
+  manualStarts?: boolean;
   spacing?: LightSpacing;
   inchesBetweenLights?: number;
 }
@@ -71,6 +74,25 @@ export function sequential(zones: Zone[]): Zone[] {
     cursor += z.length;
     return placed;
   });
+}
+
+/**
+ * Splits a part after the given light numbers (1-based within the part):
+ * "Roofline" split after 40 and 85 becomes Roofline 1 (1-40), 2 (41-85)
+ * and 3 (86-end). The first piece keeps the part's id, so looks that
+ * target it still find it. Numbers outside the part are ignored.
+ */
+export function splitZone(zone: Zone, after: number[]): Zone[] {
+  const cuts = [...new Set(after.map(Math.round))].filter((n) => n >= 1 && n < zone.length).sort((a, b) => a - b);
+  if (!cuts.length) return [zone];
+  const bounds = [0, ...cuts, zone.length];
+  return bounds.slice(1).map((end, i) => ({
+    ...zone,
+    id: i === 0 ? zone.id : newId(),
+    name: `${zone.name} ${i + 1}`,
+    start: zone.start + bounds[i],
+    length: end - bounds[i],
+  }));
 }
 
 export function validateLayout(layout: HouseLayout): string[] {

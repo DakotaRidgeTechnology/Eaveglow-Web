@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { builtinLooks } from '../engine/library';
-import { LightSpacing, SOLID_SPACING, Zone, newId, sequential, spacingEquals, suggestedSpacing, validateLayout } from '../engine/model';
+import { LightSpacing, SOLID_SPACING, Zone, newId, sequential, splitZone, spacingEquals, suggestedSpacing, validateLayout } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
 import { backupFileName, makeBackup, readBackup } from '../engine/backup';
 import { RELEASES, UpdateCheck, checkForUpdate, setUpdateChecks, updateChecksEnabled } from '../engine/updates';
@@ -41,10 +41,26 @@ export function ZonesPage() {
     setTotal(n);
   }
 
-  const layout = { totalPixels: total, zones: sequential(zones), spacing, inchesBetweenLights: inches };
+  const [manual, setManual] = useState(!!saved?.manualStarts);
+  const placed = manual ? zones : sequential(zones);
+  const layout = { totalPixels: total, zones: placed, spacing, inchesBetweenLights: inches, ...(manual ? { manualStarts: true } : {}) };
+  const setManualStarts = (on: boolean) => {
+    // Start from where the parts are now, so nothing jumps.
+    if (on) setZones(sequential(zones));
+    setManual(on);
+  };
+  const split = (i: number, text: string) => {
+    const after = text.split(/[^0-9]+/).filter(Boolean).map(Number);
+    const pieces = splitZone(placed[i], after);
+    if (pieces.length < 2) return toast(`Enter light numbers between 1 and ${placed[i].length - 1}, e.g. 40, 85.`);
+    setZones([...zones.slice(0, i), ...pieces, ...zones.slice(i + 1)]);
+    toast(`Split into ${pieces.length} parts.`);
+  };
   const preview = compileLook(layout, builtinLooks.find((l) => l.id === 'builtin.christmas_classic')!, new EffectCatalog(['Solid'], []), 64);
   const assigned = zones.reduce((n, z) => n + z.length, 0);
-  const unassigned = total - assigned;
+  // With hand-set starts, lights skipped between parts count as not in a part.
+  const covered = manual ? new Set(placed.flatMap((z) => Array.from({ length: z.length }, (_, k) => z.start + k)).filter((p) => p < total)).size : assigned;
+  const unassigned = manual ? total - covered : total - assigned;
 
   const updateZone = (i: number, patch: Partial<Zone>) => setZones(zones.map((z, k) => (k === i ? { ...z, ...patch } : z)));
   const move = (i: number, d: number) => {
@@ -88,6 +104,12 @@ export function ZonesPage() {
       </label>
 
       <h3>Parts of the house, in wiring order</h3>
+      <Toggle
+        label="Set where each part starts"
+        hint="For wiring that skips lights or runs out of order. Off: parts follow one another."
+        checked={manual}
+        onChange={setManualStarts}
+      />
       <StripPreview layout={layout} segments={preview.segments} previews={preview.previewColors} />
       {unassigned !== 0 && (
         <p class="hint">
@@ -108,9 +130,16 @@ export function ZonesPage() {
             <button class="round" onClick={() => updateZone(i, { length: z.length + 1 })}>+</button>
             <span>lights</span>
           </div>
+          {manual && (
+            <div class="row">
+              <span>Starts at light</span>
+              <NumberField class="center" value={z.start + 1} min={1} onChange={(n) => updateZone(i, { start: n - 1 })} ariaLabel={`${z.name} first light`} />
+            </div>
+          )}
           <label class="check">
             <input type="checkbox" checked={!!z.reversed} onChange={(e) => updateZone(i, { reversed: e.currentTarget.checked })} /> Runs backwards
           </label>
+          <SplitPart name={z.name} length={z.length} onSplit={(text) => split(i, text)} />
         </section>
       ))}
       <button onClick={() => setZones([...zones, { id: newId(), name: `Part ${zones.length + 1}`, start: 0, length: unassigned > 0 ? unassigned : 10 }])}>
@@ -160,6 +189,27 @@ function FadeCard() {
       </div>
       <small class="hint">Used the next time a look is turned on, by hand or by the schedule.</small>
     </section>
+  );
+}
+
+/** Split a part after some of its lights, e.g. to give a peak its own look. */
+function SplitPart(props: { name: string; length: number; onSplit: (text: string) => void }) {
+  const [text, setText] = useState('');
+  return (
+    <details class="split">
+      <summary>Split this part</summary>
+      <div class="row">
+        <input
+          inputMode="numeric"
+          aria-label={`Split ${props.name} after lights`}
+          placeholder={`After light, e.g. ${Math.max(1, Math.floor(props.length / 2))}`}
+          value={text}
+          onInput={(e) => setText(e.currentTarget.value)}
+        />
+        <button disabled={!text.trim()} onClick={() => (props.onSplit(text), setText(''))}>Split</button>
+      </div>
+      <small class="hint">Several numbers make several parts: "40, 41" turns light 41 into its own 1-light part.</small>
+    </details>
   );
 }
 
