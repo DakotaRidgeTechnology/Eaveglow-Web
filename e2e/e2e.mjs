@@ -31,6 +31,15 @@ try {
     check((await page.getByLabel('Number of lights').inputValue()) === '200', 'zones page uses the controller LED count');
     await page.getByLabel('Number of lights').fill('120');
     check((await page.getByLabel('Roofline lights').inputValue()) === '120', 'changing the total resizes the house part');
+    // Split a part, then set where a part starts by hand (not saved: later steps use this house).
+    await page.getByText('Split this part').click();
+    await page.getByLabel('Split Roofline after lights').fill('50');
+    await page.getByRole('button', { name: 'Split', exact: true }).click();
+    check((await page.getByLabel('Roofline 1 lights').inputValue()) === '50' && (await page.getByLabel('Roofline 2 lights').inputValue()) === '70', 'a part splits into two');
+    await page.getByRole('switch', { name: /Set where each part starts/ }).check();
+    check((await page.getByLabel('Roofline 2 first light').inputValue()) === '51', 'hand-set starts begin where the parts were');
+    await page.getByLabel('Roofline 2 first light').fill('61');
+    await page.screenshot({ path: `${shots}zone-tools.png`, fullPage: true });
     // Regression: a home-screen web app can reopen straight on a page with no
     // Eaveglow page behind it; Back must go Home instead of doing nothing.
     await page.goto(`${mock.url}/eaveglow.htm#/schedule`);

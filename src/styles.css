@@ -250,3 +250,4 @@ select {
 .chips.presets .chip { min-height: 32px; padding: 4px 12px; font-size: 14px; }
 h3.section .link { font-size: 14px; font-weight: normal; color: var(--muted); }
 .share-text { width: 100%; min-height: 120px; font: 12px/1.4 ui-monospace, monospace; border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: var(--card); color: inherit; word-break: break-all; }
+.zone .split summary { color: var(--muted); font-size: 14px; cursor: pointer; margin-top: 4px; }

@@ -1,5 +1,5 @@
 import { builtinLooks, effectStyles, lookCategories, palettePresets, colorGroups, styleById } from '../src/engine/library';
-import { HouseLayout, Look, sequential, suggestedSpacing, spacingLabel } from '../src/engine/model';
+import { HouseLayout, Look, sequential, splitZone, suggestedSpacing, spacingLabel, validateLayout } from '../src/engine/model';
 import { EffectCatalog, compileLook, toStateJson } from '../src/engine/segmentCompiler';
 import { wled015Effects, wled015Palettes } from './fixtures_wled015';
 import { wled16Effects, wled16Palettes } from './fixtures_wled16';
@@ -126,6 +126,23 @@ describe('segment compiler', () => {
     expect(j.seg.slice(1)).toEqual([{ id: 1, stop: 0 }, { id: 2, stop: 0 }]);
     const glitter = compileLook({ totalPixels: 10, zones: [] }, look('evergreen'), cat16).segments[0];
     expect(glitter.col).toEqual([[0, 120, 10], [255, 170, 0], [255, 170, 0]]);
+  });
+
+  it('splitting a part and setting starts by hand', () => {
+    const roof = zone('roof', 100, 120);
+    const parts = splitZone(roof, [85, 40, 999, 40]);
+    expect(parts.map((z) => [z.name, z.start, z.length])).toEqual([['roof 1', 100, 40], ['roof 2', 140, 45], ['roof 3', 185, 35]]);
+    expect(parts[0].id).toBe('roof');
+    expect(new Set(parts.map((z) => z.id)).size).toBe(3);
+    expect(splitZone(roof, [0, 120])).toEqual([roof]);
+    // A 1-light peak: split after 40 and 41.
+    expect(splitZone(roof, [40, 41]).map((z) => z.length)).toEqual([40, 1, 79]);
+    // Hand-set starts: a gap between parts is fine (those lights stay off); overlaps aren't.
+    const gap: HouseLayout = { totalPixels: 200, zones: [zone('a', 0, 50), zone('b', 60, 40)], manualStarts: true };
+    expect(validateLayout(gap)).toEqual([]);
+    const segs = compileLook(gap, solid([255, 0, 0]), cat16).segments;
+    expect(segs.map((s) => [s.start, s.stop, s.on])).toEqual([[0, 50, true], [50, 60, false], [60, 100, true], [100, 200, false]]);
+    expect(validateLayout({ totalPixels: 200, zones: [zone('a', 0, 50), zone('b', 40, 40)] })[0]).toMatch(/overlaps/);
   });
 
   it('spacing helpers', () => {
