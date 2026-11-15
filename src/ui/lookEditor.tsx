@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
 import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
+import { decodeLook, encodeLook } from '../engine/lookShare';
 import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, rgbEquals, spacingLabel } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
-import { Chip, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
+import { Chip, Dialog, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
 
 const EMOJIS = ['✨', '🎄', '🎅', '❄️', '🎃', '👻', '❤️', '🍀', '🐣', '🇺🇸', '🎆', '🦃', '🕎', '🪔', '🏈', '⚽', '🏀', '⚾', '🏒', '🎉', '🎂', '🌈', '🌊', '🔥', '🌙', '⭐', '🌸', '🦄'];
 
@@ -13,6 +14,8 @@ export function LookEditor(props: { lookId?: string }) {
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
   const [active, setActive] = useState(0);
+  const [sharing, setSharing] = useState(false);
+  const [importing, setImporting] = useState(false);
   const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
@@ -93,8 +96,27 @@ export function LookEditor(props: { lookId?: string }) {
   return (
     <main>
       <Header title={existing ? 'Edit look' : 'Make a look'} back>
-        {existing && <button class="icon" title="Delete" onClick={remove}>🗑</button>}
+        {existing ? (
+          <>
+            <button class="icon" title="Share this look" onClick={() => setSharing(true)}>📤</button>
+            <button class="icon" title="Delete" onClick={remove}>🗑</button>
+          </>
+        ) : (
+          <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
+        )}
       </Header>
+      <ShareDialog open={sharing} text={sharing ? encodeLook(look, zones) : ''} onClose={() => setSharing(false)} />
+      <ImportDialog
+        open={importing}
+        onClose={() => setImporting(false)}
+        onImport={(text) => {
+          const imported = decodeLook(text, zones);
+          setLook(imported);
+          selectLayer(0, imported);
+          setImporting(false);
+          toast(`${imported.emoji} ${imported.name} is ready. Tap Save to keep it.`);
+        }}
+      />
       <div class="sticky">
         <StripPreview layout={layout} segments={preview.segments} previews={preview.previewColors} showZones={false} />
       </div>
@@ -298,6 +320,67 @@ export function LookEditor(props: { lookId?: string }) {
         <button onClick={() => save(false)}>Save</button>
       </div>
     </main>
+  );
+}
+
+/** The look as text to copy. The clipboard API only exists on https pages,
+ * and the controller serves Eaveglow over http, so copy falls back to the
+ * selected text. */
+function ShareDialog(props: { open: boolean; text: string; onClose: () => void }) {
+  const { toast } = useApp();
+  const copy = async (area: HTMLTextAreaElement) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(props.text);
+      else {
+        area.select();
+        if (!document.execCommand('copy')) throw new Error('copy refused');
+      }
+      toast('Look copied. Paste it in a message or another phone.');
+    } catch {
+      area.select();
+      toast('Select the text and copy it.');
+    }
+  };
+  const ref = useRef<HTMLTextAreaElement>(null);
+  return (
+    <Dialog open={props.open} onClose={props.onClose}>
+      <h2>📤 Share this look</h2>
+      <p class="hint">Anyone with Eaveglow can paste this into "Make a look" → 📥.</p>
+      <textarea class="share-text" readOnly aria-label="Shared look" ref={ref} value={props.text} onFocus={(e) => e.currentTarget.select()} />
+      <div class="buttons">
+        <button class="primary" onClick={() => ref.current && copy(ref.current)}>Copy</button>
+        <button onClick={props.onClose}>Done</button>
+      </div>
+    </Dialog>
+  );
+}
+
+function ImportDialog(props: { open: boolean; onClose: () => void; onImport: (text: string) => void }) {
+  const [text, setText] = useState('');
+  const [error, setError] = useState<string>();
+  return (
+    <Dialog open={props.open} onClose={props.onClose}>
+      <h2>📥 Paste a shared look</h2>
+      <textarea class="share-text" aria-label="Paste a shared look" placeholder="EAVEGLOW-LOOK:{…}" value={text} onInput={(e) => (setText(e.currentTarget.value), setError(undefined))} />
+      {error && <p class="hint warn">{error}</p>}
+      <div class="buttons">
+        <button
+          class="primary"
+          disabled={!text.trim()}
+          onClick={() => {
+            try {
+              props.onImport(text);
+              setText('');
+            } catch (e) {
+              setError(e instanceof Error ? e.message : String(e));
+            }
+          }}
+        >
+          Use this look
+        </button>
+        <button onClick={props.onClose}>Cancel</button>
+      </div>
+    </Dialog>
   );
 }
 
