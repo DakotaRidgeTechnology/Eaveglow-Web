@@ -121,11 +121,11 @@ export function App() {
           notes.push(`Couldn't add ${r.failed.map((n) => n.replace('★ ', '')).join(', ')} to your controller (is it PIN-locked?), so a similar built-in color theme is used.`);
         }
       }
-      const catalog = new EffectCatalog(snap.effects, snap.palettes, extra);
+      const catalog = new EffectCatalog(snap.effects, snap.palettes, extra, await client.fetchFxData());
       const compiled = compileLook(layout, look, catalog, snap.info.maxSegments);
       return { state: toStateJson(compiled, snap.state.seg.length, store.settings.transition ?? 7), notes: [...notes, ...compiled.warnings] };
     },
-    [store, installer],
+    [client, store, installer],
   );
 
   const applyLook = useCallback(

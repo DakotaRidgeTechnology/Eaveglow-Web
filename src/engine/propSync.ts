@@ -50,7 +50,7 @@ export class PropSync {
     const client = this.clientFor(c);
     snap ??= await client.fetchSnapshot();
     await this.ensureLedmap(c, props, snap.info.ledCount, replaceForeignMap);
-    const catalog = new EffectCatalog(snap.effects, snap.palettes);
+    const catalog = new EffectCatalog(snap.effects, snap.palettes, {}, await client.fetchFxData());
     const compiled = compileController(props, look, catalog, snap.info.ledCount, snap.info.maxSegments);
     return toStateJson({ ...compiled, previewColors: [] }, Math.max(snap.state.seg.length, snap.info.maxSegments), this.setup().transition ?? 7);
   }

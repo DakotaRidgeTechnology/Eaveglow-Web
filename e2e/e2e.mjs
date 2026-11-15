@@ -168,6 +168,16 @@ try {
       `Magic Icicles: ${icy.map((x) => `${fxNames[x.fx]} spc ${x.spc}`).join(', ')}`,
     );
 
+    // Looks with more colors than their effect shows: WLED gets a palette, not just color 1.
+    const palNames = JSON.parse((await import('node:fs')).readFileSync(new URL('./wled16-palettes.json', import.meta.url)));
+    const sentPal = async (name) => {
+      await page.locator('.tile', { has: page.getByText(name, { exact: true }) }).first().click();
+      await page.locator('.tile.active', { has: page.getByText(name, { exact: true }) }).first().waitFor();
+      return palNames[mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1).body.seg[0].pal];
+    };
+    check((await sentPal('Rainbow Wave')) === 'Rainbow', 'Rainbow Wave sends the Rainbow palette');
+    check((await sentPal('Sunset Glow')) === '* Colors Only', 'a 3-color Gradient look uses its colors as the palette (via /json/fxdata)');
+
     // Make a custom look.
     await page.getByText('Make a look').click();
     await page.locator('.name-input').fill('Team Spirit');
