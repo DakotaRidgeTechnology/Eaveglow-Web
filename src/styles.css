@@ -11,8 +11,9 @@
   --glow: #ffb347;
   color-scheme: light dark;
 }
+/* Dark colors: when the phone is in dark mode (unless this phone chose light), or always when it chose dark. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #0f0b22;
     --card: #1b1538;
     --text: #efeaff;
@@ -24,6 +25,19 @@
     --warn: #ff8a80;
   }
 }
+:root[data-theme='dark'] {
+  --bg: #0f0b22;
+  --card: #1b1538;
+  --text: #efeaff;
+  --muted: #a59ec4;
+  --line: #2e2652;
+  --accent: #a98bff;
+  --accent-soft: #33275f;
+  --on-accent: #120d2b;
+  --warn: #ff8a80;
+  color-scheme: dark;
+}
+:root[data-theme='light'] { color-scheme: light; }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {

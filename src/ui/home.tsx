@@ -3,6 +3,7 @@ import { useApp } from '../app';
 import { currentPeriod, defaultAutopilot, describeMonthDay, seasonPeriods } from '../engine/autopilot';
 import { byUpcoming, describeDays } from '../engine/holidays';
 import { UpdateInfo, checkForUpdate } from '../engine/updates';
+import { getTheme, nextTheme, setTheme, themeIcon, themeLabel } from '../theme';
 import { builtinLooks, holidayGroups, lookCategories, lookPreviewColors, previewColorsFor } from '../engine/library';
 import { CUSTOM_CATEGORY, Look, isBuiltIn } from '../engine/model';
 import { Chip, Dialog, GradientBar, Header, StripPreview, Swatch } from './common';
@@ -21,6 +22,7 @@ const HOLIDAYS = 'Holidays';
 export function Home() {
   const { snapshot, offline, settings, refresh, applyLook, setLights, toast, go, store, saveSchedule } = useApp();
   const [sleepOpen, setSleepOpen] = useState(false);
+  const [theme, setThemeState] = useState(getTheme);
   const [update, setUpdate] = useState<UpdateInfo>();
   // Only on phones where online update checks were turned on (House zones → About).
   useEffect(() => {
@@ -133,6 +135,9 @@ export function Home() {
           {settings.schedule.enabled ? '⏰' : '🕒'}
         </button>
         <button class="icon" title="House zones" onClick={() => go('/zones')}>🏠</button>
+        <button class="icon" title={themeLabel[theme]} aria-label={themeLabel[theme]} onClick={() => (setTheme(nextTheme[theme]), setThemeState(nextTheme[theme]))}>
+          {themeIcon[theme]}
+        </button>
       </Header>
 
       {update && (
