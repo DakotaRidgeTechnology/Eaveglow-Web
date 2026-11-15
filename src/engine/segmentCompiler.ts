@@ -1,7 +1,25 @@
 // Turns a Look into WLED segments for a house layout (port of
 // lib/engine/segment_compiler.dart).
 import { previewColorsFor } from './library';
-import { BLACK, HouseLayout, Look, LookLayer, Rgb, SOLID_SPACING, WledSegment, effectiveZones, targetMatches } from './model';
+import { BLACK, HouseLayout, Look, LookLayer, Rgb, SOLID_SPACING, WledSegment, effectiveZones, rgbEquals, targetMatches } from './model';
+
+/** What an effect draws with, from WLED's own effect metadata (/json/fxdata). */
+export interface EffectColors {
+  /** Color slots the effect shows in WLED's UI. */
+  slots: number;
+  /** The effect draws through the palette. */
+  palette: boolean;
+}
+
+/**
+ * Reads one /json/fxdata entry ("sliders;colors;palette;flags;defaults").
+ * Undefined when the effect doesn't say (e.g. Solid's empty entry).
+ */
+export function parseEffectData(data: string | undefined): EffectColors | undefined {
+  const parts = (data ?? '').split(';');
+  if (parts.length < 3) return undefined;
+  return { slots: parts[1].split(',').filter((c) => c.trim() !== '').length, palette: parts[2].trim() !== '' };
+}
 
 /** Resolves effect/palette names to a device's ids (they vary by build). */
 export class EffectCatalog {
@@ -10,14 +28,19 @@ export class EffectCatalog {
 
   private extra: Map<string, number>;
 
-  /** `extraPalettes`: installed custom palettes, name → WLED palette id. */
-  constructor(effects: string[], palettes: string[], extraPalettes: Record<string, number> = {}) {
+  /**
+   * `extraPalettes`: installed custom palettes, name → WLED palette id.
+   * `fxdata`: the controller's /json/fxdata, in effect id order (optional).
+   */
+  constructor(effects: string[], palettes: string[], extraPalettes: Record<string, number> = {}, private fxdata: string[] = []) {
     this.fx = effects.map(normalize);
     this.pal = palettes.map(normalize);
     this.extra = new Map(Object.entries(extraPalettes).map(([k, v]) => [normalize(k), v]));
   }
 
   effectId = (candidates: string[]) => find(this.fx, candidates);
+
+  effectColors = (id: number) => parseEffectData(this.fxdata[id]);
 
   paletteId(candidates: string[]): number | undefined {
     for (const c of candidates) {
@@ -80,8 +103,17 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
     if (fx === undefined) missingFx.add(layer.effect[0]);
     return fx ?? 0;
   };
-  const resolvePal = (layer: LookLayer) => {
-    if (!layer.palette.length) return 0;
+  const resolvePal = (layer: LookLayer, fx: number) => {
+    if (!layer.palette.length) {
+      // With WLED's Default palette most effects draw only color 1 (and maybe a
+      // background), so a look with more colors than the effect shows would
+      // lose them (Colorwaves with a rainbow of colors came out red). Use the
+      // look's own colors as the palette instead.
+      const info = catalog.effectColors(fx);
+      const shown = layer.colors.filter((c) => !rgbEquals(c, BLACK)).length;
+      if (info?.palette && shown > Math.max(1, info.slots)) return catalog.paletteId(['* Colors Only']) ?? 0;
+      return 0;
+    }
     const id = catalog.paletteId(layer.palette);
     if (id === undefined) missingPal.add(layer.palette[0]);
     return id ?? 0;
@@ -106,7 +138,7 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
     const layer = look.layers[run.layer];
     const spacing = layer.spacing ?? layout.spacing ?? SOLID_SPACING;
     const fx = resolveFx(layer);
-    const pal = resolvePal(layer);
+    const pal = resolvePal(layer, fx);
     segments.push({
       id: i,
       start: run.start,
@@ -144,7 +176,7 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
         fx,
         sx: overlay.speed,
         ix: overlay.intensity,
-        pal: resolvePal(overlay),
+        pal: resolvePal(overlay, fx),
         rev: run.reverse,
       });
       previews.push(previewColorsFor(overlay.colors, fx === 0 ? 'Solid' : overlay.effect[0], overlay.palette[0]));

@@ -1,11 +1,15 @@
 import { builtinLooks, effectStyles, lookCategories, palettePresets, colorGroups, styleById } from '../src/engine/library';
 import { HouseLayout, Look, sequential, splitZone, suggestedSpacing, spacingLabel, validateLayout } from '../src/engine/model';
-import { EffectCatalog, compileLook, toStateJson } from '../src/engine/segmentCompiler';
+import { readFileSync } from 'node:fs';
+import { EffectCatalog, compileLook, parseEffectData, toStateJson } from '../src/engine/segmentCompiler';
 import { wled015Effects, wled015Palettes } from './fixtures_wled015';
 import { wled16Effects, wled16Palettes } from './fixtures_wled16';
 
 const cat015 = new EffectCatalog(wled015Effects, wled015Palettes);
 const cat16 = new EffectCatalog(wled16Effects, wled16Palettes);
+// WLED 16's /json/fxdata (effect metadata), generated from WLED's source for e2e/wled16-effects.json.
+const fxdata16: string[] = JSON.parse(readFileSync(new URL('../e2e/wled16-fxdata.json', import.meta.url), 'utf8'));
+const cat16fx = new EffectCatalog(wled16Effects, wled16Palettes, {}, fxdata16);
 const zone = (id: string, start: number, length: number, reversed = false) => ({ id, name: id, start, length, reversed });
 const solid = (rgb: [number, number, number], target: any = { kind: 'all' }): Look => ({
   id: 't', name: 't', emoji: '',
@@ -30,6 +34,22 @@ describe('library (exported from the Flutter app)', () => {
         expect(r.warnings, `${l.name} on ${v}`).toEqual([]);
         expect(r.previewColors.length).toBe(r.segments.length);
       }
+    }
+  });
+
+  it('every look shows all its colors on WLED 16', () => {
+    expect(JSON.parse(readFileSync(new URL('../e2e/wled16-effects.json', import.meta.url), 'utf8'))).toEqual(wled16Effects);
+    for (const l of builtinLooks) {
+      const segs = compileLook({ totalPixels: 100, zones: [] }, l, cat16fx, 32).segments;
+      l.layers.forEach((layer, i) => {
+        const shown = layer.colors.filter((c) => c.some((v) => v > 0)).length;
+        // WLED has 3 color slots: more colors only make sense through a palette.
+        if (!layer.palette.length) expect(shown, `${l.name}: more than 3 colors needs a palette`).toBeLessThanOrEqual(3);
+        const info = cat16fx.effectColors(segs[i]?.fx ?? 0);
+        if (!layer.palette.length && info?.palette && shown > Math.max(1, info.slots)) {
+          expect(wled16Palettes[segs[i].pal!], `${l.name} would only show color 1`).toBe('* Colors Only');
+        }
+      });
     }
   });
 
@@ -118,6 +138,27 @@ describe('segment compiler', () => {
     // On a small segment budget the house is simplified so base + overlays fit.
     const tight = compileLook({ totalPixels: 300, zones: [zone('a', 0, 100), zone('b', 150, 150, true)] }, look('magic_icicles'), cat16, 3);
     expect(tight.segments.length).toBeLessThanOrEqual(3);
+  });
+
+  it("a look with more colors than its effect shows uses them as the palette", () => {
+    expect(parseEffectData('!,Hue;!;!;;pal=26')).toEqual({ slots: 1, palette: true });
+    expect(parseEffectData('!,!;!,!;!;;m12=0')).toEqual({ slots: 2, palette: true });
+    expect(parseEffectData('')).toBeUndefined();
+    const waves = (colors: [number, number, number][]): Look => ({
+      id: 't', name: 't', emoji: '',
+      layers: [{ target: { kind: 'all' }, effect: ['Colorwaves'], palette: [], colors, speed: 128, intensity: 128 }],
+    });
+    const pal = (l: Look, cat = cat16fx) => wled16Palettes[compileLook({ totalPixels: 10, zones: [] }, l, cat).segments[0].pal!];
+    // Colorwaves shows only color 1 with the Default palette.
+    expect(pal(waves([[255, 0, 0], [0, 255, 0], [0, 0, 255]]))).toBe('* Colors Only');
+    expect(pal(waves([[255, 0, 0]]))).toBe('Default');
+    // Twinkle shows two colors (twinkle and background): two colors stay on Default.
+    const twinkle: Look = { ...waves([]), layers: [{ ...waves([]).layers[0], effect: ['Twinkle'], colors: [[255, 255, 255], [0, 0, 80]] }] };
+    expect(pal(twinkle)).toBe('Default');
+    // Without the controller's effect metadata nothing changes.
+    expect(pal(waves([[255, 0, 0], [0, 255, 0], [0, 0, 255]]), cat16)).toBe('Default');
+    // Rainbow Wave is a real rainbow.
+    expect(pal(look('rainbow_wave'))).toBe('Rainbow');
   });
 
   it('state JSON deletes leftover segments', () => {

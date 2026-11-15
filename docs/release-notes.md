@@ -1,9 +1,9 @@
 Eaveglow is a simple phone app for WLED that lives on the controller itself. It's one small web page you upload to the ESP32 running WLED, so there's no extra hardware, no cloud account and no app store.
 
 <p>
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.0/docs/screenshots/home.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.0/docs/screenshots/editor.png" width="240">
-  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.0/docs/screenshots/autopilot.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.1/docs/screenshots/home.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.1/docs/screenshots/editor.png" width="240">
+  <img src="https://raw.githubusercontent.com/DakotaRidgeTechnology/Eaveglow-Web/v1.3.1/docs/screenshots/autopilot.png" width="240">
 </p>
 
 ## Install
@@ -13,6 +13,10 @@ Eaveglow is a simple phone app for WLED that lives on the controller itself. It'
 3. Open `http://<your-controller-ip>/eaveglow.htm` on your phone. On iPhone, use Share > Add to Home Screen.
 
 To update later, upload the new `eaveglow.htm.gz` over the old one. Your settings are kept.
+
+## New in 1.3.1
+
+- **Fix: looks that showed only one color.** With WLED's "Default" palette most effects draw only their first color, so looks like Rainbow Wave came out solid red, and about 25 others lost colors. Eaveglow now reads each effect's details from your controller and uses the look's own colors as the palette when needed. Rainbow Wave and Rainbow Drip use WLED's Rainbow palette, and C7 Classic is now a proper three-color bulb pattern. Your own looks get the same fix.
 
 ## New in 1.3.0
 

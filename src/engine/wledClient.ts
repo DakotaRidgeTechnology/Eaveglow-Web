@@ -38,6 +38,22 @@ export class WledClient {
 
   fetchSnapshot = async (): Promise<WledSnapshot> => parseSnapshot(await this.json('/json'));
 
+  private fxdata?: Promise<string[]>;
+
+  /** WLED's effect metadata (/json/fxdata), in effect id order. Fetched once;
+   * empty if the controller doesn't answer, which just turns off the checks
+   * that use it. */
+  fetchFxData(): Promise<string[]> {
+    this.fxdata ??= this.json('/json/fxdata').then(
+      (d) => (Array.isArray(d) ? d.map(String) : []),
+      () => {
+        this.fxdata = undefined; // try again next time
+        return [];
+      },
+    );
+    return this.fxdata;
+  }
+
   fetchState = async (): Promise<WledState> => parseState(await this.json('/json/state'));
 
   setState = async (state: object): Promise<WledState> =>

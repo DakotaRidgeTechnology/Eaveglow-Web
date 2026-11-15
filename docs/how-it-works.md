@@ -174,3 +174,16 @@ would scale its background to 1/16–1/3 and dip darker.
   in `/ledmap-backup.json`.
 - Node positions come from the prop maker's xLights model (`.xmodel`, `CustomModelCompressed` = `node,row,col`;
   `src/engine/xmodel.ts`). Band = `floor((row + col) / stripeWidth) % 2`.
+
+## Colors vs. palettes (why some looks used to show one color)
+
+`Segment::color_from_palette` (`FX_fcn.cpp`) returns the segment's color 1 when the palette is 0 ("Default") and
+the effect asks for color slot 0, which most effects do. So with the Default palette, an effect shows only as many
+colors as it has color slots (Colorwaves: 1, Twinkle: 2 = twinkle + background), and the rest of a look's colors
+are dropped. WLED also only has 3 color slots per segment.
+
+Eaveglow reads each effect's metadata from `/json/fxdata` (the `@…` part of WLED's `_data_FX_MODE_*` strings:
+`sliders;colors;palette;flags;defaults`). When a layer has no palette, the effect uses one, and the look gives
+more non-black colors than the effect's slots, `compileLook` sends WLED's "* Colors Only" palette (colors 1-3).
+Looks with more than 3 colors need a real palette (Rainbow Wave uses "Rainbow"); a library test enforces this.
+`e2e/wled16-fxdata.json` is generated from WLED's source for the effects in `e2e/wled16-effects.json`.

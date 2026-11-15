@@ -9,6 +9,7 @@ export function startMockWled(port = 8099, opts = {}) {
   const leds = () => opts.leds ?? +(process.env.LEDS ?? 200);
   const effects = JSON.parse(readFileSync(new URL('../e2e/wled16-effects.json', import.meta.url)));
   const palettes = JSON.parse(readFileSync(new URL('../e2e/wled16-palettes.json', import.meta.url)));
+  const fxdata = JSON.parse(readFileSync(new URL('../e2e/wled16-fxdata.json', import.meta.url)));
   const files = {}; // controller file system
   const log = []; // every POST, for tests
   let state = { on: true, bri: 128, seg: [{ id: 0, start: 0, stop: leds(), grp: 1, spc: 0, on: true, col: [[255, 160, 80]], fx: 0, pal: 0 }] };
@@ -58,6 +59,7 @@ export function startMockWled(port = 8099, opts = {}) {
       }
       return send(res, 200, cfg);
     }
+    if (path === '/json/fxdata') return send(res, 200, fxdata);
     if (path === '/json/nodes') return send(res, 200, { nodes: [] });
     if (path === '/presets.json') return send(res, 200, presets);
     if (path === '/upload' && req.method === 'POST') {
