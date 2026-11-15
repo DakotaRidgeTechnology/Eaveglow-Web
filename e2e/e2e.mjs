@@ -170,6 +170,23 @@ try {
     await page2.waitForTimeout(500);
     check(await page2.getByText('Team Spirit').first().isVisible(), 'a second phone sees the custom look');
 
+    // Share the custom look as text, then import it as a new look.
+    await page.locator('.tile', { has: page.getByText('Team Spirit', { exact: true }) }).first().getByTitle('Edit').click();
+    await page.getByTitle('Share this look').click();
+    const shared = await page.getByLabel('Shared look').inputValue();
+    check(shared.startsWith('EAVEGLOW-LOOK:') && shared.includes('"Garage"'), 'look shared as text, parts by name');
+    await page.getByRole('button', { name: 'Done', exact: true }).click();
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    await page.getByText('Make a look').click();
+    await page.getByTitle('Paste a shared look').click();
+    await page.getByLabel('Paste a shared look').fill(`Try this: ${shared}`);
+    await page.getByRole('button', { name: 'Use this look' }).click();
+    check((await page.locator('.name-input').inputValue()) === 'Team Spirit', 'shared look opens in the editor');
+    await page.getByRole('button', { name: 'Save', exact: true }).click();
+    await page.waitForTimeout(1200);
+    const looksNow = JSON.parse(mock.files['/eaveglow.json']).customLooks;
+    check(looksNow.length === 2 && looksNow[0].id !== looksNow[1].id && looksNow[1].layers.length === 2, 'imported look saved under a new id, with its garage part');
+
     // Schedule: turn on, two windows, save → WLED timers.
     await page.getByTitle('Schedule').click();
     await page.locator('.card .toggle input').first().check();
@@ -242,7 +259,7 @@ try {
       await page.reload();
       await page.waitForTimeout(800);
       await page.locator('input[aria-label="Backup file"]').setInputFiles(backupPath);
-      await page.getByText('1 custom look', { exact: false }).waitFor();
+      await page.getByText('2 custom looks', { exact: false }).waitFor();
       await page.getByRole('button', { name: 'Restore', exact: true }).click();
       await page.getByText('Backup restored', { exact: false }).waitFor({ timeout: 30000 });
       await page.waitForTimeout(800);
