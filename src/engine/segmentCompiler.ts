@@ -86,6 +86,15 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
     if (id === undefined) missingPal.add(layer.palette[0]);
     return id ?? 0;
   };
+  // Fill unspecified colors with BLACK to avoid leaking colors between
+  // different looks. For glitter effects: copy the second color to the third
+  // color. Background color is color0, glitter color is color2, color1 is
+  // ignored.
+  const resolveColors = (layer: LookLayer): Rgb[] => {
+    const [c0 = BLACK, c1 = BLACK, c2] = layer.colors;
+    const isGlitter = layer.effect.some((e) => normalize(e).includes('glitter'));
+    return [c0, c1, c2 ?? (isGlitter ? c1 : BLACK)];
+  };
   const segments: WledSegment[] = [];
   const previews: Rgb[][] = [];
   runs.forEach((run, i) => {
@@ -106,7 +115,7 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
       spc: spacing.skip,
       on: true,
       bri: 255,
-      col: layer.colors.slice(0, 3),
+      col: resolveColors(layer),
       fx,
       sx: layer.speed,
       ix: layer.intensity,
@@ -131,7 +140,7 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
         spc: every * (base.lit + base.skip) - base.lit,
         on: true,
         bri: 255,
-        col: overlay.colors.slice(0, 3),
+        col: resolveColors(overlay),
         fx,
         sx: overlay.speed,
         ix: overlay.intensity,
