@@ -78,6 +78,26 @@ try {
     await page.evaluate(() => window.scrollTo(0, 0));
     check((await page.locator('.recent .tile .name').first().innerText()) === 'Candy Cane', 'Recent row shows the last look');
 
+    // Brightness presets go to WLED.
+    await page.locator('.chips.presets').getByRole('button', { name: '50%' }).click();
+    await page.waitForTimeout(300);
+    check(mock.log.filter((l) => l.path === '/json/state' && 'bri' in l.body).at(-1)?.body.bri === 128, 'brightness preset 50% sends bri 128');
+
+    // Hide a look you never use; it can be shown and restored.
+    const coolTile = page.locator('.grid .tile', { has: page.getByText('Cool White', { exact: true }) });
+    await coolTile.first().getByTitle('Hide this look').click();
+    await page.getByRole('button', { name: 'Show 1 hidden' }).waitFor();
+    check((await coolTile.count()) === 0, 'hidden look leaves the grid');
+    await page.getByRole('button', { name: 'Show 1 hidden' }).click();
+    await coolTile.first().getByTitle('Show this look again').click();
+    await page.waitForTimeout(200);
+    check((await coolTile.count()) === 1 && !(await page.getByText(/hidden$/).count()), 'hidden look restored');
+
+    // Tiles: the color dots and the preview bar don't touch.
+    const gap = await page.locator('.grid .tile').first().evaluate((t) => t.querySelector('.gradient').getBoundingClientRect().top - t.querySelector('.swatch').getBoundingClientRect().bottom);
+    check(gap >= 4, `tile preview bar sits below the color dots (gap ${gap}px)`);
+    await page.screenshot({ path: `${shots}tiles.png` });
+
     // Sleep timer (WLED nightlight).
     await page.getByText('Sleep timer').click();
     await page.getByRole('button', { name: '1 hour', exact: true }).click();
@@ -87,11 +107,16 @@ try {
     await page.getByText('Sleep timer cancelled').waitFor();
     check(mock.log.filter((l) => l.body?.nl).at(-1).body.nl.on === false, 'sleep timer can be cancelled');
 
+    await page.locator('h3.section', { hasText: 'Recent' }).getByRole('button', { name: 'Clear' }).click();
+    check((await page.locator('.recent').count()) === 0, 'Recent can be cleared');
+
     // House zones: spacing every 4th, 3" apart, save → /eaveglow.json on the controller.
     await page.getByTitle('House zones').click();
     await page.getByLabel('Roofline lights').fill('150');
     await page.getByText('Add a part').click();
     await page.locator('.zone .name-input').last().fill('Garage');
+    await page.getByLabel('Fade between looks').fill('20');
+    check(await page.getByText('2.0 s').isVisible(), 'fade slider shows seconds');
     await page.getByText('3"').click();
     await page.getByRole('button', { name: 'Every 4th' }).click();
     await page.screenshot({ path: `${shots}zones.png`, fullPage: true });
@@ -106,6 +131,7 @@ try {
     await page.waitForTimeout(500);
     const warm = mock.log.filter((l) => l.path === '/json/state' && l.body.seg).at(-1);
     check(warm.body.seg[0].spc === 3, 'house spacing applied to looks (spc 3)');
+    check(warm.body.transition === 20, `look uses the fade setting (transition ${warm.body.transition})`);
 
     // Magic Icicles: dim base on every lit light, a twinkling overlay on every 4th lit one.
     await page.locator('.tile', { has: page.getByText('Magic Icicles', { exact: true }) }).first().click();

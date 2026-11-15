@@ -241,3 +241,11 @@ select {
 .prop .brightness .pct { width: 44px; text-align: right; color: var(--muted); }
 .controller > .row:last-child { flex-wrap: wrap; }
 .controller > .row:last-child button { padding: 8px 12px; font-size: 15px; white-space: nowrap; }
+/* Look tiles: color dots, then a preview bar with room between them. */
+.tile .gradient { height: 8px; margin-top: 6px; border-radius: 4px; }
+.tile-actions { display: flex; gap: 2px; }
+.tile .edit { font-size: 15px; line-height: 1; padding: 2px 4px; }
+.tile.hidden { opacity: 0.5; }
+.chips.presets { margin: 2px 0 0; }
+.chips.presets .chip { min-height: 32px; padding: 4px 12px; font-size: 14px; }
+h3.section .link { font-size: 14px; font-weight: normal; color: var(--muted); }

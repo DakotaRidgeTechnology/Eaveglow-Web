@@ -17,6 +17,10 @@ export interface Settings {
   activeLookId?: string;
   /** Eaveglow (★) palettes installed on the controller: name → file slot. */
   customPalettes?: Record<string, number>;
+  /** Look ids hidden from Home (the ✕ on a tile). */
+  hiddenLooks?: string[];
+  /** Fade between looks, in tenths of a second (WLED `transition`); default 7. */
+  transition?: number;
   /** Look ids last applied, newest first (shown as "Recent" on Home). */
   recentLooks?: string[];
   /** Other WLED controllers Eaveglow drives (props), and the props on them. */
