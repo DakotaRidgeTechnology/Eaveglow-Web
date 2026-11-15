@@ -49,6 +49,23 @@ try {
     check((await page.locator('header h1').innerText()) === 'Roofline' && page.url().startsWith(mock.url), 'Back on a directly opened page goes Home');
     await page.context().close();
   }
+  {
+    // Light/dark per phone: a phone in dark mode can pick light, and it sticks.
+    const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' })).newPage();
+    const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    await page.goto(`${mock.url}/eaveglow.htm`);
+    await page.waitForSelector('.tile');
+    check((await bg()) === 'rgb(15, 11, 34)', 'follows the phone (dark) by default');
+    await page.getByTitle('Theme: same as this phone').click();
+    await page.getByTitle('Theme: dark').click();
+    check((await bg()) === 'rgb(246, 244, 251)', 'theme switch: light on a dark phone');
+    await page.reload();
+    await page.waitForSelector('.tile');
+    check((await bg()) === 'rgb(246, 244, 251)' && (await page.getByTitle('Theme: light').count()) === 1, 'theme choice kept after reopening');
+    await page.getByTitle('Theme: light').click();
+    check((await bg()) === 'rgb(15, 11, 34)', 'back to following the phone');
+    await page.context().close();
+  }
   for (const scheme of ['light', 'dark']) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: scheme, isMobile: true, hasTouch: true });
     const page = await ctx.newPage();
