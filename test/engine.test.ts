@@ -15,7 +15,7 @@ const look = (id: string) => builtinLooks.find((l) => l.id === `builtin.${id}`)!
 
 describe('library (exported from the Flutter app)', () => {
   it('has the full catalogue', () => {
-    expect(builtinLooks.length).toBe(132);
+    expect(builtinLooks.length).toBe(171);
     expect(effectStyles.length).toBe(94);
     expect(palettePresets.length).toBe(70);
     expect(colorGroups.flatMap((g) => g.colors).length).toBe(66);
