@@ -33,8 +33,10 @@ export function LookEditor(props: { lookId?: string }) {
   const setLayer = (patch: Partial<LookLayer>) =>
     setLook({ ...look, layers: look.layers.map((l, i) => (i === active ? { ...l, ...patch } : l)) });
   const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
-  const partLabel = (i: number) =>
-    i === 0 ? (look.layers[0].target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look') : layerZoneIds(look.layers[i]).map(zoneName).join(' + ');
+  const partLabel = (i: number) => {
+    const ids = layerZoneIds(look.layers[i]);
+    return ids.map(zoneName).join(' + ') || (look.layers[i]?.target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look');
+  };
   const generateFromZones = () => {
     const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated' });
     setLook(generated);
@@ -208,7 +210,7 @@ export function LookEditor(props: { lookId?: string }) {
             )}
             <Chip onClick={addPart}>＋ Different look for a part</Chip>
           </div>
-          {active > 0 && (
+          {active >= 0 && (
             <div class="card part-edit">
               <small>This look shows on:</small>
               <div class="chips dense">

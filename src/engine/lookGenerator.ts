@@ -89,7 +89,6 @@ export const DEFAULT_GENERATION_RULES: GenerationRule[] = [
 /** Match a zone name against generation rules */
 function matchZoneToRule(zoneName: string): GenerationRule {
   const lower = zoneName.toLowerCase();
-  // Sort by priority descending so first match wins
   const sortedRules = [...DEFAULT_GENERATION_RULES].sort((a, b) => b.priority - a.priority);
   for (const rule of sortedRules) {
     if (rule.keywords.some(k => k === '*' || lower.includes(k.toLowerCase()))) {
@@ -123,23 +122,17 @@ export function generateLookFromZones(
   // Create layers from groups, sorted by priority (lowest first = bottom layer)
   const sortedPriorities = Array.from(zoneGroups.keys()).sort((a, b) => a - b);
   const layers = sortedPriorities.map(priority => {
-    const group = zoneGroups.get(priority)!;
-    const zoneIds = group.zones.map(z => z.id);
-    
-    // Determine target: if only one zone matches this priority, target that zone
-    // If multiple, target them all as a group
-    let target: { kind: 'all' } | { kind: 'zones'; zoneIds: string[] };
-    if (zoneIds.length === 1) {
-      target = { kind: 'all' }; // Apply to whole house, let zone targeting in compile handle it
-    } else {
-      target = { kind: 'zones', zoneIds };
-    }
+      const group = zoneGroups.get(priority)!;
+      const zoneIds = group.zones.map(z => z.id);
 
-    return {
-      target,
-      ...group.rule.layer,
-    } as LookLayer;
-  });
+      // Always target specific zones so UI shows zone names
+      const target = { kind: 'zones' as const, zoneIds };
+
+      return {
+        target,
+        ...group.rule.layer,
+      } as LookLayer;
+    });
 
   return {
     id: newId(),
