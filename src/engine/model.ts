@@ -99,12 +99,23 @@ export function validateLayout(layout: HouseLayout): string[] {
   const problems: string[] = [];
   if (layout.totalPixels <= 0) problems.push('The house needs at least one pixel.');
   const sorted = effectiveZones(layout);
-  sorted.forEach((z, i) => {
+  sorted.forEach((z) => {
     if (z.length <= 0) problems.push(`"${z.name}" needs at least one pixel.`);
-    if (z.start + z.length > layout.totalPixels) problems.push(`"${z.name}" goes past the last pixel (${layout.totalPixels}).`);
-    if (i > 0 && z.start < sorted[i - 1].start + sorted[i - 1].length) problems.push(`"${z.name}" overlaps "${sorted[i - 1].name}".`);
+    if (z.start + z.length > layout.totalPixels)
+      problems.push(`"${z.name}" goes past the last pixel (${layout.totalPixels}).`);
   });
   return problems;
+}
+
+/** Overlapping zones are allowed (WLED draws later segments on top); just warn. */
+export function overlapWarnings(layout: HouseLayout): string[] {
+  const warnings: string[] = [];
+  const sorted = effectiveZones(layout);
+  sorted.forEach((z, i) => {
+    if (i > 0 && z.start < sorted[i - 1].start + sorted[i - 1].length)
+      warnings.push(`"${z.name}" overlaps "${sorted[i - 1].name}".`);
+  });
+  return warnings;
 }
 
 let zoneCounter = 0;
@@ -235,6 +246,7 @@ export interface WledSegment {
   ix?: number;
   pal?: number;
   rev?: boolean;
+  n?: string;
 }
 
 export interface WledInfo {

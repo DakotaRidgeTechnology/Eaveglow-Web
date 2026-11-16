@@ -3,14 +3,14 @@ import { useApp } from '../app';
 import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
 import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { decodeLook, encodeLook } from '../engine/lookShare';
-import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, rgbEquals, spacingLabel } from '../engine/model';
+import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, newId, rgbEquals, spacingLabel } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
 import { Chip, Dialog, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
 
 const EMOJIS = ['✨', '🎄', '🎅', '❄️', '🎃', '👻', '❤️', '🍀', '🐣', '🇺🇸', '🎆', '🦃', '🕎', '🪔', '🏈', '⚽', '🏀', '⚾', '🏒', '🎉', '🎂', '🌈', '🌊', '🔥', '🌙', '⭐', '🌸', '🦄'];
 
 export function LookEditor(props: { lookId?: string }) {
-  const { settings, store, snapshot, applyLook, toast, back } = useApp();
+  const { settings, store, snapshot, applyLook, toast, back, refresh } = useApp();
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
   const [active, setActive] = useState(0);
@@ -51,7 +51,13 @@ export function LookEditor(props: { lookId?: string }) {
   const devicePalettes = new Set(snapshot?.palettes.map((p) => p.toLowerCase()));
   // Eaveglow's own (★) themes are installed on the controller when used.
   const themeList = palettePresets.filter((p) => isCustomPalette(p.wled) || !snapshot || devicePalettes.has(p.wled.toLowerCase()));
-  const preview = compileLook(layout, look, catalog ?? new EffectCatalog([...layer.effect, 'Solid'], palettePresets.map((p) => p.wled)), 64);
+  const preview = compileLook(
+        layout,
+        look,
+        catalog ?? new EffectCatalog([...layer.effect, 'Solid'], palettePresets.map((p) => p.wled)),
+        64,
+        true
+      );
 
   const toggleColor = (c: Rgb) => {
     let colors = [...layer.colors];
@@ -102,7 +108,54 @@ export function LookEditor(props: { lookId?: string }) {
             <button class="icon" title="Delete" onClick={remove}>🗑</button>
           </>
         ) : (
-          <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
+          <>
+            <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
+            <button class="icon" title="Import from WLED" onClick={async () => {
+              await refresh();
+                            const currentSnapshot = snapshot;
+                            if (!currentSnapshot) return toast('No controller snapshot available');
+                            const segs = currentSnapshot.state?.seg?.filter((s) => s.stop > s.start && s.on) ?? [];
+                            if (segs.length === 0) return toast('No active segments on the controller');
+
+                            // Map each WLED segment to the zone(s) that contain its LED range
+                            const zonesList = zones;
+                            const layers = segs.map((s) => {
+                              // Find which zone(s) this segment belongs to
+                              const segmentStart = s.start;
+                              const segmentEnd = s.stop;
+                              const matchingZones = zonesList.filter(
+                                (z) => z.start < segmentEnd && z.start + z.length > segmentStart
+                              );
+
+                              return {
+                                target:
+                                  matchingZones.length > 0
+                                    ? { kind: 'zones' as const, zoneIds: matchingZones.map((z) => z.id) }
+                                    : { kind: 'all' as const },
+                                effect: [currentSnapshot.effects[s.fx ?? 0] ?? 'Solid'],
+                                palette: s.pal ? [currentSnapshot.palettes[s.pal ?? 0] ?? ''] : [],
+                                colors: s.col ?? [],
+                                speed: s.sx ?? 128,
+                                intensity: s.ix ?? 128,
+                                spacing: s.grp && s.spc ? { lit: s.grp, skip: s.spc } : undefined,
+                                reverse: !!s.rev,
+                              };
+                            });
+
+                            const imported: Look = {
+                              id: newId(),
+                              name: 'From WLED',
+                              emoji: '📥',
+                              category: CUSTOM_CATEGORY,
+                              layers,
+                            };
+              setLook(imported);
+              selectLayer(0, imported);
+              toast(`Imported ${segs.length} segment${segs.length > 1 ? 's' : ''} from WLED`);
+            }}>
+              📥
+            </button>
+          </>
         )}
       </Header>
       <ShareDialog open={sharing} text={sharing ? encodeLook(look, zones) : ''} onClose={() => setSharing(false)} />
