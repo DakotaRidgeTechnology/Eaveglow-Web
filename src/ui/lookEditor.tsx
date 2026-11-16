@@ -18,6 +18,7 @@ export function LookEditor(props: { lookId?: string }) {
   const [sharing, setSharing] = useState(false);
   const [importing, setImporting] = useState(false);
   const [randomize, setRandomize] = useState(false);
+  const [fullyRandom, setFullyRandom] = useState(false);
   const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
@@ -36,13 +37,14 @@ export function LookEditor(props: { lookId?: string }) {
   const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
   const partLabel = (i: number) => {
     const ids = layerZoneIds(look.layers[i]);
-    return ids.map(zoneName).join(' + ') || (look.layers[i]?.target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look');
+    const effect = look.layers[i].effect[0];
+    return ids.map(zoneName).join(' + ') + (effect ? ` · ${effect}` : '') + (look.layers[i]?.target.kind === 'all' ? ' 🏠' : '');
   };
   const generateFromZones = () => {
-    const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated', randomize });
+    const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated', randomize, fullyRandom });
     setLook(generated);
     selectLayer(0, generated);
-    toast(`Generated ${generated.layers.length} layers from zones${randomize ? ' (randomized)' : ''}`);
+    toast(`Generated ${generated.layers.length} layers from zones${randomize ? ' (randomized)' : ''}${fullyRandom ? ' (fully random)' : ''}`);
   };
 
   const addPart = () => {
@@ -120,6 +122,10 @@ export function LookEditor(props: { lookId?: string }) {
               <input type="checkbox" checked={randomize} onChange={(e) => setRandomize((e.target as HTMLInputElement).checked)} />
               <span>🎲</span>
             </label>
+            <label class="icon-toggle" title="Fully random (ignore themes)">
+              <input type="checkbox" checked={fullyRandom} onChange={(e) => setFullyRandom((e.target as HTMLInputElement).checked)} />
+              <span>🎲🎲</span>
+            </label>
             <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Share this look" onClick={() => setSharing(true)}>📤</button>
             <button class="icon" title="Delete" onClick={remove}>🗑</button>
@@ -129,6 +135,10 @@ export function LookEditor(props: { lookId?: string }) {
             <label class="icon-toggle" title="Randomize effects">
               <input type="checkbox" checked={randomize} onChange={(e) => setRandomize((e.target as HTMLInputElement).checked)} />
               <span>🎲</span>
+            </label>
+            <label class="icon-toggle" title="Fully random (ignore themes)">
+              <input type="checkbox" checked={fullyRandom} onChange={(e) => setFullyRandom((e.target as HTMLInputElement).checked)} />
+              <span>🎲🎲</span>
             </label>
             <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
@@ -230,8 +240,8 @@ export function LookEditor(props: { lookId?: string }) {
                     <Chip
                       key={z.id}
                       selected={on}
-                      // A part always covers at least one zone; use Remove to drop it.
-                      onClick={() => !(on && ids.length === 1) && setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}
+                      // Allow removing the last zone; use Remove button to delete empty layer
+                      onClick={() => setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}
                     >
                       {z.name}
                     </Chip>
@@ -256,7 +266,9 @@ export function LookEditor(props: { lookId?: string }) {
                     <option key={l.id} value={l.id}>{l.emoji} {l.name}</option>
                   ))}
                 </select>
-                <button onClick={() => (setLook(removeLayer(look, active)), selectLayer(0, removeLayer(look, active)))}>Remove</button>
+                {active > 0 && (
+                  <button onClick={() => { setLook(removeLayer(look, active)); selectLayer(0, removeLayer(look, active)); }}>Remove part</button>
+                )}
               </div>
             </div>
           )}

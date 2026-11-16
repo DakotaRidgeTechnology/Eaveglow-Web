@@ -121,38 +121,6 @@ function fullyRandomLayer(layer: LookLayer): LookLayer {
     'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
     'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
     'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow', 'Twinklefox', 'Twinklecat',
-    'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow', 'Twinklefox', 'Twinklecat',
-    'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow', 'Heartbeat', 'Phased', 'Chunchun',
-    'Twinkleup', 'Twinklecat', 'Twinkleup', 'Drip Drop', 'Drip',
-    'Chase 2', 'Chase 3', 'Tri Wipe', 'Tri Fade', 'Lightning',
-    'Multi Comet', 'Scanner Dual', 'Stream 2', 'Oscillate', 'Pride 2015',
-    'Juggle', 'Palette', 'Fire 2012', 'Colorwaves', 'Bpm', 'Fill Noise',
-    'Noise 1', 'Noise 2', 'Noise 3', 'Noise 4', 'Colortwinkles', 'Lake',
-    'Meteor', 'Copy Segment', 'Railway', 'Ripple', 'Twinklefox',
-    'Twinklecat', 'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow', 'Heartbeat', 'Phased', 'Chunchun',
-    'Twinkleup', 'Twinklecat', 'Twinkleup', 'Drip Drop', 'Drip',
-    'Chase 2', 'Chase 3', 'Tri Wipe', 'Tri Fade', 'Lightning',
-    'Multi Comet', 'Scanner Dual', 'Stream 2', 'Oscillate', 'Pride 2015',
-    'Juggle', 'Palette', 'Fire 2012', 'Colorwaves', 'Bpm', 'Fill Noise',
-    'Noise 1', 'Noise 2', 'Noise 3', 'Noise 4', 'Colortwinkles', 'Lake',
-    'Meteor', 'Copy Segment', 'Railway', 'Ripple', 'Twinklefox',
-    'Twinklecat', 'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
     'Ripple', 'Ripple Rainbow', 'Heartbeat', 'Phased', 'Chunchun',
     'Twinkleup', 'Twinklecat', 'Twinkleup', 'Drip Drop', 'Drip',
     'Chase 2', 'Chase 3', 'Tri Wipe', 'Tri Fade', 'Lightning',
@@ -210,14 +178,12 @@ function fullyRandomLayer(layer: LookLayer): LookLayer {
   return {
     ...layer,
     effect: [effect],
+    palette: [],  // Clear palette for fully random
     colors: selectedColors as [number, number, number][],
     speed,
     intensity,
   };
 }
-
-/** Match a zone name against generation rules */
-
 
 /** Randomize effect and colors within a rule's theme */
 function randomizeLayer(layer: LookLayer, keywords: string[]): LookLayer {
@@ -274,12 +240,13 @@ function randomizeLayer(layer: LookLayer, keywords: string[]): LookLayer {
   else if (isGarage) theme = 'garage';
 
   const effects = effectPools[theme as keyof typeof effectPools] || effectPools.default;
-  const colors = colorPools[theme as keyof typeof colorPools] || colorPools.default;
+  // For randomize: pick colors from ALL themes, not just the matched theme
+  const allColors: [number, number, number][] = Object.values(colorPools).flat();
 
   // Pick random effect and colors
   const effect = effects[Math.floor(Math.random() * effects.length)];
   const numColors = Math.floor(Math.random() * 3) + 1; // 1-3 colors
-  const shuffledColors = [...colors].sort(() => Math.random() - 0.5);
+  const shuffledColors = [...allColors].sort(() => Math.random() - 0.5);
   const selectedColors = shuffledColors.slice(0, numColors);
 
   // Randomize speed and intensity within reasonable ranges
@@ -290,6 +257,7 @@ function randomizeLayer(layer: LookLayer, keywords: string[]): LookLayer {
     ...layer,
     target: layer.target,
     effect: [effect],
+    palette: [],  // Clear palette when randomizing colors
     colors: selectedColors as [number, number, number][],
     speed,
     intensity,
