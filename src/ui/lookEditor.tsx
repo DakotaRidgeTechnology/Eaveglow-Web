@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
+import { generateLookFromZones } from '../engine/lookGenerator';
 import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
 import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { decodeLook, encodeLook } from '../engine/lookShare';
@@ -34,7 +35,15 @@ export function LookEditor(props: { lookId?: string }) {
   const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
   const partLabel = (i: number) =>
     i === 0 ? (look.layers[0].target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look') : layerZoneIds(look.layers[i]).map(zoneName).join(' + ');
+  const generateFromZones = () => {
+    const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated' });
+    setLook(generated);
+    selectLayer(0, generated);
+    toast(`Generated ${generated.layers.length} layers from zones`);
+  };
+
   const addPart = () => {
+
     const used = new Set(look.layers.flatMap(layerZoneIds));
     const free = zones.find((z) => !used.has(z.id)) ?? zones[0];
     const next = addPartLayer(look, [free.id]);
@@ -104,11 +113,13 @@ export function LookEditor(props: { lookId?: string }) {
       <Header title={existing ? 'Edit look' : 'Make a look'} back>
         {existing ? (
           <>
+            <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Share this look" onClick={() => setSharing(true)}>📤</button>
             <button class="icon" title="Delete" onClick={remove}>🗑</button>
           </>
         ) : (
           <>
+            <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
             <button class="icon" title="Import from WLED" onClick={async () => {
               await refresh();
