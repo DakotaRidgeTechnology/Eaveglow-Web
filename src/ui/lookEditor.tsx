@@ -17,6 +17,7 @@ export function LookEditor(props: { lookId?: string }) {
   const [active, setActive] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [randomize, setRandomize] = useState(false);
   const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
@@ -38,10 +39,10 @@ export function LookEditor(props: { lookId?: string }) {
     return ids.map(zoneName).join(' + ') || (look.layers[i]?.target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look');
   };
   const generateFromZones = () => {
-    const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated' });
+    const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated', randomize });
     setLook(generated);
     selectLayer(0, generated);
-    toast(`Generated ${generated.layers.length} layers from zones`);
+    toast(`Generated ${generated.layers.length} layers from zones${randomize ? ' (randomized)' : ''}`);
   };
 
   const addPart = () => {
@@ -115,12 +116,20 @@ export function LookEditor(props: { lookId?: string }) {
       <Header title={existing ? 'Edit look' : 'Make a look'} back>
         {existing ? (
           <>
+            <label class="icon-toggle" title="Randomize effects">
+              <input type="checkbox" checked={randomize} onChange={(e) => setRandomize((e.target as HTMLInputElement).checked)} />
+              <span>🎲</span>
+            </label>
             <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Share this look" onClick={() => setSharing(true)}>📤</button>
             <button class="icon" title="Delete" onClick={remove}>🗑</button>
           </>
         ) : (
           <>
+            <label class="icon-toggle" title="Randomize effects">
+              <input type="checkbox" checked={randomize} onChange={(e) => setRandomize((e.target as HTMLInputElement).checked)} />
+              <span>🎲</span>
+            </label>
             <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
             <button class="icon" title="Import from WLED" onClick={async () => {
