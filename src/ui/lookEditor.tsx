@@ -4,14 +4,21 @@ import { generateLookFromZones, seedFromText } from '../engine/lookGenerator';
 import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
 import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { decodeLook, encodeLook } from '../engine/lookShare';
-import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, newId, rgbEquals, spacingLabel } from '../engine/model';
-import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
+import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, WledState, effectiveZones, newId, rgbEquals, spacingLabel } from '../engine/model';
+import { EffectCatalog, compileLook, toStateJson } from '../engine/segmentCompiler';
 import { Chip, Dialog, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
 
 const EMOJIS = ['✨', '🎄', '🎅', '❄️', '🎃', '👻', '❤️', '🍀', '🐣', '🇺🇸', '🎆', '🦃', '🕎', '🪔', '🏈', '⚽', '🏀', '⚾', '🏒', '🎉', '🎂', '🌈', '🌊', '🔥', '🌙', '⭐', '🌸', '🦄'];
 
+interface TestSession {
+  /** Live WLED state before the test, so Restore can put it back. */
+  previous: WledState;
+  /** Number of segments the test posted (including any empty ones used for deletion). */
+  segmentCount: number;
+}
+
 export function LookEditor(props: { lookId?: string }) {
-  const { settings, store, snapshot, applyLook, toast, back, refresh } = useApp();
+  const { settings, store, snapshot, applyLook, setLights, toast, back, refresh } = useApp();
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
   const [active, setActive] = useState(0);
@@ -19,6 +26,7 @@ export function LookEditor(props: { lookId?: string }) {
   const [importing, setImporting] = useState(false);
   const [coherent, setCoherent] = useState(false);
   const [seedText, setSeedText] = useState('');
+  const [testing, setTesting] = useState<TestSession | null>(null);
   const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
@@ -98,6 +106,7 @@ export function LookEditor(props: { lookId?: string }) {
   const save = async (apply: boolean) => {
     const final: Look = { ...look, name: look.name.trim() || 'My Look', category: CUSTOM_CATEGORY };
     store.update('customLooks', [...settings.customLooks.filter((l) => l.id !== final.id), final]);
+    setTesting(null);
     if (apply) {
       try {
         const warnings = await applyLook(final);
@@ -107,6 +116,49 @@ export function LookEditor(props: { lookId?: string }) {
       }
     }
     back();
+  };
+
+  /** Apply this unsaved look to the controller so it can be judged on the real lights. */
+  const testOnLights = async () => {
+    if (!snapshot || !catalog) return toast('No controller connection — can not test on lights');
+    const compiled = compileLook(layout, look, catalog, snapshot.info.maxSegments ?? 16, true);
+    const state = toStateJson(compiled, snapshot.state.seg.length, settings.transition ?? 7);
+    try {
+      const problems = await setLights(state);
+      if (problems.length) toast(problems.join(' '));
+      setTesting({
+        previous: structuredClone(snapshot.state),
+        segmentCount: Math.max(compiled.segments.length, snapshot.state.seg.length),
+      });
+      toast(compiled.warnings.length ? `Testing on lights · ${compiled.warnings[0]}` : 'Testing on lights — not saved yet');
+    } catch (e) {
+      toast(String(e instanceof Error ? e.message : e));
+    }
+  };
+
+  /** Put back the state the controller had before the test. */
+  const restoreLights = async () => {
+    if (!testing) return;
+    const { previous, segmentCount } = testing;
+    const seg: object[] = previous.seg.map((s, i) => ({ of: 0, sel: true, ...s, id: i }));
+    // WLED keeps segments that aren't sent, so explicitly clear any the test added.
+    for (let id = previous.seg.length; id < segmentCount; id++) seg.push({ id, stop: 0 });
+    const state: object = {
+      on: previous.on,
+      bri: previous.bri,
+      mainseg: 0,
+      transition: settings.transition ?? 7,
+      seg,
+      ...(previous.nl ? { nl: previous.nl } : {}),
+    };
+    try {
+      const problems = await setLights(state);
+      if (problems.length) toast(problems.join(' '));
+      else toast('Previous look restored');
+      setTesting(null);
+    } catch (e) {
+      toast(String(e instanceof Error ? e.message : e));
+    }
   };
 
   const remove = () => {
@@ -209,6 +261,12 @@ export function LookEditor(props: { lookId?: string }) {
           </>
         )}
       </Header>
+      {testing && (
+        <div class="banner coming">
+          <span>Testing on the lights — this look is not saved yet.</span>
+          <button class="primary" onClick={restoreLights}>Restore previous look</button>
+        </div>
+      )}
       <ShareDialog open={sharing} text={sharing ? encodeLook(look, zones) : ''} onClose={() => setSharing(false)} />
       <ImportDialog
         open={importing}
@@ -422,6 +480,7 @@ export function LookEditor(props: { lookId?: string }) {
 
       {preview.warnings.length > 0 && <p class="hint warn">{preview.warnings.join(' ')}</p>}
       <div class="buttons">
+        <button onClick={testOnLights}>👀 Test on lights</button>
         <button class="primary" onClick={() => save(true)}>💡 Save & turn on</button>
         <button onClick={() => save(false)}>Save</button>
       </div>

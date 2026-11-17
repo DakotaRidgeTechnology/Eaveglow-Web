@@ -65,7 +65,8 @@ The palette, effects, colours, speeds and intensities are all derived from the s
 3. Optionally type a **seed** to reproduce a look
 4. Click **🤖 Generate from zones**
 5. Review the layers — the "Parts of the house" chips show each part's zone names and effect
-6. Adjust anything you like, then **Save** or **Save & turn on**
+6. Click **👀 Test on lights** to see the unsaved look on the real house. A banner appears with **Restore previous look** — click it when you're done to put the old look back. Testing does **not** save anything
+7. Adjust anything you like, then **Save** or **Save & turn on**
 
 ## Example
 
