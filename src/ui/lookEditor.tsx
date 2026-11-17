@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
-import { generateLookFromZones } from '../engine/lookGenerator';
+import { generateLookFromZones, seedFromText } from '../engine/lookGenerator';
 import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
 import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { decodeLook, encodeLook } from '../engine/lookShare';
@@ -17,8 +17,8 @@ export function LookEditor(props: { lookId?: string }) {
   const [active, setActive] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [importing, setImporting] = useState(false);
-  const [randomize, setRandomize] = useState(false);
-  const [fullyRandom, setFullyRandom] = useState(false);
+  const [coherent, setCoherent] = useState(false);
+  const [seedText, setSeedText] = useState('');
   const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
@@ -41,10 +41,15 @@ export function LookEditor(props: { lookId?: string }) {
     return ids.map(zoneName).join(' + ') + (effect ? ` · ${effect}` : '') + (look.layers[i]?.target.kind === 'all' ? ' 🏠' : '');
   };
   const generateFromZones = () => {
-    const generated = generateLookFromZones(zones, { name: 'Generated', emoji: '🤖', category: 'Generated', randomize, fullyRandom });
+    const typed = seedText.trim();
+    const seed = coherent ? (typed ? seedFromText(typed) : Math.floor(Math.random() * 0xffffffff)) : undefined;
+    const generated = generateLookFromZones(zones, {
+      name: 'Generated', emoji: '🤖', category: 'Generated',
+      coherent, effects: snapshot?.effects, palettes: snapshot?.palettes, seed,
+    });
     setLook(generated);
     selectLayer(0, generated);
-    toast(`Generated ${generated.layers.length} layers from zones${randomize ? ' (randomized)' : ''}${fullyRandom ? ' (fully random)' : ''}`);
+    toast(`Generated ${generated.layers.length} layers from zones${coherent ? ' (coherent random)' : ''}${coherent ? ` · seed ${typed || seed}` : ''}`);
   };
 
   const addPart = () => {
@@ -118,28 +123,42 @@ export function LookEditor(props: { lookId?: string }) {
       <Header title={existing ? 'Edit look' : 'Make a look'} back>
         {existing ? (
           <>
-            <label class="icon-toggle" title="Randomize effects">
-              <input type="checkbox" checked={randomize} onChange={(e) => setRandomize((e.target as HTMLInputElement).checked)} />
+            <label class="icon-toggle" title="Coherent random (one palette, varied effects)">
+              <input type="checkbox" checked={coherent} onChange={(e) => setCoherent((e.target as HTMLInputElement).checked)} />
               <span>🎲</span>
             </label>
-            <label class="icon-toggle" title="Fully random (ignore themes)">
-              <input type="checkbox" checked={fullyRandom} onChange={(e) => setFullyRandom((e.target as HTMLInputElement).checked)} />
-              <span>🎲🎲</span>
-            </label>
+            {coherent && (
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="seed"
+                aria-label="Random seed (blank = new each time)"
+                style={{ width: '76px' }}
+                value={seedText}
+                onInput={(e) => setSeedText((e.target as HTMLInputElement).value)}
+              />
+            )}
             <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Share this look" onClick={() => setSharing(true)}>📤</button>
             <button class="icon" title="Delete" onClick={remove}>🗑</button>
           </>
         ) : (
           <>
-            <label class="icon-toggle" title="Randomize effects">
-              <input type="checkbox" checked={randomize} onChange={(e) => setRandomize((e.target as HTMLInputElement).checked)} />
+            <label class="icon-toggle" title="Coherent random (one palette, varied effects)">
+              <input type="checkbox" checked={coherent} onChange={(e) => setCoherent((e.target as HTMLInputElement).checked)} />
               <span>🎲</span>
             </label>
-            <label class="icon-toggle" title="Fully random (ignore themes)">
-              <input type="checkbox" checked={fullyRandom} onChange={(e) => setFullyRandom((e.target as HTMLInputElement).checked)} />
-              <span>🎲🎲</span>
-            </label>
+            {coherent && (
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="seed"
+                aria-label="Random seed (blank = new each time)"
+                style={{ width: '76px' }}
+                value={seedText}
+                onInput={(e) => setSeedText((e.target as HTMLInputElement).value)}
+              />
+            )}
             <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
             <button class="icon" title="Import from WLED" onClick={async () => {

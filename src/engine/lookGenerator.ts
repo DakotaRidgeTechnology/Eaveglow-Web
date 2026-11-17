@@ -1,68 +1,81 @@
-import { Zone, LookLayer, newId } from '../engine/model';
+import { paletteByWledName } from './library';
+import { LookLayer, Rgb, Zone, newId } from './model';
 
-/** Rule for generating a layer from zones matching a pattern */
+type EffectFamily = 'sparkle' | 'flow' | 'rain' | 'solid';
+
+/** Rule for generating a layer from zones matching a pattern. */
 interface GenerationRule {
-  /** Keywords that match this rule (case-insensitive, partial match on zone name) */
+  /** Case-insensitive partial matches on the zone name. */
   keywords: string[];
-  /** Layer configuration for matching zones */
+  /** Effect families that suit this part of the house. */
+  families: EffectFamily[];
+  /** Faithful (non-random) layer settings. */
   layer: Omit<LookLayer, 'target'>;
-  /** Priority: higher = rendered later (on top) */
+  /** Higher = rendered later (on top). */
   priority: number;
 }
 
-/** Default generation rules based on common naming patterns */
+/** Which real WLED effects belong to each family, matched by name. */
+const FAMILY_KEYWORDS: Record<EffectFamily, string[]> = {
+  sparkle: ['sparkle', 'twinkle', 'glitter', 'candle', 'firework'],
+  flow: ['colorwaves', 'flow', 'stream', 'aurora', 'pacifica', 'scanner', 'sinelon', 'juggle', 'lake', 'ripple'],
+  rain: ['rain', 'drip'],
+  solid: ['solid', 'breathe', 'fade', 'colorloop', 'blink', 'strobe', 'gradient'],
+};
+
+/** Default generation rules based on common naming patterns. */
 export const DEFAULT_GENERATION_RULES: GenerationRule[] = [
-  // Apexes - single LEDs at peaks, rendered LAST (on top)
   {
     keywords: ['apex'],
+    families: ['sparkle'],
     priority: 100,
     layer: {
       effect: ['Sparkle', 'Twinkle', 'Twinklefox'],
       palette: [],
-      colors: [[255, 120, 30], [255, 200, 150]], // warm white sparkle
+      colors: [[255, 120, 30], [255, 200, 150]],
       speed: 120,
       intensity: 200,
     },
   },
-  // Peaks - sparkle effects
   {
     keywords: ['peak'],
+    families: ['sparkle'],
     priority: 80,
     layer: {
       effect: ['Sparkle', 'Twinkle', 'Glitter'],
       palette: [],
-      colors: [[255, 220, 50], [255, 170, 0], [255, 255, 255]], // yellow/gold sparkle
+      colors: [[255, 220, 50], [255, 170, 0], [255, 255, 255]],
       speed: 150,
       intensity: 220,
     },
   },
-  // Fronts/soffits - rain/snow effects
   {
     keywords: ['front', 'soffit'],
+    families: ['rain', 'flow'],
     priority: 40,
     layer: {
       effect: ['Rain', 'Drip', 'Drip Drop'],
       palette: [],
-      colors: [[255, 255, 255], [200, 220, 255], [180, 200, 255]], // white/blue rain
+      colors: [[255, 255, 255], [200, 220, 255], [180, 200, 255]],
       speed: 100,
       intensity: 180,
     },
   },
-  // Sides - similar to fronts but different palette
   {
     keywords: ['side'],
+    families: ['flow', 'rain'],
     priority: 35,
     layer: {
       effect: ['Rain', 'Colorwaves', 'Flow'],
-      palette: ['Ocean', 'Aurora'],
-      colors: [[100, 200, 255], [50, 150, 255], [0, 100, 200]], // blue rain
+      palette: [],
+      colors: [[100, 200, 255], [50, 150, 255], [0, 100, 200]],
       speed: 120,
       intensity: 160,
     },
   },
-  // Garage (non-peak/front) - warm white
   {
     keywords: ['garage'],
+    families: ['solid', 'flow'],
     priority: 30,
     layer: {
       effect: ['Solid', 'Breathe'],
@@ -72,9 +85,9 @@ export const DEFAULT_GENERATION_RULES: GenerationRule[] = [
       intensity: 140,
     },
   },
-  // Default fallback
   {
     keywords: ['*'],
+    families: ['solid'],
     priority: 0,
     layer: {
       effect: ['Solid'],
@@ -86,246 +99,155 @@ export const DEFAULT_GENERATION_RULES: GenerationRule[] = [
   },
 ];
 
-/** Match a zone name against generation rules */
+/** Match a zone name against generation rules, highest priority first. */
 function matchZoneToRule(zoneName: string): GenerationRule {
   const lower = zoneName.toLowerCase();
-  const sortedRules = [...DEFAULT_GENERATION_RULES].sort((a, b) => b.priority - a.priority);
-  for (const rule of sortedRules) {
-    if (rule.keywords.some(k => k === '*' || lower.includes(k.toLowerCase()))) {
-      return rule;
-    }
+  const sorted = [...DEFAULT_GENERATION_RULES].sort((a, b) => b.priority - a.priority);
+  return (
+    sorted.find((rule) => rule.keywords.some((k) => k === '*' || lower.includes(k.toLowerCase()))) ??
+    DEFAULT_GENERATION_RULES[DEFAULT_GENERATION_RULES.length - 1]
+  );
+}
+
+/** Turn any text into a stable 32-bit seed (FNV-1a). */
+export function seedFromText(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-  return DEFAULT_GENERATION_RULES[DEFAULT_GENERATION_RULES.length - 1];
+  return h >>> 0;
 }
 
-/** Completely random: pick from ALL effects and ALL colors */
-function fullyRandomLayer(layer: LookLayer): LookLayer {
-  // All effects from all themes
-  const allEffects = [
-    'Solid', 'Blink', 'Breathe', 'Wipe', 'Wipe Random', 'Random Colors',
-    'Sweep', 'Dynamic', 'Colorloop', 'Rainbow', 'Scan', 'Scan Dual',
-    'Fade', 'Theater', 'Theater Rainbow', 'Running', 'Saw', 'Twinkle',
-    'Dissolve', 'Dissolve Rnd', 'Sparkle', 'Sparkle Dark', 'Sparkle+',
-    'Strobe', 'Strobe Rainbow', 'Strobe Mega', 'Blink Rainbow',
-    'Android', 'Chase', 'Chase Random', 'Chase Rainbow', 'Chase Flash',
-    'Chase Flash Rnd', 'Rainbow Runner', 'Colorful', 'Traffic Light',
-    'Sweep Random', 'Chase 2', 'Aurora', 'Stream', 'Scanner', 'Lighthouse',
-    'Fireworks', 'Rain', 'Tetrix', 'Fire Flicker', 'Gradient', 'Loading',
-    'Rolling Balls', 'Fairy', 'Two Dots', 'Fairytwinkle', 'Running Dual',
-    'Image', 'Chase 3', 'Tri Wipe', 'Tri Fade', 'Lightning', 'ICU',
-    'Multi Comet', 'Scanner Dual', 'Stream 2', 'Oscillate', 'Pride 2015',
-    'Juggle', 'Palette', 'Fire 2012', 'Colorwaves', 'Bpm', 'Fill Noise',
-    'Noise 1', 'Noise 2', 'Noise 3', 'Noise 4', 'Colortwinkles', 'Lake',
-    'Meteor', 'Copy Segment', 'Railway', 'Ripple', 'Twinklefox',
-    'Twinklecat', 'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow', 'Heartbeat', 'Phased', 'Chunchun',
-    'Twinkleup', 'Twinklecat', 'Twinkleup', 'Drip Drop', 'Drip',
-    'Chase 2', 'Chase 3', 'Tri Wipe', 'Tri Fade', 'Lightning',
-    'Multi Comet', 'Scanner Dual', 'Stream 2', 'Oscillate', 'Pride 2015',
-    'Juggle', 'Palette', 'Fire 2012', 'Colorwaves', 'Bpm', 'Fill Noise',
-    'Noise 1', 'Noise 2', 'Noise 3', 'Noise 4', 'Colortwinkles', 'Lake',
-    'Meteor', 'Copy Segment', 'Railway', 'Ripple', 'Twinklefox',
-    'Twinklecat', 'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow', 'Heartbeat', 'Phased', 'Chunchun',
-    'Twinkleup', 'Twinklecat', 'Twinkleup', 'Drip Drop', 'Drip',
-    'Chase 2', 'Chase 3', 'Tri Wipe', 'Tri Fade', 'Lightning',
-    'Multi Comet', 'Scanner Dual', 'Stream 2', 'Oscillate', 'Pride 2015',
-    'Juggle', 'Palette', 'Fire 2012', 'Colorwaves', 'Bpm', 'Fill Noise',
-    'Noise 1', 'Noise 2', 'Noise 3', 'Noise 4', 'Colortwinkles', 'Lake',
-    'Meteor', 'Copy Segment', 'Railway', 'Ripple', 'Twinklefox',
-    'Twinklecat', 'Halloween Eyes', 'Solid Pattern', 'Solid Pattern Tri',
-    'Spots', 'Spots Fade', 'Glitter', 'Candle', 'Fireworks Starburst',
-    'Fireworks 1D', 'Bouncing Balls', 'Sinelon', 'Sinelon Dual',
-    'Sinelon Rainbow', 'Popcorn', 'Drip', 'Plasma', 'Percent',
-    'Ripple', 'Ripple Rainbow',
-  ];
+/** Deterministic PRNG so a seed always regenerates the same look. */
+function makeRandom(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
-  // All colors from all themes
-  const allColors: [number, number, number][] = [
-    [255, 120, 30], [255, 200, 150], [255, 255, 200],
-    [255, 180, 100], [255, 220, 180],
-    [255, 220, 50], [255, 170, 0], [255, 255, 255],
-    [255, 140, 0], [255, 100, 50],
-    [255, 255, 255], [200, 220, 255], [180, 200, 255],
-    [255, 200, 200], [150, 200, 255],
-    [100, 200, 255], [50, 150, 255], [0, 100, 200],
-    [0, 200, 255], [50, 200, 200],
-    [0, 255, 255], [100, 100, 255], [150, 50, 255],
-    [255, 180, 120], [255, 200, 150], [255, 140, 80],
-    [255, 160, 100], [200, 120, 60],
-    [255, 200, 150], [255, 180, 120], [255, 220, 180],
-    [255, 0, 0], [0, 255, 0], [0, 0, 255],
-    [255, 255, 0], [0, 255, 255], [255, 0, 255],
-    [128, 0, 128], [255, 128, 0], [0, 128, 128],
-  ];
+const matchesKeyword = (name: string, keyword: string) =>
+  keyword === 'rain' ? /\brain(?!bow)\b/i.test(name) : name.toLowerCase().includes(keyword);
+const clamp = (n: number, low: number, high: number) => Math.max(low, Math.min(high, n));
+const pick = <T,>(items: T[], rand: () => number): T | undefined =>
+  items.length ? items[Math.floor(rand() * items.length)] : undefined;
 
-  // Pick random effect and colors
-  const effect = allEffects[Math.floor(Math.random() * allEffects.length)];
-  const numColors = Math.floor(Math.random() * 3) + 1; // 1-3 colors
-  const shuffledColors = [...allColors].sort(() => Math.random() - 0.5);
-  const selectedColors = shuffledColors.slice(0, numColors);
+/** Everything the coherent generator decides once for the whole look. */
+interface CoherentContext {
+  rand: () => number;
+  effects: string[];
+  palette?: string;
+  colors: Rgb[];
+  speed: number;
+  intensity: number;
+  used: Set<string>;
+}
 
-  // Randomize speed and intensity within reasonable ranges
-  const speed = Math.floor(Math.random() * 100) + 50; // 50-150
-  const intensity = Math.floor(Math.random() * 100) + 100; // 100-200
+/** Pick one effect that fits the zone family and hasn't been used yet. */
+function chooseEffect(rule: GenerationRule, ctx: CoherentContext): string {
+  const matchesFamily = (name: string, family: EffectFamily) =>
+    FAMILY_KEYWORDS[family].some((k) => matchesKeyword(name, k));
 
+  const unused = ctx.effects.filter((e) => !ctx.used.has(e));
+  const fromFamilies = rule.families.flatMap((family) => unused.filter((e) => matchesFamily(e, family)));
+  // De-duplicate while preserving family priority order.
+  const candidates = [...new Set(fromFamilies)];
+  const chosen = pick(candidates, ctx.rand) ?? pick(unused, ctx.rand) ?? rule.layer.effect[0];
+  ctx.used.add(chosen);
+  return chosen;
+}
+
+/** Build a coherent layer: shared palette/colors/rhythm, family-matched effect. */
+function coherentLayer(base: LookLayer, rule: GenerationRule, ctx: CoherentContext): LookLayer {
   return {
-    ...layer,
-    effect: [effect],
-    palette: [],  // Clear palette for fully random
-    colors: selectedColors as [number, number, number][],
-    speed,
-    intensity,
+    ...base,
+    effect: [chooseEffect(rule, ctx)],
+    palette: ctx.palette ? [ctx.palette] : [],
+    colors: ctx.colors.map((c) => [...c] as Rgb),
+    speed: clamp(ctx.speed + Math.floor(ctx.rand() * 25) - 12, 16, 250),
+    intensity: clamp(ctx.intensity + Math.floor(ctx.rand() * 25) - 12, 16, 250),
   };
 }
 
-/** Randomize effect and colors within a rule's theme */
-function randomizeLayer(layer: LookLayer, keywords: string[]): LookLayer {
-  const isApex = keywords.includes('apex');
-  const isPeak = keywords.includes('peak');
-  const isFront = keywords.includes('front') || keywords.includes('soffit');
-  const isSide = keywords.includes('side');
-  const isGarage = keywords.includes('garage');
-
-  // Effect pools by theme
-  const effectPools = {
-    apex: ['Sparkle', 'Twinkle', 'Twinklefox', 'Sparkle+'],
-    peak: ['Sparkle', 'Twinkle', 'Glitter', 'Sparkle+', 'Sparkle Dark'],
-    front: ['Rain', 'Drip', 'Drip Drop', 'Rainbow', 'Colorwaves'],
-    side: ['Rain', 'Colorwaves', 'Flow', 'Pacifica', 'Aurora', 'Stream', 'Scanner', 'Sinelon'],
-    garage: ['Solid', 'Breathe', 'Fade', 'Colorwaves'],
-    default: ['Solid', 'Breathe', 'Fade'],
-  };
-
-  // Color pools by theme
-  const colorPools: Record<string, [number, number, number][]> = {
-    apex: [
-      [255, 120, 30], [255, 200, 150], [255, 255, 200],
-      [255, 180, 100], [255, 220, 180],
-    ],
-    peak: [
-      [255, 220, 50], [255, 170, 0], [255, 255, 255],
-      [255, 140, 0], [255, 100, 50],
-    ],
-    front: [
-      [255, 255, 255], [200, 220, 255], [180, 200, 255],
-      [255, 200, 200], [150, 200, 255],
-    ],
-    side: [
-      [100, 200, 255], [50, 150, 255], [0, 100, 200],
-      [0, 200, 255], [50, 200, 200],
-      [0, 255, 255], [100, 100, 255], [150, 50, 255],
-    ],
-    garage: [
-      [255, 180, 120], [255, 200, 150], [255, 140, 80],
-      [255, 160, 100], [200, 120, 60],
-    ],
-    default: [
-      [255, 200, 150], [255, 180, 120], [255, 220, 180],
-    ],
-  };
-
-  // Determine theme
-  let theme = 'default';
-  if (isApex) theme = 'apex';
-  else if (isPeak) theme = 'peak';
-  else if (isFront) theme = 'front';
-  else if (isSide) theme = 'side';
-  else if (isGarage) theme = 'garage';
-
-  const effects = effectPools[theme as keyof typeof effectPools] || effectPools.default;
-  // For randomize: pick colors from ALL themes, not just the matched theme
-  const allColors: [number, number, number][] = Object.values(colorPools).flat();
-
-  // Pick random effect and colors
-  const effect = effects[Math.floor(Math.random() * effects.length)];
-  const numColors = Math.floor(Math.random() * 3) + 1; // 1-3 colors
-  const shuffledColors = [...allColors].sort(() => Math.random() - 0.5);
-  const selectedColors = shuffledColors.slice(0, numColors);
-
-  // Randomize speed and intensity within reasonable ranges
-  const speed = Math.floor(Math.random() * 100) + 50; // 50-150
-  const intensity = Math.floor(Math.random() * 100) + 100; // 100-200
-
-  return {
-    ...layer,
-    target: layer.target,
-    effect: [effect],
-    palette: [],  // Clear palette when randomizing colors
-    colors: selectedColors as [number, number, number][],
-    speed,
-    intensity,
-  };
+export interface GenerateOptions {
+  name?: string;
+  emoji?: string;
+  category?: string;
+  /** One palette for the whole look, effects varied by zone type. */
+  coherent?: boolean;
+  /** Effects available on this controller (snapshot.effects). */
+  effects?: string[];
+  /** Palettes available on this controller (snapshot.palettes). */
+  palettes?: string[];
+  /** Any number — the same seed always regenerates the same look. */
+  seed?: number;
 }
 
-/** Generate a look from zones */
+/**
+ * Generate a look from zones.
+ *
+ * Faithful mode uses the fixed rules. Coherent mode picks ONE palette and
+ * colour set for the entire house, then chooses a different family-appropriate
+ * effect for every part — varied, but still looks deliberately decorated.
+ */
 export function generateLookFromZones(
   zones: Zone[],
-  options: {
-    name?: string;
-    emoji?: string;
-    category?: string;
-    /** Use random effects within theme constraints */
-    randomize?: boolean;
-    /** Use completely random effects/colors ignoring themes */
-    fullyRandom?: boolean;
-  } = {}
+  options: GenerateOptions = {}
 ): { id: string; name: string; emoji: string; category: string; layers: LookLayer[] } {
-  // Group zones by matched rule priority
-  const zoneGroups: Map<number, { rule: GenerationRule; zones: Zone[] }> = new Map();
-  
+  const groups = new Map<number, { rule: GenerationRule; zones: Zone[] }>();
   for (const zone of zones) {
     const rule = matchZoneToRule(zone.name);
-    const priority = rule.priority;
-    if (!zoneGroups.has(priority)) {
-      zoneGroups.set(priority, { rule, zones: [] });
-    }
-    zoneGroups.get(priority)!.zones.push(zone);
+    if (!groups.has(rule.priority)) groups.set(rule.priority, { rule, zones: [] });
+    groups.get(rule.priority)!.zones.push(zone);
   }
+  const priorities = [...groups.keys()].sort((a, b) => a - b);
 
-  // Create layers from groups, sorted by priority (lowest first = bottom layer)
-  const sortedPriorities = Array.from(zoneGroups.keys()).sort((a, b) => a - b);
-  const layers = sortedPriorities.map(priority => {
-      const group = zoneGroups.get(priority)!;
-      const zoneIds = group.zones.map(z => z.id);
+  const seed = options.seed ?? Math.floor(Math.random() * 0xffffffff);
+  const rand = makeRandom(seed);
 
-      // Always target specific zones so UI shows zone names
-      const target = { kind: 'zones' as const, zoneIds };
+  // Decide the shared look once, before any layer is created.
+  const availablePalettes = (options.palettes ?? []).filter(
+    (p) => p && !/^(default|\* colors only)$/i.test(p.trim())
+  );
+  const palette = options.coherent ? pick(availablePalettes, rand) : undefined;
+  const paletteStops = palette ? paletteByWledName(palette)?.stops : undefined;
+  // Skip near-black gradient stops (e.g. Icefire starts at black) so a solid
+  // effect never comes out dark; the palette still supplies the real gradient.
+  const visibleStops = paletteStops?.filter((c) => c.some((v) => v > 20));
+  const ctx: CoherentContext = {
+    rand,
+    effects: options.effects?.length
+      ? options.effects
+      : [...new Set(DEFAULT_GENERATION_RULES.flatMap((r) => r.layer.effect))],
+    palette,
+    colors: visibleStops?.length ? visibleStops.slice(0, 2) : [[255, 170, 90], [255, 255, 255]],
+    speed: 64 + Math.floor(rand() * 70),
+    intensity: 110 + Math.floor(rand() * 70),
+    used: new Set<string>(),
+  };
 
-      let layer: LookLayer = { ...group.rule.layer, target };
-
-      if (options.randomize) {
-        // Randomize effect and colors within the rule's theme
-        layer = randomizeLayer(layer, group.rule.keywords);
-        // Ensure target is preserved
-        layer.target = target;
-      }
-
-      if (options.fullyRandom) {
-        // Completely random: pick from ALL effects and ALL colors
-        layer = fullyRandomLayer(layer);
-        layer.target = target;
-      }
-
-      return layer;
-    });
+  const layers = priorities.map((priority) => {
+    const group = groups.get(priority)!;
+    const target = { kind: 'zones' as const, zoneIds: group.zones.map((z) => z.id) };
+    const base: LookLayer = { ...group.rule.layer, target };
+    return options.coherent ? coherentLayer(base, group.rule, ctx) : base;
+  });
 
   return {
     id: newId(),
-    name: options.name ?? 'Generated',
+    name: options.name ?? (options.coherent ? 'Coherent' : 'Generated'),
     emoji: options.emoji ?? '🤖',
     category: options.category ?? 'Generated',
     layers,
   };
 }
 
-/** Generate and apply to a look object */
+/** Generate and apply to a look object. */
 export function generateAndApplyToLook(
   zones: Zone[],
   baseLook?: { name?: string; emoji?: string; category?: string }
