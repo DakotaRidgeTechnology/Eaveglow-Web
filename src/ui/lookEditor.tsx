@@ -261,11 +261,13 @@ export function LookEditor(props: { lookId?: string }) {
           </>
         )}
       </Header>
-      {testing && (
+      {testing ? (
         <div class="banner coming">
           <span>Testing on the lights — this look is not saved yet.</span>
           <button class="primary" onClick={restoreLights}>Restore previous look</button>
         </div>
+      ) : (
+        <button class="banner action" onClick={testOnLights}>👀 Test on lights — see it before saving</button>
       )}
       <ShareDialog open={sharing} text={sharing ? encodeLook(look, zones) : ''} onClose={() => setSharing(false)} />
       <ImportDialog
@@ -480,7 +482,6 @@ export function LookEditor(props: { lookId?: string }) {
 
       {preview.warnings.length > 0 && <p class="hint warn">{preview.warnings.join(' ')}</p>}
       <div class="buttons">
-        <button onClick={testOnLights}>👀 Test on lights</button>
         <button class="primary" onClick={() => save(true)}>💡 Save & turn on</button>
         <button onClick={() => save(false)}>Save</button>
       </div>
