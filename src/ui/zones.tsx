@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
 import { builtinLooks } from '../engine/library';
-import { LightSpacing, SOLID_SPACING, Zone, newId, sequential, splitZone, spacingEquals, suggestedSpacing, validateLayout } from '../engine/model';
+import { LightSpacing, SOLID_SPACING, Zone, newId, sequential, splitZone, spacingEquals, suggestedSpacing, validateLayout, overlapWarnings } from '../engine/model';
 import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
 import { backupFileName, makeBackup, readBackup } from '../engine/backup';
 import { RELEASES, UpdateCheck, checkForUpdate, setUpdateChecks, updateChecksEnabled } from '../engine/updates';
@@ -44,6 +44,7 @@ export function ZonesPage() {
   const [manual, setManual] = useState(!!saved?.manualStarts);
   const placed = manual ? zones : sequential(zones);
   const layout = { totalPixels: total, zones: placed, spacing, inchesBetweenLights: inches, ...(manual ? { manualStarts: true } : {}) };
+
   const setManualStarts = (on: boolean) => {
     // Start from where the parts are now, so nothing jumps.
     if (on) setZones(sequential(zones));
@@ -79,9 +80,61 @@ export function ZonesPage() {
   const save = () => {
     const problems = validateLayout(layout);
     if (problems.length) return toast(problems[0]);
+    const warns = overlapWarnings(layout);
+    if (warns.length) toast(warns.map((w) => '⚠️ ' + w).join(' '));
     store.update('layout', layout);
     toast('🏠 House saved');
     back();
+  };
+
+  /** Sends the current zones to WLED as segments — no validation, just apply. */
+  const sendSegments = async () => {
+    const segs = placed.map((z, i) => ({
+      id: i,
+      start: z.start,
+      stop: z.start + z.length,
+      grp: spacing.lit,
+      spc: spacing.skip,
+      on: true,
+      bri: 255,
+      col: [],
+      fx: 0,
+      sx: 128,
+      ix: 128,
+      pal: 0,
+      rev: false,
+      n: z.name,
+    }));
+    try {
+      const res = await fetch('/json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ on: true, transition: 7, mainseg: 0, seg: segs }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.success) toast(`Sent ${segs.length} segments to WLED`);
+      else toast('Failed to send segments');
+    } catch (e) {
+      toast(String(e));
+    }
+  };
+
+  /** Reads WLED's current segments and turns them into zones. */
+  const readSegments = () => {
+    console.log('readSegments called, snapshot.state.seg length:', snapshot?.state?.seg?.length);
+    const segs = snapshot?.state?.seg?.filter((s) => s.stop > s.start) ?? [];
+    console.log('Filtered segments count:', segs.length);
+    if (segs.length === 0) return toast('No segments on the controller');
+    const imported: Zone[] = segs.map((s, i) => ({
+      id: newId(),
+      name: s.n || `Zone ${i + 1}`,
+      start: s.start,
+      length: s.stop - s.start,
+    }));
+    setZones(imported);
+    // Keep manual positions from WLED - don't re-sequence (would collapse overlaps)
+    setManual(true);
+    toast(`Imported ${imported.length} segment${imported.length > 1 ? 's' : ''} from WLED`);
   };
 
   return (
@@ -104,6 +157,9 @@ export function ZonesPage() {
       </label>
 
       <h3>Parts of the house, in wiring order</h3>
+      {snapshot?.state?.seg && snapshot.state.seg.length > 0 && (
+        <button class="chip" onClick={readSegments}>↻ Read segments from WLED</button>
+      )}
       <Toggle
         label="Set where each part starts"
         hint="For wiring that skips lights or runs out of order. Off: parts follow one another."
@@ -159,6 +215,7 @@ export function ZonesPage() {
 
       <div class="buttons">
         <button class="primary" onClick={save}>Save</button>
+        <button onClick={sendSegments}>Send segments to WLED</button>
       </div>
 
       <FadeCard />

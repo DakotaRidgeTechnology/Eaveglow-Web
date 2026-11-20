@@ -85,9 +85,15 @@ interface Run {
 
 const len = (r: Run) => r.stop - r.start;
 
-export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCatalog, maxSegments = 16): CompiledLook {
+export function compileLook(
+  layout: HouseLayout,
+  look: Look,
+  catalog: EffectCatalog,
+  maxSegments = 16,
+  suppressOverlapWarnings = false
+): CompiledLook {
   const warnings: string[] = [];
-  const runs = buildRuns(layout, look, warnings);
+  const runs = buildRuns(layout, look, warnings, suppressOverlapWarnings);
   mergeAdjacent(runs);
   const overlays = look.layers.filter((l) => l.overlayEvery);
   const needed = () => runs.length + runs.filter((r) => r.layer !== null).length * overlays.length;
@@ -187,7 +193,12 @@ export function compileLook(layout: HouseLayout, look: Look, catalog: EffectCata
   return { segments, warnings, previewColors: previews };
 }
 
-function buildRuns(layout: HouseLayout, look: Look, warnings: string[]): Run[] {
+function buildRuns(
+  layout: HouseLayout,
+  look: Look,
+  warnings: string[],
+  suppressOverlapWarnings = false
+): Run[] {
   const runs: Run[] = [];
   const total = layout.totalPixels;
   let cursor = 0;
@@ -195,7 +206,8 @@ function buildRuns(layout: HouseLayout, look: Look, warnings: string[]): Run[] {
     const end = zone.start + zone.length;
     const start = Math.max(zone.start, cursor);
     const stop = Math.min(end, total);
-    if (zone.start < cursor) warnings.push(`"${zone.name}" overlaps another zone and was trimmed.`);
+    if (zone.start < cursor && !suppressOverlapWarnings)
+      warnings.push(`"${zone.name}" overlaps another zone and was trimmed.`);
     if (end > total) warnings.push(`"${zone.name}" goes past the last pixel and was trimmed.`);
     if (stop <= start) return;
     if (start > cursor) runs.push({ start: cursor, stop: start, layer: null, reverse: false });

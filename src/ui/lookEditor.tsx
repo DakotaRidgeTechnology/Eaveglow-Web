@@ -1,21 +1,32 @@
 import { useMemo, useRef, useState } from 'preact/hooks';
 import { useApp } from '../app';
+import { generateLookFromZones, seedFromText } from '../engine/lookGenerator';
 import { addPartLayer, copyStyleFrom, layerZoneIds, removeLayer, setLayerZones } from '../engine/lookEdits';
 import { builtinLooks, colorGroups, effectStyles, isCustomPalette, newCustomLook, paletteCandidates, palettePresets, styleCategories, styleForEffects } from '../engine/library';
 import { decodeLook, encodeLook } from '../engine/lookShare';
-import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, effectiveZones, rgbEquals, spacingLabel } from '../engine/model';
-import { EffectCatalog, compileLook } from '../engine/segmentCompiler';
+import { CUSTOM_CATEGORY, LayerTarget, Look, LookLayer, Rgb, SOLID_SPACING, WledState, effectiveZones, newId, rgbEquals, spacingLabel } from '../engine/model';
+import { EffectCatalog, compileLook, toStateJson } from '../engine/segmentCompiler';
 import { Chip, Dialog, GradientBar, Header, SpacingPicker, StripPreview, Toggle, css, hexToRgb, rgbToHex } from './common';
 
 const EMOJIS = ['✨', '🎄', '🎅', '❄️', '🎃', '👻', '❤️', '🍀', '🐣', '🇺🇸', '🎆', '🦃', '🕎', '🪔', '🏈', '⚽', '🏀', '⚾', '🏒', '🎉', '🎂', '🌈', '🌊', '🔥', '🌙', '⭐', '🌸', '🦄'];
 
+interface TestSession {
+  /** Live WLED state before the test, so Restore can put it back. */
+  previous: WledState;
+  /** Number of segments the test posted (including any empty ones used for deletion). */
+  segmentCount: number;
+}
+
 export function LookEditor(props: { lookId?: string }) {
-  const { settings, store, snapshot, applyLook, toast, back } = useApp();
+  const { settings, store, snapshot, applyLook, setLights, toast, back, refresh } = useApp();
   const existing = settings.customLooks.find((l) => l.id === props.lookId);
   const [look, setLook] = useState<Look>(() => structuredClone(existing ?? newCustomLook()));
   const [active, setActive] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [coherent, setCoherent] = useState(false);
+  const [seedText, setSeedText] = useState('');
+  const [testing, setTesting] = useState<TestSession | null>(null);
   const layer = look.layers[active] ?? look.layers[0];
   const [category, setCategory] = useState(() => styleForEffects(layer.effect)?.category ?? 'steady');
   const [themes, setThemes] = useState(layer.palette.length > 0);
@@ -32,9 +43,25 @@ export function LookEditor(props: { lookId?: string }) {
   const setLayer = (patch: Partial<LookLayer>) =>
     setLook({ ...look, layers: look.layers.map((l, i) => (i === active ? { ...l, ...patch } : l)) });
   const zoneName = (id: string) => zones.find((z) => z.id === id)?.name ?? '?';
-  const partLabel = (i: number) =>
-    i === 0 ? (look.layers[0].target.kind === 'all' ? '🏠 Everything else' : '🏠 Main look') : layerZoneIds(look.layers[i]).map(zoneName).join(' + ');
+  const partLabel = (i: number) => {
+    const ids = layerZoneIds(look.layers[i]);
+    const effect = look.layers[i].effect[0];
+    return ids.map(zoneName).join(' + ') + (effect ? ` · ${effect}` : '') + (look.layers[i]?.target.kind === 'all' ? ' 🏠' : '');
+  };
+  const generateFromZones = () => {
+    const typed = seedText.trim();
+    const seed = coherent ? (typed ? seedFromText(typed) : Math.floor(Math.random() * 0xffffffff)) : undefined;
+    const generated = generateLookFromZones(zones, {
+      name: 'Generated', emoji: '🤖', category: 'Generated',
+      coherent, effects: snapshot?.effects, palettes: snapshot?.palettes, seed,
+    });
+    setLook(generated);
+    selectLayer(0, generated);
+    toast(`Generated ${generated.layers.length} layers from zones${coherent ? ' (coherent random)' : ''}${coherent ? ` · seed ${typed || seed}` : ''}`);
+  };
+
   const addPart = () => {
+
     const used = new Set(look.layers.flatMap(layerZoneIds));
     const free = zones.find((z) => !used.has(z.id)) ?? zones[0];
     const next = addPartLayer(look, [free.id]);
@@ -51,7 +78,13 @@ export function LookEditor(props: { lookId?: string }) {
   const devicePalettes = new Set(snapshot?.palettes.map((p) => p.toLowerCase()));
   // Eaveglow's own (★) themes are installed on the controller when used.
   const themeList = palettePresets.filter((p) => isCustomPalette(p.wled) || !snapshot || devicePalettes.has(p.wled.toLowerCase()));
-  const preview = compileLook(layout, look, catalog ?? new EffectCatalog([...layer.effect, 'Solid'], palettePresets.map((p) => p.wled)), 64);
+  const preview = compileLook(
+        layout,
+        look,
+        catalog ?? new EffectCatalog([...layer.effect, 'Solid'], palettePresets.map((p) => p.wled)),
+        64,
+        true
+      );
 
   const toggleColor = (c: Rgb) => {
     let colors = [...layer.colors];
@@ -73,6 +106,7 @@ export function LookEditor(props: { lookId?: string }) {
   const save = async (apply: boolean) => {
     const final: Look = { ...look, name: look.name.trim() || 'My Look', category: CUSTOM_CATEGORY };
     store.update('customLooks', [...settings.customLooks.filter((l) => l.id !== final.id), final]);
+    setTesting(null);
     if (apply) {
       try {
         const warnings = await applyLook(final);
@@ -82,6 +116,49 @@ export function LookEditor(props: { lookId?: string }) {
       }
     }
     back();
+  };
+
+  /** Apply this unsaved look to the controller so it can be judged on the real lights. */
+  const testOnLights = async () => {
+    if (!snapshot || !catalog) return toast('No controller connection — can not test on lights');
+    const compiled = compileLook(layout, look, catalog, snapshot.info.maxSegments ?? 16, true);
+    const state = toStateJson(compiled, snapshot.state.seg.length, settings.transition ?? 7);
+    try {
+      const problems = await setLights(state);
+      if (problems.length) toast(problems.join(' '));
+      setTesting({
+        previous: structuredClone(snapshot.state),
+        segmentCount: Math.max(compiled.segments.length, snapshot.state.seg.length),
+      });
+      toast(compiled.warnings.length ? `Testing on lights · ${compiled.warnings[0]}` : 'Testing on lights — not saved yet');
+    } catch (e) {
+      toast(String(e instanceof Error ? e.message : e));
+    }
+  };
+
+  /** Put back the state the controller had before the test. */
+  const restoreLights = async () => {
+    if (!testing) return;
+    const { previous, segmentCount } = testing;
+    const seg: object[] = previous.seg.map((s, i) => ({ of: 0, sel: true, ...s, id: i }));
+    // WLED keeps segments that aren't sent, so explicitly clear any the test added.
+    for (let id = previous.seg.length; id < segmentCount; id++) seg.push({ id, stop: 0 });
+    const state: object = {
+      on: previous.on,
+      bri: previous.bri,
+      mainseg: 0,
+      transition: settings.transition ?? 7,
+      seg,
+      ...(previous.nl ? { nl: previous.nl } : {}),
+    };
+    try {
+      const problems = await setLights(state);
+      if (problems.length) toast(problems.join(' '));
+      else toast('Previous look restored');
+      setTesting(null);
+    } catch (e) {
+      toast(String(e instanceof Error ? e.message : e));
+    }
   };
 
   const remove = () => {
@@ -98,13 +175,100 @@ export function LookEditor(props: { lookId?: string }) {
       <Header title={existing ? 'Edit look' : 'Make a look'} back>
         {existing ? (
           <>
+            <label class="icon-toggle" title="Coherent random (one palette, varied effects)">
+              <input type="checkbox" checked={coherent} onChange={(e) => setCoherent((e.target as HTMLInputElement).checked)} />
+              <span>🎲</span>
+            </label>
+            {coherent && (
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="seed"
+                aria-label="Random seed (blank = new each time)"
+                style={{ width: '76px' }}
+                value={seedText}
+                onInput={(e) => setSeedText((e.target as HTMLInputElement).value)}
+              />
+            )}
+            <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
             <button class="icon" title="Share this look" onClick={() => setSharing(true)}>📤</button>
             <button class="icon" title="Delete" onClick={remove}>🗑</button>
           </>
         ) : (
-          <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
+          <>
+            <label class="icon-toggle" title="Coherent random (one palette, varied effects)">
+              <input type="checkbox" checked={coherent} onChange={(e) => setCoherent((e.target as HTMLInputElement).checked)} />
+              <span>🎲</span>
+            </label>
+            {coherent && (
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="seed"
+                aria-label="Random seed (blank = new each time)"
+                style={{ width: '76px' }}
+                value={seedText}
+                onInput={(e) => setSeedText((e.target as HTMLInputElement).value)}
+              />
+            )}
+            <button class="icon" title="Generate from zones" onClick={generateFromZones}>🤖</button>
+            <button class="icon" title="Paste a shared look" onClick={() => setImporting(true)}>📥</button>
+            <button class="icon" title="Import from WLED" onClick={async () => {
+              await refresh();
+                            const currentSnapshot = snapshot;
+                            if (!currentSnapshot) return toast('No controller snapshot available');
+                            const segs = currentSnapshot.state?.seg?.filter((s) => s.stop > s.start && s.on) ?? [];
+                            if (segs.length === 0) return toast('No active segments on the controller');
+
+                            // Map each WLED segment to the zone(s) that contain its LED range
+                            const zonesList = zones;
+                            const layers = segs.map((s) => {
+                              // Find which zone(s) this segment belongs to
+                              const segmentStart = s.start;
+                              const segmentEnd = s.stop;
+                              const matchingZones = zonesList.filter(
+                                (z) => z.start < segmentEnd && z.start + z.length > segmentStart
+                              );
+
+                              return {
+                                target:
+                                  matchingZones.length > 0
+                                    ? { kind: 'zones' as const, zoneIds: matchingZones.map((z) => z.id) }
+                                    : { kind: 'all' as const },
+                                effect: [currentSnapshot.effects[s.fx ?? 0] ?? 'Solid'],
+                                palette: s.pal ? [currentSnapshot.palettes[s.pal ?? 0] ?? ''] : [],
+                                colors: s.col ?? [],
+                                speed: s.sx ?? 128,
+                                intensity: s.ix ?? 128,
+                                spacing: s.grp && s.spc ? { lit: s.grp, skip: s.spc } : undefined,
+                                reverse: !!s.rev,
+                              };
+                            });
+
+                            const imported: Look = {
+                              id: newId(),
+                              name: 'From WLED',
+                              emoji: '📥',
+                              category: CUSTOM_CATEGORY,
+                              layers,
+                            };
+              setLook(imported);
+              selectLayer(0, imported);
+              toast(`Imported ${segs.length} segment${segs.length > 1 ? 's' : ''} from WLED`);
+            }}>
+              📥
+            </button>
+          </>
         )}
       </Header>
+      {testing ? (
+        <div class="banner coming">
+          <span>Testing on the lights — this look is not saved yet.</span>
+          <button class="primary" onClick={restoreLights}>Restore previous look</button>
+        </div>
+      ) : (
+        <button class="banner action" onClick={testOnLights}>👀 Test on lights — see it before saving</button>
+      )}
       <ShareDialog open={sharing} text={sharing ? encodeLook(look, zones) : ''} onClose={() => setSharing(false)} />
       <ImportDialog
         open={importing}
@@ -144,7 +308,7 @@ export function LookEditor(props: { lookId?: string }) {
             )}
             <Chip onClick={addPart}>＋ Different look for a part</Chip>
           </div>
-          {active > 0 && (
+          {active >= 0 && (
             <div class="card part-edit">
               <small>This look shows on:</small>
               <div class="chips dense">
@@ -155,8 +319,8 @@ export function LookEditor(props: { lookId?: string }) {
                     <Chip
                       key={z.id}
                       selected={on}
-                      // A part always covers at least one zone; use Remove to drop it.
-                      onClick={() => !(on && ids.length === 1) && setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}
+                      // Allow removing the last zone; use Remove button to delete empty layer
+                      onClick={() => setLook(setLayerZones(look, active, on ? ids.filter((x) => x !== z.id) : [...ids, z.id]))}
                     >
                       {z.name}
                     </Chip>
@@ -181,7 +345,9 @@ export function LookEditor(props: { lookId?: string }) {
                     <option key={l.id} value={l.id}>{l.emoji} {l.name}</option>
                   ))}
                 </select>
-                <button onClick={() => (setLook(removeLayer(look, active)), selectLayer(0, removeLayer(look, active)))}>Remove</button>
+                {active > 0 && (
+                  <button onClick={() => { setLook(removeLayer(look, active)); selectLayer(0, removeLayer(look, active)); }}>Remove part</button>
+                )}
               </div>
             </div>
           )}

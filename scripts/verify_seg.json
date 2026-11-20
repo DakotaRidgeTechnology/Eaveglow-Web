@@ -1,0 +1,22 @@
+[
+  {"id":0,"start":0,"stop":6,"len":6,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Garage Front 1"},
+  {"id":1,"start":6,"stop":23,"len":17,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":true,"n":"Garage Left Side"},
+  {"id":2,"start":23,"stop":35,"len":12,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Lower Front 1"},
+  {"id":3,"start":35,"stop":50,"len":15,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":false,"n":"Lower Peak"},
+  {"id":4,"start":50,"stop":77,"len":27,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Lower Front 2"},
+  {"id":5,"start":77,"stop":101,"len":24,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Lower Side"},
+  {"id":6,"start":101,"stop":136,"len":35,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Garage Peak Left"},
+  {"id":7,"start":136,"stop":163,"len":27,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":true,"n":"Garage Front 2"},
+  {"id":8,"start":163,"stop":201,"len":38,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Garage Peak Right"},
+  {"id":9,"start":201,"stop":238,"len":37,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Garage Right Side"},
+  {"id":10,"start":238,"stop":263,"len":25,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Upper Front 1"},
+  {"id":11,"start":263,"stop":282,"len":19,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Upper Peak Left"},
+  {"id":12,"start":282,"stop":304,"len":22,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":true,"n":"Upper Front 2"},
+  {"id":13,"start":304,"stop":328,"len":24,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Upper Peak Right"},
+  {"id":14,"start":328,"stop":339,"len":11,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,0,0],[0,0,0],[0,0,0]],"fx":43,"sx":60,"ix":150,"pal":0,"rev":false,"n":"Upper Front 3"},
+  {"id":15,"start":42,"stop":43,"len":1,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":false,"n":"Lower Apex"},
+  {"id":16,"start":118,"stop":119,"len":1,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Garage Apex Left"},
+  {"id":17,"start":191,"stop":192,"len":1,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Garage Apex Right"},
+  {"id":18,"start":272,"stop":273,"len":1,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Upper Apex Left"},
+  {"id":19,"start":321,"stop":322,"len":1,"grp":1,"spc":0,"on":true,"bri":255,"col":[[255,220,50],[0,0,0],[0,0,0]],"fx":20,"sx":150,"ix":255,"pal":0,"rev":true,"n":"Upper Apex Right"}
+]

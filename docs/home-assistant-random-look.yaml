@@ -1,0 +1,120 @@
+# Eaveglow Random Look Mode — Home Assistant package
+# Drop into config/packages/ (or paste into configuration.yaml).
+# Requires: WLED integration (light.wled + select.wled_color_palette).
+# Change light.wled to your WLED light entity if different.
+
+# ── Settings (edit in HA UI: Settings → Devices & Services → Helpers) ──
+input_boolean:
+  eaveglow_random_mode:
+    name: Random Look Mode
+    icon: mdi:shuffle-variant
+
+input_select:
+  eaveglow_random_days:
+    name: Random Mode Days
+    icon: mdi:calendar-week
+    mode: list
+    options:
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+      - Sunday
+
+input_datetime:
+  eaveglow_random_end:
+    name: Random Mode End Time
+    icon: mdi:clock-end
+    has_time: true
+    has_date: false
+
+input_text:
+  eaveglow_random_exclude:
+    name: Excluded Effects (comma-separated)
+    icon: mdi:filter-remove
+    initial: "Audio Reactive, Strobe"
+    max: 500
+
+input_number:
+  eaveglow_random_brightness:
+    name: Random Mode Brightness
+    icon: mdi:brightness-6
+    min: 10
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 50
+
+# ── Script: pick a random effect + palette, apply to WLED ──
+script:
+  eaveglow_random_look:
+    alias: "Eaveglow: Random Look"
+    icon: mdi:shuffle-variant
+    sequence:
+      - variables:
+          effects: "{{ state_attr('light.wled', 'effect_list') | default([]) }}"
+          palettes: "{{ state_attr('select.wled_color_palette', 'options') | default([]) }}"
+          excluded: "{{ states('input_text.eaveglow_random_exclude').split(',') | map('trim') | list }}"
+          allowed: "{{ effects | reject('in', excluded) | list }}"
+          effect: "{{ allowed | random }}"
+          palette: "{{ palettes | random }}"
+          bri: "{{ states('input_number.eaveglow_random_brightness') | int * 255 // 100 }}"
+      - service: wled.effect
+        target:
+          entity_id: light.wled
+        data:
+          effect: "{{ effect }}"
+          palette: "{{ palette }}"
+      - service: light.turn_on
+        target:
+          entity_id: light.wled
+        data:
+          brightness: "{{ bri }}"
+
+# ── Automation: sunset → random look on ──
+automation:
+  - alias: "Eaveglow: Random Look On"
+    trigger:
+      - platform: sun
+        event: sunset
+        offset: "00:00:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.eaveglow_random_mode
+        state: "on"
+      - condition: template
+        value_template: >
+          {% set days = states('input_select.eaveglow_random_days') %}
+          {{ now().strftime('%A') in days }}
+    action:
+      - service: script.eaveglow_random_look
+
+  - alias: "Eaveglow: Random Look Change"
+    trigger:
+      - platform: time_pattern
+        minutes: "/30"
+    condition:
+      - condition: state
+        entity_id: input_boolean.eaveglow_random_mode
+        state: "on"
+      - condition: sun
+        after: sunset
+      - condition: time
+        before: input_datetime.eaveglow_random_end
+    action:
+      - service: script.eaveglow_random_look
+
+  - alias: "Eaveglow: Random Look Off"
+    trigger:
+      - platform: time
+        at: input_datetime.eaveglow_random_end
+    condition:
+      - condition: state
+        entity_id: input_boolean.eaveglow_random_mode
+        state: "on"
+    action:
+      - service: light.turn_off
+        target:
+          entity_id: light.wled

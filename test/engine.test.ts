@@ -1,5 +1,5 @@
 import { builtinLooks, effectStyles, lookCategories, palettePresets, colorGroups, styleById } from '../src/engine/library';
-import { HouseLayout, Look, sequential, splitZone, suggestedSpacing, spacingLabel, validateLayout } from '../src/engine/model';
+import { HouseLayout, Look, sequential, splitZone, suggestedSpacing, spacingLabel, validateLayout, overlapWarnings } from '../src/engine/model';
 import { readFileSync } from 'node:fs';
 import { EffectCatalog, compileLook, parseEffectData, toStateJson } from '../src/engine/segmentCompiler';
 import { wled015Effects, wled015Palettes } from './fixtures_wled015';
@@ -183,7 +183,7 @@ describe('segment compiler', () => {
     expect(validateLayout(gap)).toEqual([]);
     const segs = compileLook(gap, solid([255, 0, 0]), cat16).segments;
     expect(segs.map((s) => [s.start, s.stop, s.on])).toEqual([[0, 50, true], [50, 60, false], [60, 100, true], [100, 200, false]]);
-    expect(validateLayout({ totalPixels: 200, zones: [zone('a', 0, 50), zone('b', 40, 40)] })[0]).toMatch(/overlaps/);
+    expect(overlapWarnings({ totalPixels: 200, zones: [zone('a', 0, 50), zone('b', 40, 40)] })[0]).toMatch(/overlaps/);
   });
 
   it('spacing helpers', () => {
